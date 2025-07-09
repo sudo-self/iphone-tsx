@@ -2,8 +2,8 @@ import type { Metadata } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "iPhone Mock Phone GUI — Supabase & Redis Integration Demo",
-  description: "A mock iPhone phone GUI featuring Supabase and Redis integration for a modern app experience.",
+  title: "iPhone TSX — Supabase & Redis intigrations",
+  description: "iPhone TSX featuring Supabase and Redis integration for a modern app experience.",
   generator: "v0.dev",
   metadataBase: new URL("https://iphone.jessejesse.com"),
   openGraph: {
