@@ -586,13 +586,13 @@ function SettingsApp({
                 <Phone className="w-10 h-10 text-white" />
               </div>
               <h3 className="text-xl font-bold">{settings.deviceName}</h3>
-              <p className="text-gray-400">Smartphone UI Clone</p>
+              <p className="text-gray-400">iphone.JesseJesse.com</p>
             </div>
 
             <div className="space-y-3">
               <div className="flex justify-between py-2 border-b border-gray-700">
                 <span className="text-gray-400">Version</span>
-                <span>1.0.0</span>
+                <span>2.02</span>
               </div>
               <div className="flex justify-between py-2 border-b border-gray-700">
                 <span className="text-gray-400">Model</span>
@@ -600,7 +600,7 @@ function SettingsApp({
               </div>
               <div className="flex justify-between py-2 border-b border-gray-700">
                 <span className="text-gray-400">Storage</span>
-                <span>Unlimited</span>
+                <span>Supabase</span>
               </div>
               <div className="flex justify-between py-2 border-b border-gray-700">
                 <span className="text-gray-400">Battery Health</span>
@@ -609,8 +609,7 @@ function SettingsApp({
             </div>
 
             <div className="mt-8 text-center text-gray-400 text-sm">
-              <p>Built with Next.js, Tailwind CSS</p>
-              <p>Supabase & Upstash Redis</p>
+              <p>Next.js 15.4</p>
             </div>
           </div>
         </div>
