@@ -47,13 +47,13 @@ export default function SmartphoneUI() {
     return () => clearInterval(interval)
   }, [])
 
-  // Load settings on mount
+
   useEffect(() => {
     const loadedSettings = loadSettings()
     setSettings(loadedSettings)
   }, [])
 
-  // Fetch contacts from Redis
+
   useEffect(() => {
     const fetchContacts = async () => {
       if (!isLocked) {
@@ -131,9 +131,9 @@ export default function SmartphoneUI() {
   return (
     <div className="flex justify-center items-center min-h-screen bg-gray-900 p-4">
       <div className="relative w-full max-w-[375px] h-[750px] bg-black rounded-[40px] overflow-hidden shadow-2xl border-[14px] border-black">
-        {/* Power button */}
+      
         <div className="absolute right-[-14px] top-[120px] w-[4px] h-[40px] bg-gray-700 rounded-r-sm"></div>
-        {/* Volume buttons */}
+     
         <div className="absolute left-[-14px] top-[100px] w-[4px] h-[30px] bg-gray-700 rounded-l-sm"></div>
         <div className="absolute left-[-14px] top-[140px] w-[4px] h-[30px] bg-gray-700 rounded-l-sm"></div>
 
@@ -166,7 +166,7 @@ export default function SmartphoneUI() {
           </div>
 
           {isLocked ? (
-            // Lock Screen
+            // Lock
             <div
               className="absolute inset-0 flex flex-col items-center bg-cover bg-center"
               style={{ backgroundImage: `url('${settings.lockScreenWallpaper}')` }}
@@ -186,12 +186,12 @@ export default function SmartphoneUI() {
               </div>
             </div>
           ) : (
-            // Home Screen or App Screen
+        
             <div className="absolute inset-0 pt-12">
               {activeApp ? (
-                // App Screens
+            
                 <div className="h-full">
-                  {/* App Header */}
+            
                   <div className="h-12 flex items-center justify-between px-4 bg-gray-800">
                     <h2 className="text-white text-lg font-medium">{activeApp}</h2>
                     {(activeApp === "Contacts" || activeApp === "Phone") && (
@@ -201,7 +201,7 @@ export default function SmartphoneUI() {
                     )}
                   </div>
 
-                  {/* App Content */}
+              
                   {activeApp === "Phone" && <PhoneApp contacts={contacts} />}
                   {activeApp === "Contacts" && <ContactsApp contacts={contacts} onContactsChange={refreshContacts} />}
                   {activeApp === "Calendar" && <CalendarApp />}
@@ -211,7 +211,7 @@ export default function SmartphoneUI() {
                   {activeApp === "Settings" && <SettingsApp settings={settings} onSettingsChange={updateSettings} />}
                 </div>
               ) : (
-                // Home Screen with App Icons
+          
                 <div
                   className="h-full flex flex-col bg-cover bg-center"
                   style={{ backgroundImage: `url('${settings.wallpaper}')` }}
@@ -263,7 +263,7 @@ export default function SmartphoneUI() {
                 </div>
               )}
 
-              {/* Navigation Bar */}
+       
               <div
                 className={cn(
                   "absolute bottom-0 left-0 right-0 h-16 backdrop-blur-md flex justify-center items-center",
@@ -302,7 +302,7 @@ function AppIcon({
   )
 }
 
-// Settings
+
 function SettingsApp({
   settings,
   onSettingsChange,
@@ -855,7 +855,7 @@ function CalendarApp() {
 
   return (
     <div className="h-full bg-gray-900 text-white p-4">
-      {/* Header */}
+    
       <div className="flex justify-between items-center mb-6">
         <button onClick={() => setViewDate(new Date(currentYear, viewDate.getMonth() - 1, 1))}>←</button>
         <h2 className="text-xl font-bold">
@@ -918,7 +918,7 @@ function CalendarApp() {
       )}
 
       <div className="mt-6">
-        <h3 className="text-lg font-medium mb-3">Saved Events</h3>
+        <h3 className="text-lg font-medium mb-3">Calendar Events</h3>
         <div className="space-y-3">
           {Object.entries(events).map(([date, event]) => (
             <div key={date} className="p-3 bg-gray-800 rounded-lg">
@@ -1236,7 +1236,7 @@ function BrowserApp() {
           </button>
         </div>
 
-        {/* Address bar */}
+       
         <form onSubmit={handleSubmit} className="flex items-center gap-2">
           <div className="flex-1 relative">
             <input
@@ -1258,7 +1258,7 @@ function BrowserApp() {
         </form>
       </div>
 
-      {/* Content */}
+    
       <div className="flex-1 relative">
         {currentUrl ? (
           <iframe
@@ -1367,10 +1367,10 @@ function CalculatorApp() {
 
   return (
     <div className="flex flex-col h-full bg-black text-white">
-      {/* Display */}
+    
       <div className="h-16 flex items-end justify-end px-4 text-4xl font-light">{display}</div>
 
-      {/* Buttons */}
+     
       <div className="grid grid-cols-4 gap-x-1 gap-y-1 p-2 pb-4">
         <CalcButton onClick={handleClearClick} className="bg-gray-500">
           AC
