@@ -8,22 +8,26 @@ export const supabase = createClient(supabaseUrl, supabaseKey)
 
 export async function uploadPhoto(file: File, fileName: string) {
   try {
-    const { data, error } = await supabase.storage
+    const { error } = await supabase.storage
       .from("photos")
-      .upload(fileName, file, { cacheControl: "3600", upsert: false })
+      .upload(fileName, file, {
+        cacheControl: "3600",
+        upsert: true,
+      })
 
     if (error) {
       console.error("Upload error:", error)
       return null
     }
 
-    const { data: urlData } = supabase.storage.from("photos").getPublicUrl(fileName)
-    return urlData?.publicUrl ?? null
+    const { publicUrl } = supabase.storage.from("photos").getPublicUrl(fileName)
+    return publicUrl || null
   } catch (error) {
-    console.error("Error uploading photo:", error)
+    console.error("Exception uploading photo:", error)
     return null
   }
 }
+
 
 export async function getPhotos() {
   try {
@@ -36,21 +40,18 @@ export async function getPhotos() {
       return []
     }
 
-    const photos = await Promise.all(
-      data.map(async (obj) => {
-        const { data: urlData } = supabase.storage.from("photos").getPublicUrl(obj.name)
-        return {
-          filename: obj.name,
-          url: urlData?.publicUrl ?? "/placeholder.svg",
-          created_at: obj.updated_at ?? new Date().toISOString(),
-        }
-      })
-    )
-
-    return photos
+    return data.map((obj) => {
+      const { publicUrl } = supabase.storage.from("photos").getPublicUrl(obj.name)
+      return {
+        filename: obj.name,
+        url: publicUrl || "/placeholder.svg",
+        created_at: obj.updated_at || new Date().toISOString(),
+      }
+    })
   } catch (error) {
     console.error("Error fetching photos:", error)
     return []
   }
 }
+
 
