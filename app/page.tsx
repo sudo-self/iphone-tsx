@@ -280,7 +280,7 @@ export default function SmartphoneUI() {
   )
 }
 
-// App Icon Component
+// icon
 function AppIcon({
   name,
   icon,
@@ -302,7 +302,7 @@ function AppIcon({
   )
 }
 
-// Settings App
+// Settings
 function SettingsApp({
   settings,
   onSettingsChange,
@@ -560,7 +560,7 @@ function SettingsApp({
                 }}
                 className="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700"
               >
-                Reset to Default
+                Reset
               </button>
             </div>
           </div>
@@ -586,13 +586,13 @@ function SettingsApp({
                 <Phone className="w-10 h-10 text-white" />
               </div>
               <h3 className="text-xl font-bold">{settings.deviceName}</h3>
-              <p className="text-gray-400">iphone.JesseJesse.com</p>
+              <p className="text-gray-400">JesseJesse.com</p>
             </div>
 
             <div className="space-y-3">
               <div className="flex justify-between py-2 border-b border-gray-700">
                 <span className="text-gray-400">Version</span>
-                <span>2.02</span>
+                <span>2.0</span>
               </div>
               <div className="flex justify-between py-2 border-b border-gray-700">
                 <span className="text-gray-400">Model</span>
@@ -641,7 +641,7 @@ function SettingsApp({
         </div>
 
         <div className="mt-8 text-center text-gray-400 text-sm">
-          <p>Customize your phone experience</p>
+          <p>iphone-tsx.vercel.app</p>
         </div>
       </div>
     </div>
