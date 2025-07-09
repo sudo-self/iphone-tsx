@@ -23,6 +23,7 @@ import { cn } from "@/lib/utils"
 import { getContacts } from "@/lib/redis"
 import { saveEvent, getEvents } from "@/lib/redis"
 import { type PhoneSettings, defaultSettings, loadSettings, saveSettings } from "@/lib/settings"
+import cn from "classnames"
 
 export default function SmartphoneUI() {
   const [isLocked, setIsLocked] = useState(true)
@@ -933,7 +934,8 @@ function CalendarApp() {
   )
 }
 
-function CameraApp() {
+
+ function CameraApp() {
   const [stream, setStream] = useState<MediaStream | null>(null)
   const [isCapturing, setIsCapturing] = useState(false)
   const [photos, setPhotos] = useState<Array<{ filename: string; url: string; created_at: string }>>([])
@@ -944,9 +946,7 @@ function CameraApp() {
 
   useEffect(() => {
     if (!showGallery) startCamera()
-    return () => {
-      stopCamera()
-    }
+    return stopCamera
   }, [showGallery])
 
   const startCamera = async () => {
@@ -956,19 +956,15 @@ function CameraApp() {
         audio: false,
       })
       setStream(mediaStream)
-      if (videoRef.current) {
-        videoRef.current.srcObject = mediaStream
-      }
-    } catch (error) {
-      console.error("Error accessing camera:", error)
+      if (videoRef.current) videoRef.current.srcObject = mediaStream
+    } catch (err) {
+      console.error("Camera access error:", err)
     }
   }
 
   const stopCamera = () => {
-    if (stream) {
-      stream.getTracks().forEach((track) => track.stop())
-      setStream(null)
-    }
+    stream?.getTracks().forEach((track) => track.stop())
+    setStream(null)
   }
 
   const loadPhotos = async () => {
@@ -976,8 +972,8 @@ function CameraApp() {
       const { getPhotos } = await import("@/lib/supabase")
       const photosList = await getPhotos()
       setPhotos(photosList)
-    } catch (error) {
-      console.error("Error loading photos:", error)
+    } catch (err) {
+      console.error("Failed to load photos:", err)
     }
   }
 
@@ -987,83 +983,67 @@ function CameraApp() {
 
   const capturePhoto = async () => {
     if (!videoRef.current || !canvasRef.current) return
-
     setIsCapturing(true)
     setIsUploading(true)
 
     try {
       const video = videoRef.current
       const canvas = canvasRef.current
-      const context = canvas.getContext("2d")
-
-      if (!context) return
+      const ctx = canvas.getContext("2d")
+      if (!ctx) return
 
       canvas.width = video.videoWidth
       canvas.height = video.videoHeight
-      context.drawImage(video, 0, 0, canvas.width, canvas.height)
+      ctx.drawImage(video, 0, 0, canvas.width, canvas.height)
 
-      canvas.toBlob(
-        async (blob) => {
-          if (!blob) return
+      canvas.toBlob(async (blob) => {
+        if (!blob) return
+        const fileName = `photo_${Date.now()}.jpg`
+        const file = new File([blob], fileName, { type: "image/jpeg" })
 
-          const fileName = `photo_${Date.now()}.jpg`
-          const file = new File([blob], fileName, { type: "image/jpeg" })
-
-          try {
-            const { uploadPhoto } = await import("@/lib/supabase")
-            const url = await uploadPhoto(file, fileName)
-
-            if (url) {
-              setPhotos((prev) => [{ filename: fileName, url, created_at: new Date().toISOString() }, ...prev])
-            }
-          } catch (error) {
-            console.error("Error saving photo:", error)
-          } finally {
-            setIsUploading(false)
-            setIsCapturing(false)
+        try {
+          const { uploadPhoto } = await import("@/lib/supabase")
+          const url = await uploadPhoto(file, fileName)
+          if (url) {
+            setPhotos((prev) => [{ filename: fileName, url, created_at: new Date().toISOString() }, ...prev])
           }
-        },
-        "image/jpeg",
-        0.8,
-      )
-    } catch (error) {
-      console.error("Error capturing photo:", error)
-      setIsUploading(false)
+        } catch (err) {
+          console.error("Upload failed:", err)
+        } finally {
+          setIsCapturing(false)
+          setIsUploading(false)
+        }
+      }, "image/jpeg", 0.8)
+    } catch (err) {
+      console.error("Capture error:", err)
       setIsCapturing(false)
+      setIsUploading(false)
     }
   }
 
   const switchCamera = async () => {
-    if (stream) {
-      stopCamera()
-    }
-
+    if (stream) stopCamera()
     try {
-      const mediaStream = await navigator.mediaDevices.getUserMedia({
-        video: {
-          facingMode: stream?.getVideoTracks()[0]?.getSettings()?.facingMode === "user" ? "environment" : "user",
-        },
+      const currentFacing = stream?.getVideoTracks()[0]?.getSettings().facingMode
+      const nextFacing = currentFacing === "user" ? "environment" : "user"
+
+      const newStream = await navigator.mediaDevices.getUserMedia({
+        video: { facingMode: nextFacing },
         audio: false,
       })
-      setStream(mediaStream)
-      if (videoRef.current) {
-        videoRef.current.srcObject = mediaStream
-      }
-    } catch (error) {
-      console.error("Error switching camera:", error)
+
+      setStream(newStream)
+      if (videoRef.current) videoRef.current.srcObject = newStream
+    } catch (err) {
+      console.error("Switch error:", err)
     }
   }
 
   if (showGallery) {
     return (
-      <div className="h-full w-full bg-black text-white flex flex-col">
+      <div className="h-full w-full bg-black text-white flex flex-col overflow-hidden">
         <div className="flex items-center justify-between p-4 bg-gray-900">
-          <button
-            onClick={() => {
-              setShowGallery(false)
-            }}
-            className="text-blue-400"
-          >
+          <button onClick={() => setShowGallery(false)} className="text-blue-400">
             ← Camera
           </button>
           <h2 className="text-lg font-medium">Photos ({photos.length})</h2>
@@ -1096,17 +1076,12 @@ function CameraApp() {
   }
 
   return (
-    <div
-      className="h-full bg-black relative overflow-hidden"
-      onClick={() => {
-        if (!isCapturing && !isUploading) capturePhoto()
-      }}
-    >
+    <div className="h-full bg-black relative overflow-hidden">
       <video ref={videoRef} autoPlay playsInline muted className="w-full h-full object-cover" />
       <canvas ref={canvasRef} className="hidden" />
 
-      {/* Bottom Controls */}
-      <div className="absolute bottom-4 left-0 right-0 flex justify-between items-center px-4 z-10">
+      {/* Controls */}
+      <div className="absolute bottom-0 left-0 right-0 p-4 z-10 flex justify-between items-center bg-black/30 backdrop-blur-md">
         <button
           onClick={() => {
             stopCamera()
@@ -1122,7 +1097,7 @@ function CameraApp() {
           disabled={isCapturing || isUploading}
           className={cn(
             "w-16 h-16 rounded-full border-4 border-white flex items-center justify-center",
-            isCapturing || isUploading ? "bg-red-500" : "bg-white/30",
+            isCapturing || isUploading ? "bg-red-500" : "bg-white/30"
           )}
         >
           {isUploading ? (
@@ -1133,7 +1108,9 @@ function CameraApp() {
         </button>
       </div>
 
-      {isUploading && <div className="absolute bottom-24 w-full text-center text-white text-sm">Saving photo...</div>}
+      {isUploading && (
+        <div className="absolute bottom-24 w-full text-center text-white text-sm">Saving photo...</div>
+      )}
 
       {!stream && (
         <div className="absolute inset-0 bg-black flex items-center justify-center">
@@ -1147,6 +1124,7 @@ function CameraApp() {
     </div>
   )
 }
+
 
 function BrowserApp() {
   const [url, setUrl] = useState("")
