@@ -9,6 +9,7 @@ import {
   Wifi,
   Lock,
   ChevronRight,
+  ChevronLeft,
   Phone,
   Calendar,
   Calculator,
