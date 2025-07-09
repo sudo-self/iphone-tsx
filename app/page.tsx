@@ -932,9 +932,67 @@ function CalendarApp() {
   )
 }
 
+async function uploadPhoto(file: File, filename: string): Promise<string | null> {
+  try {
+  
+    const { supabase } = await import("@/lib/supabase")
+    const { data, error } = await supabase.storage
+      .from("photos-bucket") // Your bucket name
+      .upload(filename, file, {
+        cacheControl: "3600",
+        upsert: false,
+      })
+
+    if (error) {
+      console.error("Supabase upload error:", error)
+      return null
+    }
 
 
+    const { publicURL, error: urlError } = supabase.storage
+      .from("photos-bucket")
+      .getPublicUrl(filename)
 
+    if (urlError) {
+      console.error("Supabase public URL error:", urlError)
+      return null
+    }
+
+    return publicURL || null
+  } catch (err) {
+    console.error("Upload exception:", err)
+    return null
+  }
+}
+
+
+async function getPhotos(): Promise<Array<{ filename: string; url: string; created_at: string }>> {
+  try {
+    const { supabase } = await import("@/lib/supabase")
+    const { data, error } = await supabase.storage.from("photos-bucket").list("", {
+      limit: 100,
+      sortBy: { column: "created_at", order: "desc" },
+    })
+
+    if (error) {
+      console.error("Supabase list error:", error)
+      return []
+    }
+
+    if (!data) return []
+
+    
+    const photos = data.map((file) => {
+      const url = supabase.storage.from("photos-bucket").getPublicUrl(file.name).publicURL || ""
+      return { filename: file.name, url, created_at: file.created_at || "" }
+    })
+
+    return photos
+  } catch (err) {
+    console.error("Get photos exception:", err)
+    return []
+  }
+}
 
 function CameraApp() {
   const [stream, setStream] = useState<MediaStream | null>(null)
@@ -942,47 +1000,53 @@ function CameraApp() {
   const [photos, setPhotos] = useState<Array<{ filename: string; url: string; created_at: string }>>([])
   const [isUploading, setIsUploading] = useState(false)
   const [showGallery, setShowGallery] = useState(false)
+  const [facingMode, setFacingMode] = useState<"user" | "environment">("user")
   const videoRef = useRef<HTMLVideoElement>(null)
   const canvasRef = useRef<HTMLCanvasElement>(null)
+  const [permissionDenied, setPermissionDenied] = useState(false)
 
   useEffect(() => {
-    if (!showGallery) startCamera()
+    if (!showGallery) {
+      startCamera()
+    } else {
+      stopCamera()
+    }
     return stopCamera
-  }, [showGallery])
+  }, [showGallery, facingMode])
+
 
   useEffect(() => {
     loadPhotos()
   }, [])
 
-  const startCamera = async () => {
+  async function startCamera() {
     try {
+      setPermissionDenied(false)
       const mediaStream = await navigator.mediaDevices.getUserMedia({
-        video: { facingMode: "user" },
+        video: { facingMode },
         audio: false,
       })
       setStream(mediaStream)
       if (videoRef.current) videoRef.current.srcObject = mediaStream
-    } catch (err) {
+    } catch (err: any) {
       console.error("Camera access error:", err)
+      if (err.name === "NotAllowedError") setPermissionDenied(true)
     }
   }
 
-  const stopCamera = () => {
-    stream?.getTracks().forEach((track) => track.stop())
+  function stopCamera() {
+    if (stream) {
+      stream.getTracks().forEach((track) => track.stop())
+    }
     setStream(null)
   }
 
-  const loadPhotos = async () => {
-    try {
-      const { getPhotos } = await import("@/lib/supabase")
-      const photosList = await getPhotos()
-      setPhotos(photosList)
-    } catch (err) {
-      console.error("Failed to load photos:", err)
-    }
+  async function loadPhotos() {
+    const photosList = await getPhotos()
+    setPhotos(photosList)
   }
 
-  const capturePhoto = async () => {
+  async function capturePhoto() {
     if (!videoRef.current || !canvasRef.current) return
     setIsCapturing(true)
     setIsUploading(true)
@@ -997,18 +1061,21 @@ function CameraApp() {
     ctx.drawImage(video, 0, 0, canvas.width, canvas.height)
 
     canvas.toBlob(async (blob) => {
-      if (!blob) return
+      if (!blob) {
+        setIsCapturing(false)
+        setIsUploading(false)
+        return
+      }
 
       const fileName = `photo_${Date.now()}.jpg`
       const file = new File([blob], fileName, { type: "image/jpeg" })
 
       try {
-        const { uploadPhoto } = await import("@/lib/supabase")
         const url = await uploadPhoto(file, fileName)
         if (url) {
           setPhotos((prev) => [{ filename: fileName, url, created_at: new Date().toISOString() }, ...prev])
         } else {
-          console.warn("Photo URL missing after upload.")
+          console.warn("Upload returned no URL")
         }
       } catch (err) {
         console.error("Upload failed:", err)
@@ -1019,29 +1086,18 @@ function CameraApp() {
     }, "image/jpeg", 0.8)
   }
 
-  const switchCamera = async () => {
-    if (stream) stopCamera()
-    try {
-      const currentFacing = stream?.getVideoTracks()[0]?.getSettings().facingMode
-      const nextFacing = currentFacing === "user" ? "environment" : "user"
 
-      const newStream = await navigator.mediaDevices.getUserMedia({
-        video: { facingMode: nextFacing },
-        audio: false,
-      })
-
-      setStream(newStream)
-      if (videoRef.current) videoRef.current.srcObject = newStream
-    } catch (err) {
-      console.error("Switch error:", err)
-    }
+  async function switchCamera() {
+    setFacingMode((current) => (current === "user" ? "environment" : "user"))
   }
 
   if (showGallery) {
     return (
       <div className="h-full w-full bg-black text-white flex flex-col overflow-hidden">
         <div className="flex items-center justify-between p-4 bg-gray-900">
-          <button onClick={() => setShowGallery(false)} className="text-blue-400">← Camera</button>
+          <button onClick={() => setShowGallery(false)} className="text-blue-400">
+            ← Camera
+          </button>
           <h2 className="text-lg font-medium">Photos ({photos.length})</h2>
           <div />
         </div>
@@ -1049,13 +1105,18 @@ function CameraApp() {
           {photos.length === 0 ? (
             <div className="text-center text-gray-400 mt-8">
               <p>No photos yet</p>
-              <p className="text-sm mt-2">SupaBase Bucket</p>
+              <p className="text-sm mt-2">Supabase Bucket</p>
             </div>
           ) : (
             <div className="grid grid-cols-3 gap-1">
               {photos.map((photo, index) => (
                 <div key={index} className="aspect-square">
-                  <img src={photo.url || "/placeholder.svg"} alt={photo.filename} className="w-full h-full object-cover rounded" loading="lazy" />
+                  <img
+                    src={photo.url || "/placeholder.svg"}
+                    alt={photo.filename}
+                    className="w-full h-full object-cover rounded"
+                    loading="lazy"
+                  />
                 </div>
               ))}
             </div>
@@ -1066,12 +1127,17 @@ function CameraApp() {
   }
 
   return (
-    <div
-      className="h-full w-full bg-black relative overflow-hidden"
-      onClick={() => {
-        if (!isCapturing && !isUploading) capturePhoto()
-      }}
-    >
+    <div className="h-full w-full bg-black relative overflow-hidden">
+      {permissionDenied && (
+        <div className="absolute inset-0 bg-black bg-opacity-90 flex flex-col items-center justify-center text-white p-6 z-20">
+          <Camera className="w-16 h-16 mb-4" />
+          <p className="text-lg mb-2">Camera access denied</p>
+          <p className="text-center text-sm">
+            Please enable camera permissions in your browser settings.
+          </p>
+        </div>
+      )}
+
       <video ref={videoRef} autoPlay playsInline muted className="w-full h-full object-cover" />
       <canvas ref={canvasRef} className="hidden" />
 
@@ -1104,24 +1170,38 @@ function CameraApp() {
             <div className="w-12 h-12 bg-white rounded-full" />
           )}
         </button>
+
+        <button
+          onClick={(e) => {
+            e.stopPropagation()
+            if (!isCapturing && !isUploading) capturePhoto()
+          }}
+          disabled={isCapturing || isUploading || permissionDenied}
+          className={cn(
+            "w-16 h-16 rounded-full bg-white text-black flex items-center justify-center text-lg font-bold select-none",
+            isCapturing || isUploading ? "opacity-50 cursor-not-allowed" : "hover:bg-gray-300"
+          )}
+        >
+          ●
+        </button>
       </div>
 
-      {isUploading && (
+      {(isUploading || isCapturing) && (
         <div className="absolute bottom-24 w-full text-center text-white text-sm">Saving photo...</div>
       )}
 
-      {!stream && (
+      {!stream && !permissionDenied && (
         <div className="absolute inset-0 bg-black flex items-center justify-center">
-          <div className="text-center text-white">
+          <div className="text-center text-white p-4">
             <Camera className="w-16 h-16 mx-auto mb-4 text-gray-400" />
-            <p className="text-lg mb-2">SupaBase DB</p>
-            <p className="text-sm text-gray-400">Allow camera access to take photos</p>
+            <p className="text-lg mb-2">Allow camera access to take photos</p>
           </div>
         </div>
       )}
     </div>
   )
 }
+
 
 
 function BrowserApp() {
