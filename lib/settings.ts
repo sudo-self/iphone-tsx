@@ -50,14 +50,14 @@ export const taskbarColorOptions = [
   { name: "Red", value: "red-900/40" },
 ]
 
-// Save settings to localStorage
+
 export function saveSettings(settings: PhoneSettings) {
   if (typeof window !== "undefined") {
     localStorage.setItem("phoneSettings", JSON.stringify(settings))
   }
 }
 
-// Load settings from localStorage
+
 export function loadSettings(): PhoneSettings {
   if (typeof window !== "undefined") {
     const saved = localStorage.getItem("phoneSettings")
