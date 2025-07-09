@@ -34,18 +34,31 @@ export default function SmartphoneUI() {
   const [isLoading, setIsLoading] = useState(false)
   const [settings, setSettings] = useState<PhoneSettings>(defaultSettings)
 
-  useEffect(() => {
-    const updateTime = () => {
-      const now = new Date()
-      setCurrentTime(now.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }))
-      setCurrentDate(now.toLocaleDateString([], { weekday: "long", month: "long", day: "numeric" }))
-    }
+useEffect(() => {
+  const updateTime = () => {
+    const now = new Date()
+    setCurrentTime(
+      now.toLocaleTimeString([], {
+        hour: "2-digit",
+        minute: "2-digit",
+        hour12: false,
+      })
+    )
+    setCurrentDate(
+      now.toLocaleDateString([], {
+        weekday: "long",
+        month: "long",
+        day: "numeric",
+      })
+    )
+  }
 
-    updateTime()
-    const interval = setInterval(updateTime, 60000)
+  updateTime()
+  const interval = setInterval(updateTime, 60000)
 
-    return () => clearInterval(interval)
-  }, [])
+  return () => clearInterval(interval)
+}, [])
+
 
 
   useEffect(() => {
@@ -180,9 +193,11 @@ export default function SmartphoneUI() {
                 <div className="p-4 rounded-full mb-4">
                   <Lock className="w-6 h-6 text-white" />
                 </div>
-                <button onClick={handleUnlock} className="text-white text-lg font-light flex items-center">
-                  Tap to Unlock <ChevronRight className="w-5 h-5 ml-1 animate-pulse" />
-                </button>
+               <button onClick={handleUnlock} className="text-white text-lg font-light flex items-center">
+  <ChevronLeft className="w-5 h-5 mr-1 animate-pulse" />
+  Tap to Unlock
+</button>
+
               </div>
             </div>
           ) : (
