@@ -934,7 +934,10 @@ function CalendarApp() {
 }
 
 
- function CameraApp() {
+
+
+
+function CameraApp() {
   const [stream, setStream] = useState<MediaStream | null>(null)
   const [isCapturing, setIsCapturing] = useState(false)
   const [photos, setPhotos] = useState<Array<{ filename: string; url: string; created_at: string }>>([])
@@ -947,6 +950,10 @@ function CalendarApp() {
     if (!showGallery) startCamera()
     return stopCamera
   }, [showGallery])
+
+  useEffect(() => {
+    loadPhotos()
+  }, [])
 
   const startCamera = async () => {
     try {
@@ -976,48 +983,41 @@ function CalendarApp() {
     }
   }
 
-  useEffect(() => {
-    loadPhotos()
-  }, [])
-
   const capturePhoto = async () => {
     if (!videoRef.current || !canvasRef.current) return
     setIsCapturing(true)
     setIsUploading(true)
 
-    try {
-      const video = videoRef.current
-      const canvas = canvasRef.current
-      const ctx = canvas.getContext("2d")
-      if (!ctx) return
+    const video = videoRef.current
+    const canvas = canvasRef.current
+    const ctx = canvas.getContext("2d")
+    if (!ctx) return
 
-      canvas.width = video.videoWidth
-      canvas.height = video.videoHeight
-      ctx.drawImage(video, 0, 0, canvas.width, canvas.height)
+    canvas.width = video.videoWidth
+    canvas.height = video.videoHeight
+    ctx.drawImage(video, 0, 0, canvas.width, canvas.height)
 
-      canvas.toBlob(async (blob) => {
-        if (!blob) return
-        const fileName = `photo_${Date.now()}.jpg`
-        const file = new File([blob], fileName, { type: "image/jpeg" })
+    canvas.toBlob(async (blob) => {
+      if (!blob) return
 
-        try {
-          const { uploadPhoto } = await import("@/lib/supabase")
-          const url = await uploadPhoto(file, fileName)
-          if (url) {
-            setPhotos((prev) => [{ filename: fileName, url, created_at: new Date().toISOString() }, ...prev])
-          }
-        } catch (err) {
-          console.error("Upload failed:", err)
-        } finally {
-          setIsCapturing(false)
-          setIsUploading(false)
+      const fileName = `photo_${Date.now()}.jpg`
+      const file = new File([blob], fileName, { type: "image/jpeg" })
+
+      try {
+        const { uploadPhoto } = await import("@/lib/supabase")
+        const url = await uploadPhoto(file, fileName)
+        if (url) {
+          setPhotos((prev) => [{ filename: fileName, url, created_at: new Date().toISOString() }, ...prev])
+        } else {
+          console.warn("Photo URL missing after upload.")
         }
-      }, "image/jpeg", 0.8)
-    } catch (err) {
-      console.error("Capture error:", err)
-      setIsCapturing(false)
-      setIsUploading(false)
-    }
+      } catch (err) {
+        console.error("Upload failed:", err)
+      } finally {
+        setIsCapturing(false)
+        setIsUploading(false)
+      }
+    }, "image/jpeg", 0.8)
   }
 
   const switchCamera = async () => {
@@ -1042,13 +1042,10 @@ function CalendarApp() {
     return (
       <div className="h-full w-full bg-black text-white flex flex-col overflow-hidden">
         <div className="flex items-center justify-between p-4 bg-gray-900">
-          <button onClick={() => setShowGallery(false)} className="text-blue-400">
-            ← Camera
-          </button>
+          <button onClick={() => setShowGallery(false)} className="text-blue-400">← Camera</button>
           <h2 className="text-lg font-medium">Photos ({photos.length})</h2>
           <div />
         </div>
-
         <div className="flex-grow overflow-y-auto px-1 pb-6">
           {photos.length === 0 ? (
             <div className="text-center text-gray-400 mt-8">
@@ -1059,12 +1056,7 @@ function CalendarApp() {
             <div className="grid grid-cols-3 gap-1">
               {photos.map((photo, index) => (
                 <div key={index} className="aspect-square">
-                  <img
-                    src={photo.url || "/placeholder.svg"}
-                    alt={photo.filename}
-                    className="w-full h-full object-cover rounded"
-                    loading="lazy"
-                  />
+                  <img src={photo.url || "/placeholder.svg"} alt={photo.filename} className="w-full h-full object-cover rounded" loading="lazy" />
                 </div>
               ))}
             </div>
@@ -1075,14 +1067,19 @@ function CalendarApp() {
   }
 
   return (
-    <div className="h-full bg-black relative overflow-hidden">
+    <div
+      className="h-full w-full bg-black relative overflow-hidden"
+      onClick={() => {
+        if (!isCapturing && !isUploading) capturePhoto()
+      }}
+    >
       <video ref={videoRef} autoPlay playsInline muted className="w-full h-full object-cover" />
       <canvas ref={canvasRef} className="hidden" />
 
-      {/* Controls */}
       <div className="absolute bottom-0 left-0 right-0 p-4 z-10 flex justify-between items-center bg-black/30 backdrop-blur-md">
         <button
-          onClick={() => {
+          onClick={(e) => {
+            e.stopPropagation()
             stopCamera()
             setShowGallery(true)
           }}
@@ -1092,7 +1089,10 @@ function CalendarApp() {
         </button>
 
         <button
-          onClick={switchCamera}
+          onClick={(e) => {
+            e.stopPropagation()
+            switchCamera()
+          }}
           disabled={isCapturing || isUploading}
           className={cn(
             "w-16 h-16 rounded-full border-4 border-white flex items-center justify-center",
