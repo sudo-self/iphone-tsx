@@ -129,7 +129,7 @@ export default function SmartphoneUI() {
   }
 
   return (
-    <div className="flex justify-center items-center min-h-screen bg-gray-900 p-4">
+    <div className="flex justify-center items-center min-h-screen bg-gray-200 p-4">
       <div className="relative w-full max-w-[375px] h-[750px] bg-black rounded-[40px] overflow-hidden shadow-2xl border-[14px] border-black">
       
         <div className="absolute right-[-14px] top-[120px] w-[4px] h-[40px] bg-gray-700 rounded-r-sm"></div>
