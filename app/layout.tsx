@@ -45,19 +45,3 @@ export default function RootLayout({
   );
 }
 
-
-
-export default function RootLayout({
-  children,
-}: Readonly<{
-  children: React.ReactNode
-}>) {
-  return (
-    <html lang="en" className="h-full">
-      <body className="h-full">
-        <div className="h-full">{children}</div>
-      </body>
-    </html>
-  )
-}
-
