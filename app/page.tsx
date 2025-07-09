@@ -381,7 +381,7 @@ function SettingsApp({
                   key={index}
                   onClick={() => onSettingsChange({ ...settings, wallpaper: option.url })}
                   className={cn(
-                    "relative aspect-[3/4] rounded-lg overflow-hidden border-2",
+                    "relative aspect-[3/4] rounded-lg overflow-y-auto border-2",
                     settings.wallpaper === option.url ? "border-blue-500" : "border-gray-600",
                   )}
                 >
@@ -406,7 +406,7 @@ function SettingsApp({
                   key={index}
                   onClick={() => onSettingsChange({ ...settings, lockScreenWallpaper: option.url })}
                   className={cn(
-                    "relative aspect-[3/4] rounded-lg overflow-hidden border-2",
+                    "relative aspect-[3/4] rounded-lg overflow-y-auto border-2",
                     settings.lockScreenWallpaper === option.url ? "border-blue-500" : "border-gray-600",
                   )}
                 >
@@ -429,7 +429,7 @@ function SettingsApp({
 
   if (activeSection === "display") {
     return (
-      <div className="h-full bg-gray-900 text-white flex flex-col overflow-hidden">
+      <div className="h-full bg-gray-900 text-white flex flex-col overflow-y-auto">
         <div className="flex items-center mb-6 px-4 pt-4 flex-shrink-0">
           <button onClick={() => setActiveSection(null)} className="text-blue-400 mr-4">
             ← Back
