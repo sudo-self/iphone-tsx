@@ -364,7 +364,7 @@ function SettingsApp({
 
   if (activeSection === "wallpaper") {
     return (
-      <div className="h-full bg-gray-900 text-white flex flex-col overflow-hidden">
+      <div className="h-full bg-gray-900 text-white flex flex-col overflow-y-auto">
         <div className="flex items-center mb-6 px-4 pt-4 flex-shrink-0">
           <button onClick={() => setActiveSection(null)} className="text-blue-400 mr-4">
             ← Back
@@ -537,7 +537,7 @@ function SettingsApp({
 
   if (activeSection === "general") {
     return (
-      <div className="h-full bg-gray-900 text-white flex flex-col overflow-hidden">
+      <div className="h-full bg-gray-900 text-white flex flex-col overflow-y-auto">
         <div className="flex items-center mb-6 px-4 pt-4">
           <button onClick={() => setActiveSection(null)} className="text-blue-400 mr-4">
             ← Back
@@ -589,7 +589,7 @@ function SettingsApp({
 
   if (activeSection === "about") {
     return (
-      <div className="h-full bg-gray-900 text-white flex flex-col overflow-hidden">
+      <div className="h-full bg-gray-900 text-white flex flex-col overflow-y-auto">
         <div className="flex items-center mb-6 px-4 pt-4">
           <button onClick={() => setActiveSection(null)} className="text-blue-400 mr-4">
             ← Back
@@ -610,15 +610,15 @@ function SettingsApp({
             <div className="space-y-3">
               <div className="flex justify-between py-2 border-b border-gray-700">
                 <span className="text-gray-400">Version</span>
-                <span>2.0</span>
+                <span>719</span>
               </div>
               <div className="flex justify-between py-2 border-b border-gray-700">
                 <span className="text-gray-400">Model</span>
-                <span>iPhone TSX</span>
+                <span>TypeScript</span>
               </div>
               <div className="flex justify-between py-2 border-b border-gray-700">
                 <span className="text-gray-400">Storage</span>
-                <span>Supabase</span>
+                <span>2TB</span>
               </div>
               <div className="flex justify-between py-2 border-b border-gray-700">
                 <span className="text-gray-400">Battery Health</span>
@@ -636,7 +636,7 @@ function SettingsApp({
   }
 
   return (
-    <div className="h-full bg-gray-900 text-white flex flex-col overflow-hidden">
+    <div className="h-full bg-gray-900 text-white flex flex-col overflow-y-auto">
       <div className="px-4 pt-4 pb-2">
         <h2 className="text-2xl font-bold">Settings</h2>
       </div>
