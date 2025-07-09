@@ -23,7 +23,6 @@ import { cn } from "@/lib/utils"
 import { getContacts } from "@/lib/redis"
 import { saveEvent, getEvents } from "@/lib/redis"
 import { type PhoneSettings, defaultSettings, loadSettings, saveSettings } from "@/lib/settings"
-import cn from "classnames"
 
 export default function SmartphoneUI() {
   const [isLocked, setIsLocked] = useState(true)
