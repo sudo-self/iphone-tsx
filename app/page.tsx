@@ -854,8 +854,7 @@ function CalendarApp() {
   }
 
   return (
-    <div className="h-full bg-gray-900 text-white p-4">
-    
+ <div className="h-full overflow-y-auto flex flex-col bg-gray-900 text-white">
       <div className="flex justify-between items-center mb-6">
         <button onClick={() => setViewDate(new Date(currentYear, viewDate.getMonth() - 1, 1))}>←</button>
         <h2 className="text-xl font-bold">
