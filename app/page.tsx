@@ -197,7 +197,9 @@ useEffect(() => {
                <button onClick={handleUnlock} className="text-white text-lg font-light flex items-center">
   <ChevronLeft className="w-5 h-5 mr-1 animate-pulse" />
   Tap to Unlock
+  <ChevronRight className="w-5 h-5 ml-1 animate-pulse" />
 </button>
+
 
               </div>
             </div>
