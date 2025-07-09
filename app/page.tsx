@@ -604,13 +604,13 @@ function SettingsApp({
                 <Phone className="w-10 h-10 text-white" />
               </div>
               <h3 className="text-xl font-bold">{settings.deviceName}</h3>
-              <p className="text-gray-400">JesseJesse.com</p>
+              <p className="text-gray-400">iphone.JesseJesse.com</p>
             </div>
 
             <div className="space-y-3">
               <div className="flex justify-between py-2 border-b border-gray-700">
                 <span className="text-gray-400">Version</span>
-                <span>719</span>
+                 <span className="text-orange-400">719</span>
               </div>
               <div className="flex justify-between py-2 border-b border-gray-700">
                 <span className="text-gray-400">Model</span>
@@ -658,8 +658,8 @@ function SettingsApp({
           ))}
         </div>
 
-        <div className="mt-8 text-center text-gray-400 text-sm">
-          <p>iphone-tsx.vercel.app</p>
+        <div className="mt-8 text-center text-cyan-500 text-sm">
+          <p>¯\_(ツ)_/¯</p>
         </div>
       </div>
     </div>
