@@ -25,8 +25,6 @@ import { cn } from "@/lib/utils"
 import { getContacts } from "@/lib/redis"
 import { saveEvent, getEvents } from "@/lib/redis"
 import { type PhoneSettings, defaultSettings, loadSettings, saveSettings } from "@/lib/settings"
-import { SkipBack, SkipForward } from "lucide-react";
-
 
 export default function SmartphoneUI() {
   const [isLocked, setIsLocked] = useState(true)
@@ -724,6 +722,22 @@ function PhoneApp({ contacts }: { contacts: Array<{ name: string; phone: string 
 }
 
 
+import React, { useState, useEffect, useRef } from "react";
+
+
+const SkipBack = (props: React.SVGProps<SVGSVGElement>) => (
+  <svg {...props} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
+    <polygon points="19 20 9 12 19 4 19 20" />
+    <line x1="5" y1="19" x2="5" y2="5" />
+  </svg>
+);
+const SkipForward = (props: React.SVGProps<SVGSVGElement>) => (
+  <svg {...props} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
+    <polygon points="5 4 15 12 5 20 5 4" />
+    <line x1="19" y1="5" x2="19" y2="19" />
+  </svg>
+);
+
 declare global {
   interface Window {
     YT: any;
@@ -739,30 +753,10 @@ interface Track {
 }
 
 const sampleTracks: Track[] = [
-  {
-    id: 1,
-    title: "You Only Live Once",
-    artist: "The Strokes",
-    videoId: "pT68FS3YbQ4",
-  },
-  {
-    id: 2,
-    title: "I was running through the six",
-    artist: "Drake",
-    videoId: "jqScSp5l-AQ",
-  },
-  {
-    id: 3,
-    title: "Undercover",
-    artist: "Lane 8",
-    videoId: "HSydHbGdIcY",
-  },
-  {
-    id: 4,
-    title: "King of Everything",
-    artist: "Wiz Khalifa",
-    videoId: "8d0cm_hcQes",
-  },
+  { id: 1, title: "You Only Live Once", artist: "The Strokes", videoId: "pT68FS3YbQ4" },
+  { id: 2, title: "I was running through the six", artist: "Drake", videoId: "jqScSp5l-AQ" },
+  { id: 3, title: "Undercover", artist: "Lane 8", videoId: "HSydHbGdIcY" },
+  { id: 4, title: "King of Everything", artist: "Wiz Khalifa", videoId: "8d0cm_hcQes" },
 ];
 
 function MusicApp() {
@@ -778,18 +772,19 @@ function MusicApp() {
 
   const currentTrack = sampleTracks[currentIndex];
 
-  // Load YouTube IFrame API
+
   useEffect(() => {
-    if (!(window as any).YT) {
+    if (!window.YT) {
       const tag = document.createElement("script");
       tag.src = "https://www.youtube.com/iframe_api";
       document.body.appendChild(tag);
     }
 
+
     window.onYouTubeIframeAPIReady = () => {
       ytPlayer.current = new window.YT.Player(playerRef.current, {
-        height: "326",
-        width: "326", 
+        height: "240",
+        width: "426",
         videoId: currentTrack.videoId,
         playerVars: {
           autoplay: 0,
@@ -798,7 +793,7 @@ function MusicApp() {
           rel: 0,
         },
         events: {
-          onReady: () => {
+          onReady: (event: any) => {
             setIsReady(true);
             ytPlayer.current.setVolume(volume);
             setDuration(ytPlayer.current.getDuration());
@@ -818,47 +813,57 @@ function MusicApp() {
     if (ytPlayer.current && isReady) {
       ytPlayer.current.loadVideoById(currentTrack.videoId);
       setIsPlaying(true);
+      setProgress(0);
+ 
     }
-  }, [currentIndex, isReady]);
+  }, [currentIndex, isReady, currentTrack.videoId]);
+
+  useEffect(() => {
+    if (!ytPlayer.current || !isReady) return;
+    if (isPlaying) {
+      ytPlayer.current.playVideo();
+    } else {
+      ytPlayer.current.pauseVideo();
+    }
+  }, [isPlaying, isReady]);
+
+
+  useEffect(() => {
+    if (ytPlayer.current && isReady) {
+      ytPlayer.current.setVolume(volume);
+    }
+  }, [volume, isReady]);
 
 
   useEffect(() => {
     if (!ytPlayer.current) return;
-    if (isPlaying) ytPlayer.current.playVideo();
-    else ytPlayer.current.pauseVideo();
-  }, [isPlaying]);
 
-
-  useEffect(() => {
-    if (ytPlayer.current) ytPlayer.current.setVolume(volume);
-  }, [volume]);
-
-
-  useEffect(() => {
     const interval = setInterval(() => {
       if (ytPlayer.current && ytPlayer.current.getCurrentTime) {
         setProgress(ytPlayer.current.getCurrentTime());
         setDuration(ytPlayer.current.getDuration());
       }
     }, 1000);
+
     return () => clearInterval(interval);
   }, []);
 
 
   const playPrev = () => {
-    setCurrentIndex((i) => (i === 0 ? sampleTracks.length - 1 : i - 1));
+    setCurrentIndex(i => (i === 0 ? sampleTracks.length - 1 : i - 1));
   };
 
-
   const playNext = () => {
-    setCurrentIndex((i) => (i === sampleTracks.length - 1 ? 0 : i + 1));
+    setCurrentIndex(i => (i === sampleTracks.length - 1 ? 0 : i + 1));
   };
 
 
   const seekTo = (e: React.ChangeEvent<HTMLInputElement>) => {
     const time = Number(e.target.value);
     setProgress(time);
-    if (ytPlayer.current) ytPlayer.current.seekTo(time, true);
+    if (ytPlayer.current && isReady) {
+      ytPlayer.current.seekTo(time, true);
+    }
   };
 
   return (
@@ -880,20 +885,22 @@ function MusicApp() {
         value={progress}
         onChange={seekTo}
         className="w-full max-w-md"
+        aria-label="Seek video"
       />
 
       <div className="flex items-center gap-8">
-        <button onClick={playPrev} aria-label="Previous Track">
+        <button onClick={playPrev} aria-label="Previous Track" type="button">
           <SkipBack className="w-8 h-8" />
         </button>
         <button
-          onClick={() => setIsPlaying((p) => !p)}
+          onClick={() => setIsPlaying(p => !p)}
           className="px-6 py-3 bg-white text-black rounded-full text-lg"
           aria-label={isPlaying ? "Pause" : "Play"}
+          type="button"
         >
           {isPlaying ? "Pause" : "Play"}
         </button>
-        <button onClick={playNext} aria-label="Next Track">
+        <button onClick={playNext} aria-label="Next Track" type="button">
           <SkipForward className="w-8 h-8" />
         </button>
       </div>
@@ -910,6 +917,7 @@ function MusicApp() {
     </div>
   );
 }
+
 
 // Contacts App
 function ContactsApp({
