@@ -26,6 +26,9 @@ import { getContacts } from "@/lib/redis"
 import { saveEvent, getEvents } from "@/lib/redis"
 import { type PhoneSettings, defaultSettings, loadSettings, saveSettings } from "@/lib/settings"
 import { Map as MapIcon } from "lucide-react";
+import L from "leaflet";
+import "leaflet/dist/leaflet.css";
+
 
 export default function SmartphoneUI() {
   const [isLocked, setIsLocked] = useState(true)
@@ -1047,42 +1050,35 @@ function ContactsApp({
   )
 }
 
-function MapsApp() {
-  const mapRef = useRef<HTMLDivElement>(null);
-  const apiKey = process.env.NEXT_PUBLIC_MAPS_API_KEY;
+interface MapsAppProps {
+  setActiveApp: (app: string | null) => void;
+}
+
+function MapsApp({ setActiveApp }: MapsAppProps) {
+  const mapRef = useRef<HTMLDivElement | null>(null);
+  const leafletMapRef = useRef<L.Map | null>(null);
 
   useEffect(() => {
-    const loadGoogleMaps = () => {
-      return new Promise<void>((resolve, reject) => {
-        if (typeof window.google === "object" && window.google.maps) {
-          resolve();
-          return;
-        }
+    if (!mapRef.current || leafletMapRef.current) return;
 
-        const script = document.createElement("script");
-        script.src = `https://maps.googleapis.com/maps/api/js?key=${apiKey}&v=weekly&libraries=maps`;
-        script.async = true;
-        script.onload = () => resolve();
-        script.onerror = () => reject("Failed to load Google Maps");
-        document.head.appendChild(script);
-      });
+    // Initialize Leaflet map centered on NYC
+    leafletMapRef.current = L.map(mapRef.current).setView([40.7128, -74.006], 12);
+
+    // Add OpenStreetMap tile layer
+    L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+      attribution:
+        '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+    }).addTo(leafletMapRef.current);
+
+    // Optional: Add a marker
+    L.marker([40.7128, -74.006]).addTo(leafletMapRef.current).bindPopup("New York City").openPopup();
+
+    return () => {
+      // Clean up on unmount
+      leafletMapRef.current?.remove();
+      leafletMapRef.current = null;
     };
-
-    const initMap = async () => {
-      try {
-        await loadGoogleMaps();
-        const { Map } = await (window as any).google.maps.importLibrary("maps");
-        new Map(mapRef.current, {
-          center: { lat: 40.7128, lng: -74.0060 }, // NYC default
-          zoom: 12,
-        });
-      } catch (err) {
-        console.error(err);
-      }
-    };
-
-    initMap();
-  }, [apiKey]);
+  }, []);
 
   return (
     <div className="h-full flex flex-col bg-gray-900 text-white">
@@ -1095,14 +1091,14 @@ function MapsApp() {
       <div className="flex-1 px-4 pb-4">
         <div
           ref={mapRef}
-          id="map"
-          className="w-full h-[500px] rounded-lg"
-          style={{ minHeight: "300px" }}
+          className="w-full rounded-lg"
+          style={{ height: "500px", minHeight: "300px" }}
         />
       </div>
     </div>
   );
 }
+
 
 
 // Calendar App
