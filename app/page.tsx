@@ -26,6 +26,8 @@ import { getContacts } from "@/lib/redis"
 import { saveEvent, getEvents } from "@/lib/redis"
 import { type PhoneSettings, defaultSettings, loadSettings, saveSettings } from "@/lib/settings"
 import { Play, Pause, SkipBack, SkipForward } from "lucide-react"
+import YouTubePlayer from "./components/YouTubePlayer"
+
 
 export default function SmartphoneUI() {
   const [isLocked, setIsLocked] = useState(true)
@@ -785,6 +787,8 @@ function MusicApp() {
 
   return (
     <div className="h-full bg-gray-900 text-white flex flex-col items-center justify-center p-4">
+      
+      <YouTubePlayer videoId="pT68FS3YbQ4" />
       <audio ref={audioRef} src={currentTrack.url} />
 
       <img
