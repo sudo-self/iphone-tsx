@@ -722,9 +722,6 @@ function PhoneApp({ contacts }: { contacts: Array<{ name: string; phone: string 
 }
 
 
-import React, { useState, useEffect, useRef } from "react";
-
-
 const SkipBack = (props: React.SVGProps<SVGSVGElement>) => (
   <svg {...props} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
     <polygon points="19 20 9 12 19 4 19 20" />
