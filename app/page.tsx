@@ -19,11 +19,13 @@ import {
   Camera,
   Globe,
   Settings,
+  Music,
 } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { getContacts } from "@/lib/redis"
 import { saveEvent, getEvents } from "@/lib/redis"
 import { type PhoneSettings, defaultSettings, loadSettings, saveSettings } from "@/lib/settings"
+import { Play, Pause, SkipBack, SkipForward } from "lucide-react"
 
 export default function SmartphoneUI() {
   const [isLocked, setIsLocked] = useState(true)
@@ -226,6 +228,7 @@ useEffect(() => {
                   {activeApp === "Calculator" && <CalculatorApp />}
                   {activeApp === "Camera" && <CameraApp />}
                   {activeApp === "Browser" && <BrowserApp />}
+                  {activeApp === "Music" && <MusicApp />}
                   {activeApp === "Settings" && <SettingsApp settings={settings} onSettingsChange={updateSettings} />}
                 </div>
               ) : (
@@ -277,6 +280,12 @@ useEffect(() => {
                       onClick={() => openApp("Settings")}
                       iconStyle={getAppIconStyle()}
                     />
+                    <AppIcon
+                     name="Music"
+                     icon={<Music />}
+                     onClick={() => openApp("Music")}
+                     iconStyle={getAppIconStyle()}
+                     />
                   </div>
                 </div>
               )}
@@ -712,6 +721,88 @@ function PhoneApp({ contacts }: { contacts: Array<{ name: string; phone: string 
     </div>
   )
 }
+
+// Music App
+const sampleTracks = [
+  {
+    id: 1,
+    title: "Relaxing Tune",
+    artist: "Artist A",
+    url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3",
+  },
+  {
+    id: 2,
+    title: "Upbeat Beat",
+    artist: "Artist B",
+    url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3",
+  },
+  {
+    id: 3,
+    title: "Chill Vibes",
+    artist: "Artist C",
+    url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3",
+  },
+]
+
+export default function MusicApp() {
+  const [currentTrackIndex, setCurrentTrackIndex] = useState(0)
+  const [isPlaying, setIsPlaying] = useState(false)
+  const audioRef = useRef<HTMLAudioElement | null>(null)
+
+  useEffect(() => {
+    if (audioRef.current) {
+      if (isPlaying) {
+        audioRef.current.play()
+      } else {
+        audioRef.current.pause()
+      }
+    }
+  }, [isPlaying, currentTrackIndex])
+
+  const playPauseToggle = () => setIsPlaying(!isPlaying)
+
+  const playPrev = () => {
+    setCurrentTrackIndex((idx) => (idx === 0 ? sampleTracks.length - 1 : idx - 1))
+    setIsPlaying(true)
+  }
+
+  const playNext = () => {
+    setCurrentTrackIndex((idx) => (idx === sampleTracks.length - 1 ? 0 : idx + 1))
+    setIsPlaying(true)
+  }
+
+  const currentTrack = sampleTracks[currentTrackIndex]
+
+  return (
+    <div className="h-full bg-gray-900 text-white flex flex-col items-center justify-center p-4">
+      <audio ref={audioRef} src={currentTrack.url} />
+
+      <div className="mb-6 text-center">
+        <h2 className="text-2xl font-semibold">{currentTrack.title}</h2>
+        <p className="text-gray-400">{currentTrack.artist}</p>
+      </div>
+
+      <div className="flex items-center gap-8">
+        <button onClick={playPrev} aria-label="Previous Track" className="p-3 rounded-full hover:bg-gray-800">
+          <SkipBack className="w-8 h-8" />
+        </button>
+
+        <button
+          onClick={playPauseToggle}
+          aria-label={isPlaying ? "Pause" : "Play"}
+          className="p-4 rounded-full bg-white text-black flex items-center justify-center"
+        >
+          {isPlaying ? <Pause className="w-8 h-8" /> : <Play className="w-8 h-8" />}
+        </button>
+
+        <button onClick={playNext} aria-label="Next Track" className="p-3 rounded-full hover:bg-gray-800">
+          <SkipForward className="w-8 h-8" />
+        </button>
+      </div>
+    </div>
+  )
+}
+
 
 // Contacts App
 function ContactsApp({
