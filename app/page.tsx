@@ -818,7 +818,7 @@ function YouTubePlayer({ videoId }: { videoId: string }) {
   return <div ref={playerRef} className="w-full max-w-sm aspect-video rounded overflow-hidden mb-4" />
 }
 
-export default function MusicApp() {
+ function MusicApp() {
   const [currentTrackIndex, setCurrentTrackIndex] = useState(0)
   const [isPlaying, setIsPlaying] = useState(false)
   const audioRef = useRef<HTMLAudioElement | null>(null)
