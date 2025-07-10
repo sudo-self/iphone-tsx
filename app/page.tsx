@@ -1398,7 +1398,8 @@ function NotesApp() {
         title: newTitle.trim(),
         content: newContent.trim(),
         created_at: new Date().toISOString(),
-        completed: viewMode === "todos" ? false : undefined,
+        completed: viewMode === "todos" ? false : null,
+
       }
 
       await redis.hset("notes", { [id]: JSON.stringify(noteData) })
@@ -1441,7 +1442,8 @@ function NotesApp() {
     const matchesSearch =
       note.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
       note.content.toLowerCase().includes(searchTerm.toLowerCase())
-    const matchesMode = viewMode === "notes" ? note.completed === undefined : note.completed !== undefined
+  const matchesMode = viewMode === "notes" ? note.completed === null : typeof note.completed === "boolean"
+
     return matchesSearch && matchesMode
   })
 
