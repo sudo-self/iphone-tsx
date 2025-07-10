@@ -228,6 +228,7 @@ useEffect(() => {
                   {activeApp === "Camera" && <CameraApp />}
                   {activeApp === "Browser" && <BrowserApp />}
                   {activeApp === "Music" && <MusicApp />}
+                  {activeApp === "Maps" && <MapsApp />}
                   {activeApp === "Settings" && <SettingsApp settings={settings} onSettingsChange={updateSettings} />}
                 </div>
               ) : (
@@ -283,6 +284,12 @@ useEffect(() => {
                      name="Music"
                      icon={<Music />}
                      onClick={() => openApp("Music")}
+                     iconStyle={getAppIconStyle()}
+                     />
+                     <AppIcon
+                     name="Maps"
+                     icon={<Maps />}
+                     onClick={() => openApp("Maps")}
                      iconStyle={getAppIconStyle()}
                      />
                   </div>
@@ -1038,6 +1045,64 @@ function ContactsApp({
     </div>
   )
 }
+
+function MapsApp() {
+  const mapRef = useRef<HTMLDivElement>(null);
+  const apiKey = process.env.NEXT_PUBLIC_MAPS_API_KEY;
+
+  useEffect(() => {
+    const loadGoogleMaps = () => {
+      return new Promise<void>((resolve, reject) => {
+        if (typeof window.google === "object" && window.google.maps) {
+          resolve();
+          return;
+        }
+
+        const script = document.createElement("script");
+        script.src = `https://maps.googleapis.com/maps/api/js?key=${apiKey}&v=weekly&libraries=maps`;
+        script.async = true;
+        script.onload = () => resolve();
+        script.onerror = () => reject("Failed to load Google Maps");
+        document.head.appendChild(script);
+      });
+    };
+
+    const initMap = async () => {
+      try {
+        await loadGoogleMaps();
+        const { Map } = await (window as any).google.maps.importLibrary("maps");
+        new Map(mapRef.current, {
+          center: { lat: 40.7128, lng: -74.0060 }, // NYC default
+          zoom: 12,
+        });
+      } catch (err) {
+        console.error(err);
+      }
+    };
+
+    initMap();
+  }, [apiKey]);
+
+  return (
+    <div className="h-full flex flex-col bg-gray-900 text-white">
+      <div className="flex items-center p-4">
+        <button onClick={() => setActiveApp(null)} className="text-blue-400 mr-4">
+          ← Back
+        </button>
+        <h2 className="text-xl font-bold">Maps</h2>
+      </div>
+      <div className="flex-1 px-4 pb-4">
+        <div
+          ref={mapRef}
+          id="map"
+          className="w-full h-[500px] rounded-lg"
+          style={{ minHeight: "300px" }}
+        />
+      </div>
+    </div>
+  );
+}
+
 
 // Calendar App
 function CalendarApp() {
