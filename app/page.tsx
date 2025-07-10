@@ -864,7 +864,8 @@ function MusicApp() {
   };
 
   return (
-    <div className="bg-black text-white min-h-screen flex flex-col items-center justify-center p-6 space-y-6 overflow-y-auto">
+<div className="bg-black text-white min-h-screen flex flex-col items-center p-6 space-y-6 overflow-y-auto">
+
       <div
         ref={playerRef}
         style={{ maxWidth: "426px", width: "100%", marginBottom: "1rem" }}
