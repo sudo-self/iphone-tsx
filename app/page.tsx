@@ -23,6 +23,7 @@ import {
   MapIcon,
   FileText,
   Loader2,
+  Game,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { getContacts } from "@/lib/redis";
@@ -33,6 +34,8 @@ import {
   saveSettings,
 } from "@/lib/settings";
 import { Redis } from "@upstash/redis";
+
+import SnakeGame from "./SnakeGame";
 
 export default function SmartphoneUI() {
   const [isLocked, setIsLocked] = useState(true);
@@ -57,14 +60,14 @@ export default function SmartphoneUI() {
           hour: "2-digit",
           minute: "2-digit",
           hour12: false,
-        })
+        }),
       );
       setCurrentDate(
         now.toLocaleDateString([], {
           weekday: "long",
           month: "long",
           day: "numeric",
-        })
+        }),
       );
     };
 
@@ -156,27 +159,26 @@ export default function SmartphoneUI() {
   return (
     <div className="flex justify-center items-center min-h-screen bg-gray-200 p-4">
       <div className="relative w-full max-w-[375px] h-[750px] bg-black rounded-[40px] overflow-hidden shadow-2xl border-[14px] border-black">
+        {/* Phone frame elements */}
         <div className="absolute right-[-14px] top-[120px] w-[4px] h-[40px] bg-gray-700 rounded-r-sm"></div>
-
         <div className="absolute left-[-14px] top-[100px] w-[4px] h-[30px] bg-gray-700 rounded-l-sm"></div>
         <div className="absolute left-[-14px] top-[140px] w-[4px] h-[30px] bg-gray-700 rounded-l-sm"></div>
-
         <div className="absolute top-0 left-1/2 transform -translate-x-1/2 w-[120px] h-[30px] bg-black rounded-b-[14px] z-50"></div>
 
         <div className="relative w-full h-full bg-gray-900 overflow-hidden">
+          {/* Status bar */}
           <div
             className={cn(
               "absolute top-0 left-0 right-0 h-12 px-6 flex justify-between items-center z-40",
               settings.statusBarStyle === "dark"
                 ? "text-gray-800"
-                : "text-gray-200"
+                : "text-gray-200",
             )}
           >
             <div className="flex flex-col text-left text-sm font-medium leading-tight">
               <span>{settings.deviceName}</span>
               <span className="text-xs">{currentTime}</span>
             </div>
-
             <div className="flex items-center gap-2">
               <Signal className="w-4 h-4" />
               <Wifi className="w-4 h-4" />
@@ -202,7 +204,6 @@ export default function SmartphoneUI() {
                 <div className="text-6xl font-light">{currentTime}</div>
                 <div className="mt-2 text-lg">{currentDate}</div>
               </div>
-
               <div className="mt-auto mb-10 flex flex-col items-center">
                 <div className="p-4 rounded-full mb-4">
                   <Lock className="w-6 h-6 text-white" />
@@ -234,6 +235,11 @@ export default function SmartphoneUI() {
                         {isLoading ? "Loading..." : "Refresh"}
                       </button>
                     )}
+                    {activeApp === "Snake" && (
+                      <button onClick={goHome} className="text-white text-sm">
+                        Exit
+                      </button>
+                    )}
                   </div>
 
                   {activeApp === "Phone" && <PhoneApp contacts={contacts} />}
@@ -258,6 +264,7 @@ export default function SmartphoneUI() {
                     />
                   )}
                   {activeApp === "Notes" && <NotesApp />}
+                  {activeApp === "Snake" && <SnakeGame />}
                 </div>
               ) : (
                 <div
@@ -325,6 +332,12 @@ export default function SmartphoneUI() {
                       onClick={() => openApp("Notes")}
                       iconStyle={getAppIconStyle()}
                     />
+                    <AppIcon
+                      name="Snake"
+                      icon={<Game />}
+                      onClick={() => openApp("Snake")}
+                      iconStyle={getAppIconStyle()}
+                    />
                   </div>
                 </div>
               )}
@@ -332,7 +345,7 @@ export default function SmartphoneUI() {
               <div
                 className={cn(
                   "absolute bottom-0 left-0 right-0 h-16 backdrop-blur-md flex justify-center items-center",
-                  `bg-${settings.taskbarColor}`
+                  `bg-${settings.taskbarColor}`,
                 )}
               >
                 <button
@@ -364,7 +377,7 @@ function AppIcon({
       <div
         className={cn(
           iconStyle,
-          "bg-gradient-to-br from-gray-700 to-gray-900 flex items-center justify-center text-white mb-1"
+          "bg-gradient-to-br from-gray-700 to-gray-900 flex items-center justify-center text-white mb-1",
         )}
       >
         {icon}
@@ -445,7 +458,7 @@ function SettingsApp({
                     "relative aspect-[3/4] rounded-lg overflow-y-auto border-2",
                     settings.wallpaper === option.url
                       ? "border-blue-500"
-                      : "border-gray-600"
+                      : "border-gray-600",
                   )}
                 >
                   <img
@@ -477,7 +490,7 @@ function SettingsApp({
                     "relative aspect-[3/4] rounded-lg overflow-y-auto border-2",
                     settings.lockScreenWallpaper === option.url
                       ? "border-blue-500"
-                      : "border-gray-600"
+                      : "border-gray-600",
                   )}
                 >
                   <img
@@ -528,7 +541,7 @@ function SettingsApp({
                       "p-3 rounded-lg border-2 text-left",
                       settings.taskbarColor === option.value
                         ? "border-blue-500 bg-blue-900/20"
-                        : "border-gray-600 bg-gray-800"
+                        : "border-gray-600 bg-gray-800",
                     )}
                   >
                     {option.name}
@@ -557,7 +570,7 @@ function SettingsApp({
                       "p-3 rounded-lg border-2 text-center",
                       settings.homeButtonStyle === option.value
                         ? "border-blue-500 bg-blue-900/20"
-                        : "border-gray-600 bg-gray-800"
+                        : "border-gray-600 bg-gray-800",
                     )}
                   >
                     {option.name}
@@ -586,7 +599,7 @@ function SettingsApp({
                       "p-3 rounded-lg border-2 text-center",
                       settings.appIconStyle === option.value
                         ? "border-blue-500 bg-blue-900/20"
-                        : "border-gray-600 bg-gray-800"
+                        : "border-gray-600 bg-gray-800",
                     )}
                   >
                     {option.name}
@@ -609,7 +622,9 @@ function SettingsApp({
                     }
                     className={cn(
                       "w-12 h-6 rounded-full relative transition-colors",
-                      settings.batteryPercentage ? "bg-blue-600" : "bg-gray-600"
+                      settings.batteryPercentage
+                        ? "bg-blue-600"
+                        : "bg-gray-600",
                     )}
                   >
                     <div
@@ -617,7 +632,7 @@ function SettingsApp({
                         "w-5 h-5 bg-white rounded-full absolute top-0.5 transition-transform",
                         settings.batteryPercentage
                           ? "translate-x-6"
-                          : "translate-x-0.5"
+                          : "translate-x-0.5",
                       )}
                     />
                   </button>
@@ -779,7 +794,7 @@ function PhoneApp({
   const filteredContacts = contacts.filter(
     (contact) =>
       contact.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      contact.phone.includes(searchTerm)
+      contact.phone.includes(searchTerm),
   );
 
   return (
@@ -818,7 +833,7 @@ function PhoneApp({
                 <a
                   href={`tel:${String(contact.phone || "").replace(
                     /[^+\d]/g,
-                    ""
+                    "",
                   )}`}
                 >
                   {contact.phone}
@@ -1065,7 +1080,7 @@ function ContactsApp({
   const filteredContacts = contacts.filter(
     (contact) =>
       contact.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      contact.phone.includes(searchTerm)
+      contact.phone.includes(searchTerm),
   );
 
   const handleAddContact = async (e: React.FormEvent) => {
@@ -1225,7 +1240,7 @@ function MapsApp({
   ];
 
   const filteredLocations = locations.filter((location) =>
-    location.name.toLowerCase().includes(searchQuery.toLowerCase())
+    location.name.toLowerCase().includes(searchQuery.toLowerCase()),
   );
 
   return (
@@ -1278,7 +1293,7 @@ function MapsApp({
                 "w-full p-3 rounded-lg text-left transition-colors",
                 selectedLocation === location.name
                   ? "bg-blue-600"
-                  : "bg-gray-800 hover:bg-gray-700"
+                  : "bg-gray-800 hover:bg-gray-700",
               )}
             >
               <div className="font-medium">{location.name}</div>
@@ -1436,7 +1451,7 @@ function CameraApp() {
         }
       },
       "image/jpeg",
-      0.8
+      0.8,
     );
   }
 
@@ -1530,7 +1545,7 @@ function CameraApp() {
               "w-20 h-20 rounded-full border-4 border-white flex items-center justify-center",
               isCapturing || isUploading
                 ? "bg-red-500"
-                : "bg-white/30 hover:bg-white/40"
+                : "bg-white/30 hover:bg-white/40",
             )}
           >
             {isUploading ? (
@@ -1692,7 +1707,7 @@ function NotesApp() {
                 "px-3 py-1 rounded text-sm",
                 viewMode === "notes"
                   ? "bg-blue-600 text-white"
-                  : "text-gray-300"
+                  : "text-gray-300",
               )}
             >
               Notes
@@ -1703,7 +1718,7 @@ function NotesApp() {
                 "px-3 py-1 rounded text-sm",
                 viewMode === "todos"
                   ? "bg-blue-600 text-white"
-                  : "text-gray-300"
+                  : "text-gray-300",
               )}
             >
               Todos
@@ -1909,7 +1924,7 @@ function BrowserApp() {
               "p-2 rounded-full",
               canGoBack
                 ? "bg-gray-100 hover:bg-gray-200"
-                : "bg-gray-50 text-gray-400"
+                : "bg-gray-50 text-gray-400",
             )}
           >
             ←
@@ -1921,7 +1936,7 @@ function BrowserApp() {
               "p-2 rounded-full",
               canGoForward
                 ? "bg-gray-100 hover:bg-gray-200"
-                : "bg-gray-50 text-gray-400"
+                : "bg-gray-50 text-gray-400",
             )}
           >
             →
@@ -1999,7 +2014,7 @@ function BrowserApp() {
                         "bg-purple-600",
                         "bg-green-600",
                         "bg-pink-600",
-                      ][index % 6]
+                      ][index % 6],
                     )}
                   >
                     {link.name}
@@ -2155,7 +2170,7 @@ function CalcButton({
       onClick={onClick}
       className={cn(
         "h-9 rounded-full flex items-center justify-center bg-gray-800 font-medium",
-        className
+        className,
       )}
     >
       {children}
@@ -2175,3 +2190,10 @@ function CalendarApp() {
     </div>
   );
 }
+
+
+
+
+
+
+                
