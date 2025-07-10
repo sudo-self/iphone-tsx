@@ -156,24 +156,24 @@ useEffect(() => {
         <div className="absolute left-[-14px] top-[100px] w-[4px] h-[30px] bg-gray-700 rounded-l-sm"></div>
         <div className="absolute left-[-14px] top-[140px] w-[4px] h-[30px] bg-gray-700 rounded-l-sm"></div>
 
-        {/* Notch */}
+
         <div className="absolute top-0 left-1/2 transform -translate-x-1/2 w-[120px] h-[30px] bg-black rounded-b-[14px] z-50"></div>
 
         <div className="relative w-full h-full bg-gray-900 overflow-hidden">
-          {/* Status Bar - Always visible */}
+      
           <div
             className={cn(
               "absolute top-0 left-0 right-0 h-12 px-6 flex justify-between items-center z-40",
               settings.statusBarStyle === "dark" ? "text-gray-800" : "text-gray-200",
             )}
           >
-            {/* Left side: device name and time */}
+         
             <div className="flex flex-col text-left text-sm font-medium leading-tight">
               <span>{settings.deviceName}</span>
               <span className="text-xs">{currentTime}</span>
             </div>
 
-            {/* Right side: icons and battery */}
+    
             <div className="flex items-center gap-2">
               <Signal className="w-4 h-4" />
               <Wifi className="w-4 h-4" />
@@ -185,7 +185,7 @@ useEffect(() => {
           </div>
 
           {isLocked ? (
-            // Lock
+     
             <div
               className="absolute inset-0 flex flex-col items-center bg-cover bg-center"
               style={{ backgroundImage: `url('${settings.lockScreenWallpaper}')` }}
@@ -232,7 +232,7 @@ useEffect(() => {
                   {activeApp === "Camera" && <CameraApp />}
                   {activeApp === "Browser" && <BrowserApp />}
                   {activeApp === "Music" && <MusicApp />}
-                  {activeApp === "Maps" && <MapsApp />}
+                  {activeApp === "Maps" && <MapsApp setActiveApp={setActiveApp} />}
                   {activeApp === "Settings" && <SettingsApp settings={settings} onSettingsChange={updateSettings} />}
                 </div>
               ) : (
@@ -317,7 +317,7 @@ useEffect(() => {
   )
 }
 
-// icon
+
 function AppIcon({
   name,
   icon,
@@ -637,7 +637,7 @@ function SettingsApp({
               </div>
               <div className="flex justify-between py-2 border-b border-gray-700">
                 <span className="text-gray-400">Storage</span>
-                <span>2TB</span>
+                <span className="text-yellow-400">2TB</span>
               </div>
               <div className="flex justify-between py-2 border-b border-gray-700">
                 <span className="text-gray-400">Battery Health</span>
@@ -685,7 +685,7 @@ function SettingsApp({
   )
 }
 
-// Phone App
+
 function PhoneApp({ contacts }: { contacts: Array<{ name: string; phone: string }> }) {
   const [searchTerm, setSearchTerm] = useState("")
 
@@ -1095,9 +1095,15 @@ function MapsApp({ setActiveApp }: { setActiveApp: (app: string | null) => void 
   return (
     <div className="h-full flex flex-col bg-gray-900 text-white min-h-screen">
       <div className="flex items-center p-4">
-        <button onClick={() => setActiveApp(null)} className="text-blue-400 mr-4">
-          ← Back
-        </button>
+          <button
+                onClick={() => {
+                  console.log("Back clicked");
+                  setActiveApp(null);
+                }}
+                className="text-blue-400 mr-4"
+              >
+                ← Back
+              </button>
         <h2 className="text-xl font-bold">Maps</h2>
       </div>
       <div className="flex-1 px-4 pb-4">
@@ -1110,6 +1116,9 @@ function MapsApp({ setActiveApp }: { setActiveApp: (app: string | null) => void 
     </div>
   );
 }
+
+
+
 
 
 
