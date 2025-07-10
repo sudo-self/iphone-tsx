@@ -1050,6 +1050,9 @@ function ContactsApp({
   )
 }
 
+
+
+
 interface MapsAppProps {
   setActiveApp: (app: string | null) => void;
 }
@@ -1059,22 +1062,34 @@ function MapsApp({ setActiveApp }: MapsAppProps) {
   const leafletMapRef = useRef<L.Map | null>(null);
 
   useEffect(() => {
-    if (!mapRef.current || leafletMapRef.current) return;
+ 
+    if (typeof window === "undefined" || !mapRef.current || leafletMapRef.current) return;
 
-    // Initialize Leaflet map centered on NYC
+
+    delete (L.Icon.Default.prototype as any)._getIconUrl;
+    L.Icon.Default.mergeOptions({
+      iconRetinaUrl:
+        "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-icon-2x.png",
+      iconUrl:
+        "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-icon.png",
+      shadowUrl:
+        "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-shadow.png",
+    });
+
+ 
     leafletMapRef.current = L.map(mapRef.current).setView([40.7128, -74.006], 12);
 
-    // Add OpenStreetMap tile layer
     L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
       attribution:
         '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
     }).addTo(leafletMapRef.current);
 
-    // Optional: Add a marker
-    L.marker([40.7128, -74.006]).addTo(leafletMapRef.current).bindPopup("New York City").openPopup();
+    L.marker([40.7128, -74.006])
+      .addTo(leafletMapRef.current)
+      .bindPopup("New York City")
+      .openPopup();
 
     return () => {
-      // Clean up on unmount
       leafletMapRef.current?.remove();
       leafletMapRef.current = null;
     };
@@ -1098,7 +1113,6 @@ function MapsApp({ setActiveApp }: MapsAppProps) {
     </div>
   );
 }
-
 
 
 // Calendar App
