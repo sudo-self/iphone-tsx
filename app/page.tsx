@@ -1,8 +1,8 @@
-"use client"
+"use client";
 
-import type React from "react"
+import type React from "react";
 
-import { useState, useEffect, useRef } from "react"
+import { useState, useEffect, useRef } from "react";
 import {
   Battery,
   Signal,
@@ -22,124 +22,134 @@ import {
   Music,
   MapIcon,
   FileText,
-} from "lucide-react"
-import { cn } from "@/lib/utils"
-import { getContacts } from "@/lib/redis"
-import { type PhoneSettings, defaultSettings, loadSettings, saveSettings } from "@/lib/settings"
+} from "lucide-react";
+import { cn } from "@/lib/utils";
+import { getContacts } from "@/lib/redis";
+import {
+  type PhoneSettings,
+  defaultSettings,
+  loadSettings,
+  saveSettings,
+} from "@/lib/settings";
 
 export default function SmartphoneUI() {
-  const [isLocked, setIsLocked] = useState(true)
-  const [currentTime, setCurrentTime] = useState("")
-  const [currentDate, setCurrentDate] = useState("")
-  const [activeApp, setActiveApp] = useState<string | null>(null)
-  const [batteryLevel, setBatteryLevel] = useState(85)
-  const [contacts, setContacts] = useState<Array<{ name: string; phone: string }>>([])
-  const [isLoading, setIsLoading] = useState(false)
-  const [settings, setSettings] = useState<PhoneSettings>(defaultSettings)
+  const [isLocked, setIsLocked] = useState(true);
+  const [currentTime, setCurrentTime] = useState("");
+  const [currentDate, setCurrentDate] = useState("");
+  const [activeApp, setActiveApp] = useState<string | null>(null);
+  const [batteryLevel, setBatteryLevel] = useState(85);
+  const [contacts, setContacts] = useState<
+    Array<{ name: string; phone: string }>
+  >([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const [settings, setSettings] = useState<PhoneSettings>(defaultSettings);
+
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     const updateTime = () => {
-      const now = new Date()
+      const now = new Date();
       setCurrentTime(
         now.toLocaleTimeString([], {
           hour: "2-digit",
           minute: "2-digit",
           hour12: false,
-        }),
-      )
+        })
+      );
       setCurrentDate(
         now.toLocaleDateString([], {
           weekday: "long",
           month: "long",
           day: "numeric",
-        }),
-      )
-    }
+        })
+      );
+    };
 
-    updateTime()
-    const interval = setInterval(updateTime, 60000)
+    updateTime();
+    const interval = setInterval(updateTime, 60000);
 
-    return () => clearInterval(interval)
-  }, [])
+    return () => clearInterval(interval);
+  }, []);
 
   useEffect(() => {
-    const loadedSettings = loadSettings()
-    setSettings(loadedSettings)
-  }, [])
+    const loadedSettings = loadSettings();
+    setSettings(loadedSettings);
+  }, []);
 
   useEffect(() => {
     const fetchContacts = async () => {
       if (!isLocked) {
-        setIsLoading(true)
+        setIsLoading(true);
         try {
-          const contactsList = await getContacts()
-          setContacts(contactsList)
+          const contactsList = await getContacts();
+          setContacts(contactsList);
         } catch (error) {
-          console.error("Failed to fetch contacts:", error)
+          console.error("Failed to fetch contacts:", error);
         } finally {
-          setIsLoading(false)
+          setIsLoading(false);
         }
       }
-    }
+    };
 
-    fetchContacts()
-  }, [isLocked, activeApp])
+    fetchContacts();
+  }, [isLocked, activeApp]);
 
   const handleUnlock = () => {
-    setIsLocked(false)
-  }
+    setIsLocked(false);
+  };
 
   const handleLock = () => {
-    setIsLocked(true)
-    setActiveApp(null)
-  }
+    setIsLocked(true);
+    setActiveApp(null);
+  };
 
   const openApp = (appName: string) => {
-    setActiveApp(appName)
-  }
+    setActiveApp(appName);
+  };
 
   const goHome = () => {
-    setActiveApp(null)
-  }
+    setActiveApp(null);
+  };
 
   const refreshContacts = async () => {
-    setIsLoading(true)
+    setIsLoading(true);
     try {
-      const contactsList = await getContacts()
-      setContacts(contactsList)
+      const contactsList = await getContacts();
+      setContacts(contactsList);
     } catch (error) {
-      console.error("Failed to refresh contacts:", error)
+      console.error("Failed to refresh contacts:", error);
     } finally {
-      setIsLoading(false)
+      setIsLoading(false);
     }
-  }
+  };
 
   const updateSettings = (newSettings: PhoneSettings) => {
-    setSettings(newSettings)
-    saveSettings(newSettings)
-  }
+    setSettings(newSettings);
+    saveSettings(newSettings);
+  };
 
   const getHomeButtonStyle = () => {
     switch (settings.homeButtonStyle) {
       case "square":
-        return "w-12 h-12 rounded-lg border-2 border-white/50"
+        return "w-12 h-12 rounded-lg border-2 border-white/50";
       case "pill":
-        return "w-16 h-8 rounded-full border-2 border-white/50"
+        return "w-16 h-8 rounded-full border-2 border-white/50";
       default:
-        return "w-12 h-12 rounded-full border-2 border-white/50"
+        return "w-12 h-12 rounded-full border-2 border-white/50";
     }
-  }
+  };
 
   const getAppIconStyle = () => {
     switch (settings.appIconStyle) {
       case "square":
-        return "w-14 h-14 rounded-lg"
+        return "w-14 h-14 rounded-lg";
       case "circle":
-        return "w-14 h-14 rounded-full"
+        return "w-14 h-14 rounded-full";
       default:
-        return "w-14 h-14 rounded-2xl"
+        return "w-14 h-14 rounded-2xl";
     }
-  }
+  };
 
   return (
     <div className="flex justify-center items-center min-h-screen bg-gray-200 p-4">
@@ -155,7 +165,9 @@ export default function SmartphoneUI() {
           <div
             className={cn(
               "absolute top-0 left-0 right-0 h-12 px-6 flex justify-between items-center z-40",
-              settings.statusBarStyle === "dark" ? "text-gray-800" : "text-gray-200",
+              settings.statusBarStyle === "dark"
+                ? "text-gray-800"
+                : "text-gray-200"
             )}
           >
             <div className="flex flex-col text-left text-sm font-medium leading-tight">
@@ -167,7 +179,11 @@ export default function SmartphoneUI() {
               <Signal className="w-4 h-4" />
               <Wifi className="w-4 h-4" />
               <div className="flex items-center">
-                {settings.batteryPercentage && <span className="text-xs mr-1 text-green-700">{batteryLevel}%</span>}
+                {settings.batteryPercentage && (
+                  <span className="text-xs mr-1 text-green-700">
+                    {batteryLevel}%
+                  </span>
+                )}
                 <Battery className="w-5 h-5" />
               </div>
             </div>
@@ -176,7 +192,9 @@ export default function SmartphoneUI() {
           {isLocked ? (
             <div
               className="absolute inset-0 flex flex-col items-center bg-cover bg-center"
-              style={{ backgroundImage: `url('${settings.lockScreenWallpaper}')` }}
+              style={{
+                backgroundImage: `url('${settings.lockScreenWallpaper}')`,
+              }}
             >
               <div className="mt-20 text-white text-center">
                 <div className="text-6xl font-light">{currentTime}</div>
@@ -187,7 +205,10 @@ export default function SmartphoneUI() {
                 <div className="p-4 rounded-full mb-4">
                   <Lock className="w-6 h-6 text-white" />
                 </div>
-                <button onClick={handleUnlock} className="text-white text-lg font-light flex items-center">
+                <button
+                  onClick={handleUnlock}
+                  className="text-white text-lg font-light flex items-center"
+                >
                   <ChevronLeft className="w-5 h-5 mr-1 animate-pulse" />
                   Tap to Unlock
                   <ChevronRight className="w-5 h-5 ml-1 animate-pulse" />
@@ -199,23 +220,41 @@ export default function SmartphoneUI() {
               {activeApp ? (
                 <div className="h-full">
                   <div className="h-12 flex items-center justify-between px-4 bg-gray-800">
-                    <h2 className="text-white text-lg font-medium">{activeApp}</h2>
+                    <h2 className="text-white text-lg font-medium">
+                      {activeApp}
+                    </h2>
                     {(activeApp === "Contacts" || activeApp === "Phone") && (
-                      <button onClick={refreshContacts} className="text-blue-400 text-sm" disabled={isLoading}>
+                      <button
+                        onClick={refreshContacts}
+                        className="text-blue-400 text-sm"
+                        disabled={isLoading}
+                      >
                         {isLoading ? "Loading..." : "Refresh"}
                       </button>
                     )}
                   </div>
 
                   {activeApp === "Phone" && <PhoneApp contacts={contacts} />}
-                  {activeApp === "Contacts" && <ContactsApp contacts={contacts} onContactsChange={refreshContacts} />}
+                  {activeApp === "Contacts" && (
+                    <ContactsApp
+                      contacts={contacts}
+                      onContactsChange={refreshContacts}
+                    />
+                  )}
                   {activeApp === "Calendar" && <CalendarApp />}
                   {activeApp === "Calculator" && <CalculatorApp />}
                   {activeApp === "Camera" && <CameraApp />}
                   {activeApp === "Browser" && <BrowserApp />}
                   {activeApp === "Music" && <MusicApp />}
-                  {activeApp === "Maps" && <MapsApp setActiveApp={setActiveApp} />}
-                  {activeApp === "Settings" && <SettingsApp settings={settings} onSettingsChange={updateSettings} />}
+                  {activeApp === "Maps" && (
+                    <MapsApp setActiveApp={setActiveApp} />
+                  )}
+                  {activeApp === "Settings" && (
+                    <SettingsApp
+                      settings={settings}
+                      onSettingsChange={updateSettings}
+                    />
+                  )}
                   {activeApp === "Notes" && <NotesApp />}
                 </div>
               ) : (
@@ -291,17 +330,20 @@ export default function SmartphoneUI() {
               <div
                 className={cn(
                   "absolute bottom-0 left-0 right-0 h-16 backdrop-blur-md flex justify-center items-center",
-                  `bg-${settings.taskbarColor}`,
+                  `bg-${settings.taskbarColor}`
                 )}
               >
-                <button onClick={activeApp ? goHome : handleLock} className={getHomeButtonStyle()}></button>
+                <button
+                  onClick={activeApp ? goHome : handleLock}
+                  className={getHomeButtonStyle()}
+                ></button>
               </div>
             </div>
           )}
         </div>
       </div>
     </div>
-  )
+  );
 }
 
 function AppIcon({
@@ -309,34 +351,42 @@ function AppIcon({
   icon,
   onClick,
   iconStyle,
-}: { name: string; icon: React.ReactNode; onClick: () => void; iconStyle: string }) {
+}: {
+  name: string;
+  icon: React.ReactNode;
+  onClick: () => void;
+  iconStyle: string;
+}) {
   return (
     <button onClick={onClick} className="flex flex-col items-center">
       <div
         className={cn(
           iconStyle,
-          "bg-gradient-to-br from-gray-700 to-gray-900 flex items-center justify-center text-white mb-1",
+          "bg-gradient-to-br from-gray-700 to-gray-900 flex items-center justify-center text-white mb-1"
         )}
       >
         {icon}
       </div>
       <span className="text-xs text-white">{name}</span>
     </button>
-  )
+  );
 }
 
 function SettingsApp({
   settings,
   onSettingsChange,
-}: { settings: PhoneSettings; onSettingsChange: (settings: PhoneSettings) => void }) {
-  const [activeSection, setActiveSection] = useState<string | null>(null)
+}: {
+  settings: PhoneSettings;
+  onSettingsChange: (settings: PhoneSettings) => void;
+}) {
+  const [activeSection, setActiveSection] = useState<string | null>(null);
 
   const settingSections = [
     { id: "display", name: "Display", icon: "🤩" },
     { id: "wallpaper", name: "Wallpaper", icon: "📱" },
     { id: "general", name: "General", icon: "⚙️" },
     { id: "about", name: "About", icon: "ℹ️" },
-  ]
+  ];
 
   const wallpaperOptions = [
     {
@@ -355,7 +405,7 @@ function SettingsApp({
       name: "iPad Blue",
       url: "https://firebasestorage.googleapis.com/v0/b/jessejessexyz.appspot.com/o/ipad_wallpaper.png?alt=media&token=cb015e53-1df5-4474-96bf-789e39c6cffa",
     },
-  ]
+  ];
 
   const taskbarColorOptions = [
     { name: "Default", value: "black/30" },
@@ -364,13 +414,16 @@ function SettingsApp({
     { name: "Purple", value: "purple-900/40" },
     { name: "Green", value: "green-900/40" },
     { name: "Red", value: "red-900/40" },
-  ]
+  ];
 
   if (activeSection === "wallpaper") {
     return (
       <div className="h-full bg-gray-900 text-white flex flex-col overflow-y-auto">
         <div className="flex items-center mb-6 px-4 pt-4 flex-shrink-0">
-          <button onClick={() => setActiveSection(null)} className="text-blue-400 mr-4">
+          <button
+            onClick={() => setActiveSection(null)}
+            className="text-blue-400 mr-4"
+          >
             ← Back
           </button>
           <h2 className="text-xl font-bold">Wallpaper</h2>
@@ -383,10 +436,14 @@ function SettingsApp({
               {wallpaperOptions.map((option, index) => (
                 <button
                   key={index}
-                  onClick={() => onSettingsChange({ ...settings, wallpaper: option.url })}
+                  onClick={() =>
+                    onSettingsChange({ ...settings, wallpaper: option.url })
+                  }
                   className={cn(
                     "relative aspect-[3/4] rounded-lg overflow-y-auto border-2",
-                    settings.wallpaper === option.url ? "border-blue-500" : "border-gray-600",
+                    settings.wallpaper === option.url
+                      ? "border-blue-500"
+                      : "border-gray-600"
                   )}
                 >
                   <img
@@ -408,10 +465,17 @@ function SettingsApp({
               {wallpaperOptions.map((option, index) => (
                 <button
                   key={index}
-                  onClick={() => onSettingsChange({ ...settings, lockScreenWallpaper: option.url })}
+                  onClick={() =>
+                    onSettingsChange({
+                      ...settings,
+                      lockScreenWallpaper: option.url,
+                    })
+                  }
                   className={cn(
                     "relative aspect-[3/4] rounded-lg overflow-y-auto border-2",
-                    settings.lockScreenWallpaper === option.url ? "border-blue-500" : "border-gray-600",
+                    settings.lockScreenWallpaper === option.url
+                      ? "border-blue-500"
+                      : "border-gray-600"
                   )}
                 >
                   <img
@@ -428,14 +492,17 @@ function SettingsApp({
           </div>
         </div>
       </div>
-    )
+    );
   }
 
   if (activeSection === "display") {
     return (
       <div className="h-full bg-gray-900 text-white flex flex-col overflow-y-auto">
         <div className="flex items-center mb-6 px-4 pt-4 flex-shrink-0">
-          <button onClick={() => setActiveSection(null)} className="text-blue-400 mr-4">
+          <button
+            onClick={() => setActiveSection(null)}
+            className="text-blue-400 mr-4"
+          >
             ← Back
           </button>
           <h2 className="text-xl font-bold">Display & Brightness</h2>
@@ -449,12 +516,17 @@ function SettingsApp({
                 {taskbarColorOptions.map((option, index) => (
                   <button
                     key={index}
-                    onClick={() => onSettingsChange({ ...settings, taskbarColor: option.value })}
+                    onClick={() =>
+                      onSettingsChange({
+                        ...settings,
+                        taskbarColor: option.value,
+                      })
+                    }
                     className={cn(
                       "p-3 rounded-lg border-2 text-left",
                       settings.taskbarColor === option.value
                         ? "border-blue-500 bg-blue-900/20"
-                        : "border-gray-600 bg-gray-800",
+                        : "border-gray-600 bg-gray-800"
                     )}
                   >
                     {option.name}
@@ -473,12 +545,17 @@ function SettingsApp({
                 ].map((option, index) => (
                   <button
                     key={index}
-                    onClick={() => onSettingsChange({ ...settings, homeButtonStyle: option.value })}
+                    onClick={() =>
+                      onSettingsChange({
+                        ...settings,
+                        homeButtonStyle: option.value,
+                      })
+                    }
                     className={cn(
                       "p-3 rounded-lg border-2 text-center",
                       settings.homeButtonStyle === option.value
                         ? "border-blue-500 bg-blue-900/20"
-                        : "border-gray-600 bg-gray-800",
+                        : "border-gray-600 bg-gray-800"
                     )}
                   >
                     {option.name}
@@ -497,12 +574,17 @@ function SettingsApp({
                 ].map((option, index) => (
                   <button
                     key={index}
-                    onClick={() => onSettingsChange({ ...settings, appIconStyle: option.value })}
+                    onClick={() =>
+                      onSettingsChange({
+                        ...settings,
+                        appIconStyle: option.value,
+                      })
+                    }
                     className={cn(
                       "p-3 rounded-lg border-2 text-center",
                       settings.appIconStyle === option.value
                         ? "border-blue-500 bg-blue-900/20"
-                        : "border-gray-600 bg-gray-800",
+                        : "border-gray-600 bg-gray-800"
                     )}
                   >
                     {option.name}
@@ -517,16 +599,23 @@ function SettingsApp({
                 <label className="flex items-center justify-between">
                   <span>Show Battery Percentage</span>
                   <button
-                    onClick={() => onSettingsChange({ ...settings, batteryPercentage: !settings.batteryPercentage })}
+                    onClick={() =>
+                      onSettingsChange({
+                        ...settings,
+                        batteryPercentage: !settings.batteryPercentage,
+                      })
+                    }
                     className={cn(
                       "w-12 h-6 rounded-full relative transition-colors",
-                      settings.batteryPercentage ? "bg-blue-600" : "bg-gray-600",
+                      settings.batteryPercentage ? "bg-blue-600" : "bg-gray-600"
                     )}
                   >
                     <div
                       className={cn(
                         "w-5 h-5 bg-white rounded-full absolute top-0.5 transition-transform",
-                        settings.batteryPercentage ? "translate-x-6" : "translate-x-0.5",
+                        settings.batteryPercentage
+                          ? "translate-x-6"
+                          : "translate-x-0.5"
                       )}
                     />
                   </button>
@@ -536,14 +625,17 @@ function SettingsApp({
           </div>
         </div>
       </div>
-    )
+    );
   }
 
   if (activeSection === "general") {
     return (
       <div className="h-full bg-gray-900 text-white flex flex-col">
         <div className="flex items-center mb-6 px-4 pt-4 flex-shrink-0">
-          <button onClick={() => setActiveSection(null)} className="text-blue-400 mr-4">
+          <button
+            onClick={() => setActiveSection(null)}
+            className="text-blue-400 mr-4"
+          >
             ← Back
           </button>
           <h2 className="text-xl font-bold">General</h2>
@@ -556,7 +648,9 @@ function SettingsApp({
               <input
                 type="text"
                 value={settings.deviceName}
-                onChange={(e) => onSettingsChange({ ...settings, deviceName: e.target.value })}
+                onChange={(e) =>
+                  onSettingsChange({ ...settings, deviceName: e.target.value })
+                }
                 className="w-full p-3 bg-gray-800 border border-gray-600 rounded-lg text-white"
                 placeholder="Enter device name"
               />
@@ -577,8 +671,8 @@ function SettingsApp({
                     appIconStyle: "rounded" as const,
                     deviceName: "iPhone TSX",
                     batteryPercentage: true,
-                  }
-                  onSettingsChange(defaultSettings)
+                  };
+                  onSettingsChange(defaultSettings);
                 }}
                 className="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700"
               >
@@ -588,14 +682,17 @@ function SettingsApp({
           </div>
         </div>
       </div>
-    )
+    );
   }
 
   if (activeSection === "about") {
     return (
       <div className="h-full bg-gray-900 text-white flex flex-col">
         <div className="flex items-center mb-6 px-4 pt-4 flex-shrink-0">
-          <button onClick={() => setActiveSection(null)} className="text-blue-400 mr-4">
+          <button
+            onClick={() => setActiveSection(null)}
+            className="text-blue-400 mr-4"
+          >
             ← Back
           </button>
           <h2 className="text-xl font-bold">About</h2>
@@ -636,7 +733,7 @@ function SettingsApp({
           </div>
         </div>
       </div>
-    )
+    );
   }
 
   return (
@@ -667,15 +764,21 @@ function SettingsApp({
         </div>
       </div>
     </div>
-  )
+  );
 }
 
-function PhoneApp({ contacts }: { contacts: Array<{ name: string; phone: string }> }) {
-  const [searchTerm, setSearchTerm] = useState("")
+function PhoneApp({
+  contacts,
+}: {
+  contacts: Array<{ name: string; phone: string }>;
+}) {
+  const [searchTerm, setSearchTerm] = useState("");
 
   const filteredContacts = contacts.filter(
-    (contact) => contact.name.toLowerCase().includes(searchTerm.toLowerCase()) || contact.phone.includes(searchTerm),
-  )
+    (contact) =>
+      contact.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      contact.phone.includes(searchTerm)
+  );
 
   return (
     <div className="h-full bg-gray-900 text-white p-4 overflow-y-auto">
@@ -699,13 +802,25 @@ function PhoneApp({ contacts }: { contacts: Array<{ name: string; phone: string 
       ) : (
         <div className="grid gap-4">
           {filteredContacts.map((contact, index) => (
-            <div key={index} className="flex items-center p-3 border-b border-gray-800">
+            <div
+              key={index}
+              className="flex items-center p-3 border-b border-gray-800"
+            >
               <div className="w-10 h-10 rounded-full bg-gray-700 flex items-center justify-center mr-3">
                 {contact.name.charAt(0)}
               </div>
               <div>
-                <div className="font-medium hover:text-green-600">{contact.name}</div>
-                <a href={`tel:${String(contact.phone || "").replace(/[^+\d]/g, "")}`}>{contact.phone}</a>
+                <div className="font-medium hover:text-green-600">
+                  {contact.name}
+                </div>
+                <a
+                  href={`tel:${String(contact.phone || "").replace(
+                    /[^+\d]/g,
+                    ""
+                  )}`}
+                >
+                  {contact.phone}
+                </a>
               </div>
               <Phone className="w-5 h-5 ml-auto text-green-500" />
             </div>
@@ -713,7 +828,7 @@ function PhoneApp({ contacts }: { contacts: Array<{ name: string; phone: string 
         </div>
       )}
     </div>
-  )
+  );
 }
 
 const SkipBack = (props: React.SVGProps<SVGSVGElement>) => (
@@ -729,7 +844,7 @@ const SkipBack = (props: React.SVGProps<SVGSVGElement>) => (
     <polygon points="19 20 9 12 19 4 19 20" />
     <line x1="5" y1="19" x2="5" y2="5" />
   </svg>
-)
+);
 const SkipForward = (props: React.SVGProps<SVGSVGElement>) => (
   <svg
     {...props}
@@ -743,47 +858,62 @@ const SkipForward = (props: React.SVGProps<SVGSVGElement>) => (
     <polygon points="5 4 15 12 5 20 5 4" />
     <line x1="19" y1="5" x2="19" y2="19" />
   </svg>
-)
+);
 
 declare global {
   interface Window {
-    YT: any
-    onYouTubeIframeAPIReady: () => void
+    YT: any;
+    onYouTubeIframeAPIReady: () => void;
   }
 }
 
 interface Track {
-  id: number
-  title: string
-  artist: string
-  videoId: string
+  id: number;
+  title: string;
+  artist: string;
+  videoId: string;
 }
 
 const sampleTracks: Track[] = [
-  { id: 1, title: "You Only Live Once", artist: "The Strokes", videoId: "pT68FS3YbQ4" },
-  { id: 2, title: "I was running through the six", artist: "Drake", videoId: "jqScSp5l-AQ" },
+  {
+    id: 1,
+    title: "You Only Live Once",
+    artist: "The Strokes",
+    videoId: "pT68FS3YbQ4",
+  },
+  {
+    id: 2,
+    title: "I was running through the six",
+    artist: "Drake",
+    videoId: "jqScSp5l-AQ",
+  },
   { id: 3, title: "Undercover", artist: "Lane 8", videoId: "HSydHbGdIcY" },
-  { id: 4, title: "King of Everything", artist: "Wiz Khalifa", videoId: "8d0cm_hcQes" },
-]
+  {
+    id: 4,
+    title: "King of Everything",
+    artist: "Wiz Khalifa",
+    videoId: "8d0cm_hcQes",
+  },
+];
 
 function MusicApp() {
-  const playerRef = useRef<HTMLDivElement>(null)
-  const ytPlayer = useRef<any>(null)
+  const playerRef = useRef<HTMLDivElement>(null);
+  const ytPlayer = useRef<any>(null);
 
-  const [currentIndex, setCurrentIndex] = useState(0)
-  const [isReady, setIsReady] = useState(false)
-  const [isPlaying, setIsPlaying] = useState(false)
-  const [volume, setVolume] = useState(50)
-  const [progress, setProgress] = useState(0)
-  const [duration, setDuration] = useState(0)
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const [isReady, setIsReady] = useState(false);
+  const [isPlaying, setIsPlaying] = useState(false);
+  const [volume, setVolume] = useState(50);
+  const [progress, setProgress] = useState(0);
+  const [duration, setDuration] = useState(0);
 
-  const currentTrack = sampleTracks[currentIndex]
+  const currentTrack = sampleTracks[currentIndex];
 
   useEffect(() => {
     if (!window.YT) {
-      const tag = document.createElement("script")
-      tag.src = "https://www.youtube.com/iframe_api"
-      document.body.appendChild(tag)
+      const tag = document.createElement("script");
+      tag.src = "https://www.youtube.com/iframe_api";
+      document.body.appendChild(tag);
     }
 
     window.onYouTubeIframeAPIReady = () => {
@@ -799,75 +929,78 @@ function MusicApp() {
         },
         events: {
           onReady: (event: any) => {
-            setIsReady(true)
-            ytPlayer.current.setVolume(volume)
-            setDuration(ytPlayer.current.getDuration())
+            setIsReady(true);
+            ytPlayer.current.setVolume(volume);
+            setDuration(ytPlayer.current.getDuration());
           },
           onStateChange: (e: any) => {
             if (e.data === window.YT.PlayerState.ENDED) {
-              playNext()
+              playNext();
             }
           },
         },
-      })
-    }
-  }, [])
+      });
+    };
+  }, []);
 
   useEffect(() => {
     if (ytPlayer.current && isReady) {
-      ytPlayer.current.loadVideoById(currentTrack.videoId)
-      setIsPlaying(true)
-      setProgress(0)
+      ytPlayer.current.loadVideoById(currentTrack.videoId);
+      setIsPlaying(true);
+      setProgress(0);
     }
-  }, [currentIndex, isReady, currentTrack.videoId])
+  }, [currentIndex, isReady, currentTrack.videoId]);
 
   useEffect(() => {
-    if (!ytPlayer.current || !isReady) return
+    if (!ytPlayer.current || !isReady) return;
     if (isPlaying) {
-      ytPlayer.current.playVideo()
+      ytPlayer.current.playVideo();
     } else {
-      ytPlayer.current.pauseVideo()
+      ytPlayer.current.pauseVideo();
     }
-  }, [isPlaying, isReady])
+  }, [isPlaying, isReady]);
 
   useEffect(() => {
     if (ytPlayer.current && isReady) {
-      ytPlayer.current.setVolume(volume)
+      ytPlayer.current.setVolume(volume);
     }
-  }, [volume, isReady])
+  }, [volume, isReady]);
 
   useEffect(() => {
-    if (!ytPlayer.current) return
+    if (!ytPlayer.current) return;
 
     const interval = setInterval(() => {
       if (ytPlayer.current && ytPlayer.current.getCurrentTime) {
-        setProgress(ytPlayer.current.getCurrentTime())
-        setDuration(ytPlayer.current.getDuration())
+        setProgress(ytPlayer.current.getCurrentTime());
+        setDuration(ytPlayer.current.getDuration());
       }
-    }, 1000)
+    }, 1000);
 
-    return () => clearInterval(interval)
-  }, [])
+    return () => clearInterval(interval);
+  }, []);
 
   const playPrev = () => {
-    setCurrentIndex((i) => (i === 0 ? sampleTracks.length - 1 : i - 1))
-  }
+    setCurrentIndex((i) => (i === 0 ? sampleTracks.length - 1 : i - 1));
+  };
 
   const playNext = () => {
-    setCurrentIndex((i) => (i === sampleTracks.length - 1 ? 0 : i + 1))
-  }
+    setCurrentIndex((i) => (i === sampleTracks.length - 1 ? 0 : i + 1));
+  };
 
   const seekTo = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const time = Number(e.target.value)
-    setProgress(time)
+    const time = Number(e.target.value);
+    setProgress(time);
     if (ytPlayer.current && isReady) {
-      ytPlayer.current.seekTo(time, true)
+      ytPlayer.current.seekTo(time, true);
     }
-  }
+  };
 
   return (
     <div className="bg-black text-white min-h-screen flex flex-col items-center p-6 space-y-6 overflow-y-auto">
-      <div ref={playerRef} style={{ maxWidth: "426px", width: "100%", marginBottom: "1rem" }} />
+      <div
+        ref={playerRef}
+        style={{ maxWidth: "426px", width: "100%", marginBottom: "1rem" }}
+      />
 
       <div className="text-center">
         <h2 className="text-2xl font-bold">{currentTrack.title}</h2>
@@ -911,54 +1044,56 @@ function MusicApp() {
         aria-label="Volume control"
       />
     </div>
-  )
+  );
 }
 
 function ContactsApp({
   contacts,
   onContactsChange,
 }: {
-  contacts: Array<{ name: string; phone: string }>
-  onContactsChange: () => Promise<void>
+  contacts: Array<{ name: string; phone: string }>;
+  onContactsChange: () => Promise<void>;
 }) {
-  const [searchTerm, setSearchTerm] = useState("")
-  const [showAddForm, setShowAddForm] = useState(false)
-  const [newName, setNewName] = useState("")
-  const [newPhone, setNewPhone] = useState("")
-  const [isSubmitting, setIsSubmitting] = useState(false)
+  const [searchTerm, setSearchTerm] = useState("");
+  const [showAddForm, setShowAddForm] = useState(false);
+  const [newName, setNewName] = useState("");
+  const [newPhone, setNewPhone] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const filteredContacts = contacts.filter(
-    (contact) => contact.name.toLowerCase().includes(searchTerm.toLowerCase()) || contact.phone.includes(searchTerm),
-  )
+    (contact) =>
+      contact.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      contact.phone.includes(searchTerm)
+  );
 
   const handleAddContact = async (e: React.FormEvent) => {
-    e.preventDefault()
-    if (!newName || !newPhone) return
+    e.preventDefault();
+    if (!newName || !newPhone) return;
 
-    setIsSubmitting(true)
+    setIsSubmitting(true);
     try {
-      const { addContact } = await import("@/lib/redis")
-      await addContact(newName, newPhone)
-      setNewName("")
-      setNewPhone("")
-      setShowAddForm(false)
-      await onContactsChange()
+      const { addContact } = await import("@/lib/redis");
+      await addContact(newName, newPhone);
+      setNewName("");
+      setNewPhone("");
+      setShowAddForm(false);
+      await onContactsChange();
     } catch (error) {
-      console.error("Failed to add contact:", error)
+      console.error("Failed to add contact:", error);
     } finally {
-      setIsSubmitting(false)
+      setIsSubmitting(false);
     }
-  }
+  };
 
   const handleDeleteContact = async (name: string) => {
     try {
-      const { deleteContact } = await import("@/lib/redis")
-      await deleteContact(name)
-      await onContactsChange()
+      const { deleteContact } = await import("@/lib/redis");
+      await deleteContact(name);
+      await onContactsChange();
     } catch (error) {
-      console.error("Failed to delete contact:", error)
+      console.error("Failed to delete contact:", error);
     }
-  }
+  };
 
   return (
     <div className="h-full bg-gray-900 text-white p-4 overflow-y-auto">
@@ -973,13 +1108,19 @@ function ContactsApp({
             className="bg-transparent border-none outline-none flex-1 text-white"
           />
         </div>
-        <button onClick={() => setShowAddForm(!showAddForm)} className="bg-blue-600 text-white p-2 rounded-full">
+        <button
+          onClick={() => setShowAddForm(!showAddForm)}
+          className="bg-blue-600 text-white p-2 rounded-full"
+        >
           {showAddForm ? "×" : "+"}
         </button>
       </div>
 
       {showAddForm && (
-        <form onSubmit={handleAddContact} className="bg-gray-800 p-4 rounded-lg mb-4">
+        <form
+          onSubmit={handleAddContact}
+          className="bg-gray-800 p-4 rounded-lg mb-4"
+        >
           <div className="mb-3">
             <label className="block text-sm text-gray-400 mb-1">Name</label>
             <input
@@ -1002,7 +1143,11 @@ function ContactsApp({
               required
             />
           </div>
-          <button type="submit" className="w-full bg-blue-600 text-white py-2 rounded-md" disabled={isSubmitting}>
+          <button
+            type="submit"
+            className="w-full bg-blue-600 text-white py-2 rounded-md"
+            disabled={isSubmitting}
+          >
             {isSubmitting ? "Saving..." : "Save Contact"}
           </button>
         </form>
@@ -1016,7 +1161,10 @@ function ContactsApp({
       ) : (
         <div className="grid gap-4">
           {filteredContacts.map((contact, index) => (
-            <div key={index} className="flex items-center p-3 border-b border-gray-800">
+            <div
+              key={index}
+              className="flex items-center p-3 border-b border-gray-800"
+            >
               <div className="w-10 h-10 rounded-full bg-gray-700 flex items-center justify-center mr-3">
                 {contact.name.charAt(0)}
               </div>
@@ -1024,7 +1172,10 @@ function ContactsApp({
                 <div className="font-medium">{contact.name}</div>
                 <div className="text-sm text-gray-400">{contact.phone}</div>
               </div>
-              <button onClick={() => handleDeleteContact(contact.name)} className="text-red-500 p-2">
+              <button
+                onClick={() => handleDeleteContact(contact.name)}
+                className="text-red-500 p-2"
+              >
                 ×
               </button>
             </div>
@@ -1032,29 +1183,56 @@ function ContactsApp({
         </div>
       )}
     </div>
-  )
+  );
 }
 
-function MapsApp({ setActiveApp }: { setActiveApp: (app: string | null) => void }) {
-  const [selectedLocation, setSelectedLocation] = useState("Denver, CO")
-  const [searchQuery, setSearchQuery] = useState("")
+function MapsApp({
+  setActiveApp,
+}: {
+  setActiveApp: (app: string | null) => void;
+}) {
+  const [selectedLocation, setSelectedLocation] = useState("Denver, CO");
+  const [searchQuery, setSearchQuery] = useState("");
 
   const locations = [
-    { name: "Denver, CO", coords: "39.7392°N, 104.9903°W", description: "Mile High City" },
-    { name: "New York, NY", coords: "40.7128°N, 74.0060°W", description: "The Big Apple" },
-    { name: "Los Angeles, CA", coords: "34.0522°N, 118.2437°W", description: "City of Angels" },
-    { name: "Chicago, IL", coords: "41.8781°N, 87.6298°W", description: "Windy City" },
-    { name: "Miami, FL", coords: "25.7617°N, 80.1918°W", description: "Magic City" },
-  ]
+    {
+      name: "Denver, CO",
+      coords: "39.7392°N, 104.9903°W",
+      description: "Mile High City",
+    },
+    {
+      name: "New York, NY",
+      coords: "40.7128°N, 74.0060°W",
+      description: "The Big Apple",
+    },
+    {
+      name: "Los Angeles, CA",
+      coords: "34.0522°N, 118.2437°W",
+      description: "City of Angels",
+    },
+    {
+      name: "Chicago, IL",
+      coords: "41.8781°N, 87.6298°W",
+      description: "Windy City",
+    },
+    {
+      name: "Miami, FL",
+      coords: "25.7617°N, 80.1918°W",
+      description: "Magic City",
+    },
+  ];
 
   const filteredLocations = locations.filter((location) =>
-    location.name.toLowerCase().includes(searchQuery.toLowerCase()),
-  )
+    location.name.toLowerCase().includes(searchQuery.toLowerCase())
+  );
 
   return (
     <div className="h-full flex flex-col bg-gray-900 text-white">
       <div className="flex items-center p-4 bg-gray-800 flex-shrink-0">
-        <button onClick={() => setActiveApp(null)} className="text-blue-400 mr-4">
+        <button
+          onClick={() => setActiveApp(null)}
+          className="text-blue-400 mr-4"
+        >
           ← Back
         </button>
         <h2 className="text-xl font-bold">Maps</h2>
@@ -1077,7 +1255,9 @@ function MapsApp({ setActiveApp }: { setActiveApp: (app: string | null) => void 
         <div className="bg-gray-800 rounded-lg p-6 mb-4 text-center">
           <MapIcon className="w-16 h-16 text-blue-400 mx-auto mb-4" />
           <h3 className="text-xl font-bold mb-2">{selectedLocation}</h3>
-          <p className="text-gray-400 mb-4">{locations.find((loc) => loc.name === selectedLocation)?.coords}</p>
+          <p className="text-gray-400 mb-4">
+            {locations.find((loc) => loc.name === selectedLocation)?.coords}
+          </p>
           <div className="w-full h-32 bg-gray-700 rounded-lg flex items-center justify-center">
             <div className="text-center">
               <div className="w-8 h-8 bg-blue-500 rounded-full mx-auto mb-2"></div>
@@ -1094,158 +1274,182 @@ function MapsApp({ setActiveApp }: { setActiveApp: (app: string | null) => void 
               onClick={() => setSelectedLocation(location.name)}
               className={cn(
                 "w-full p-3 rounded-lg text-left transition-colors",
-                selectedLocation === location.name ? "bg-blue-600" : "bg-gray-800 hover:bg-gray-700",
+                selectedLocation === location.name
+                  ? "bg-blue-600"
+                  : "bg-gray-800 hover:bg-gray-700"
               )}
             >
               <div className="font-medium">{location.name}</div>
-              <div className="text-sm text-gray-400">{location.description}</div>
+              <div className="text-sm text-gray-400">
+                {location.description}
+              </div>
               <div className="text-xs text-gray-500">{location.coords}</div>
             </button>
           ))}
         </div>
       </div>
     </div>
-  )
+  );
 }
 
 function CameraApp() {
-  const [stream, setStream] = useState<MediaStream | null>(null)
-  const [isCapturing, setIsCapturing] = useState(false)
-  const [photos, setPhotos] = useState<Array<{ filename: string; url: string; created_at: string }>>([])
-  const [isUploading, setIsUploading] = useState(false)
-  const [showGallery, setShowGallery] = useState(false)
-  const [facingMode, setFacingMode] = useState<"user" | "environment">("user")
-  const videoRef = useRef<HTMLVideoElement>(null)
-  const canvasRef = useRef<HTMLCanvasElement>(null)
-  const [permissionDenied, setPermissionDenied] = useState(false)
+  const [stream, setStream] = useState<MediaStream | null>(null);
+  const [isCapturing, setIsCapturing] = useState(false);
+  const [photos, setPhotos] = useState<
+    Array<{ filename: string; url: string; created_at: string }>
+  >([]);
+  const [isUploading, setIsUploading] = useState(false);
+  const [showGallery, setShowGallery] = useState(false);
+  const [facingMode, setFacingMode] = useState<"user" | "environment">("user");
+  const videoRef = useRef<HTMLVideoElement>(null);
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const [permissionDenied, setPermissionDenied] = useState(false);
 
   useEffect(() => {
     if (!showGallery) {
-      startCamera()
+      startCamera();
     } else {
-      stopCamera()
+      stopCamera();
     }
-    return stopCamera
-  }, [showGallery, facingMode])
+    return stopCamera;
+  }, [showGallery, facingMode]);
 
   useEffect(() => {
-    loadPhotos()
-  }, [])
+    loadPhotos();
+  }, []);
 
   async function startCamera() {
     try {
-      setPermissionDenied(false)
+      setPermissionDenied(false);
       const mediaStream = await navigator.mediaDevices.getUserMedia({
         video: { facingMode },
         audio: false,
-      })
-      setStream(mediaStream)
-      if (videoRef.current) videoRef.current.srcObject = mediaStream
+      });
+      setStream(mediaStream);
+      if (videoRef.current) videoRef.current.srcObject = mediaStream;
     } catch (err: any) {
-      console.error("Camera access error:", err)
-      if (err.name === "NotAllowedError") setPermissionDenied(true)
+      console.error("Camera access error:", err);
+      if (err.name === "NotAllowedError") setPermissionDenied(true);
     }
   }
 
   function stopCamera() {
     if (stream) {
-      stream.getTracks().forEach((track) => track.stop())
+      stream.getTracks().forEach((track) => track.stop());
     }
-    setStream(null)
+    setStream(null);
   }
 
   async function loadPhotos() {
     try {
-      const { supabase } = await import("@/lib/supabase")
-      const { data, error } = await supabase.storage.from("photos-bucket").list("", {
-        limit: 100,
-        sortBy: { column: "created_at", order: "desc" },
-      })
+      const { supabase } = await import("@/lib/supabase");
+      const { data, error } = await supabase.storage
+        .from("photos-bucket")
+        .list("", {
+          limit: 100,
+          sortBy: { column: "created_at", order: "desc" },
+        });
 
       if (error) {
-        console.error("Supabase list error:", error)
-        return
+        console.error("Supabase list error:", error);
+        return;
       }
 
-      if (!data) return
+      if (!data) return;
 
       const photosList = data.map((file) => {
-        const { data: urlData } = supabase.storage.from("photos-bucket").getPublicUrl(file.name)
+        const { data: urlData } = supabase.storage
+          .from("photos-bucket")
+          .getPublicUrl(file.name);
         return {
           filename: file.name,
           url: urlData.publicUrl || "",
           created_at: file.created_at || "",
-        }
-      })
+        };
+      });
 
-      setPhotos(photosList)
+      setPhotos(photosList);
     } catch (error) {
-      console.error("Failed to load photos:", error)
+      console.error("Failed to load photos:", error);
     }
   }
 
   async function capturePhoto() {
-    if (!videoRef.current || !canvasRef.current) return
-    setIsCapturing(true)
-    setIsUploading(true)
+    if (!videoRef.current || !canvasRef.current) return;
+    setIsCapturing(true);
+    setIsUploading(true);
 
-    const video = videoRef.current
-    const canvas = canvasRef.current
-    const ctx = canvas.getContext("2d")
-    if (!ctx) return
+    const video = videoRef.current;
+    const canvas = canvasRef.current;
+    const ctx = canvas.getContext("2d");
+    if (!ctx) return;
 
-    canvas.width = video.videoWidth
-    canvas.height = video.videoHeight
-    ctx.drawImage(video, 0, 0, canvas.width, canvas.height)
+    canvas.width = video.videoWidth;
+    canvas.height = video.videoHeight;
+    ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
 
     canvas.toBlob(
       async (blob) => {
         if (!blob) {
-          setIsCapturing(false)
-          setIsUploading(false)
-          return
+          setIsCapturing(false);
+          setIsUploading(false);
+          return;
         }
 
-        const fileName = `photo_${Date.now()}.jpg`
-        const file = new File([blob], fileName, { type: "image/jpeg" })
+        const fileName = `photo_${Date.now()}.jpg`;
+        const file = new File([blob], fileName, { type: "image/jpeg" });
 
         try {
-          const { supabase } = await import("@/lib/supabase")
-          const { data, error } = await supabase.storage.from("photos-bucket").upload(fileName, file, {
-            cacheControl: "3600",
-            upsert: false,
-          })
+          const { supabase } = await import("@/lib/supabase");
+          const { data, error } = await supabase.storage
+            .from("photos-bucket")
+            .upload(fileName, file, {
+              cacheControl: "3600",
+              upsert: false,
+            });
 
           if (error) {
-            console.error("Supabase upload error:", error)
+            console.error("Supabase upload error:", error);
           } else {
-            const { data: urlData } = supabase.storage.from("photos-bucket").getPublicUrl(fileName)
-            const url = urlData.publicUrl
+            const { data: urlData } = supabase.storage
+              .from("photos-bucket")
+              .getPublicUrl(fileName);
+            const url = urlData.publicUrl;
             if (url) {
-              setPhotos((prev) => [{ filename: fileName, url, created_at: new Date().toISOString() }, ...prev])
+              setPhotos((prev) => [
+                {
+                  filename: fileName,
+                  url,
+                  created_at: new Date().toISOString(),
+                },
+                ...prev,
+              ]);
             }
           }
         } catch (err) {
-          console.error("Upload failed:", err)
+          console.error("Upload failed:", err);
         } finally {
-          setIsCapturing(false)
-          setIsUploading(false)
+          setIsCapturing(false);
+          setIsUploading(false);
         }
       },
       "image/jpeg",
-      0.8,
-    )
+      0.8
+    );
   }
 
   async function switchCamera() {
-    setFacingMode((current) => (current === "user" ? "environment" : "user"))
+    setFacingMode((current) => (current === "user" ? "environment" : "user"));
   }
 
   if (showGallery) {
     return (
       <div className="h-full w-full bg-black text-white flex flex-col">
         <div className="flex items-center justify-between p-4 bg-gray-900 flex-shrink-0">
-          <button onClick={() => setShowGallery(false)} className="text-blue-400">
+          <button
+            onClick={() => setShowGallery(false)}
+            className="text-blue-400"
+          >
             ← Camera
           </button>
           <h2 className="text-lg font-medium">Photos ({photos.length})</h2>
@@ -1274,7 +1478,7 @@ function CameraApp() {
           )}
         </div>
       </div>
-    )
+    );
   }
 
   return (
@@ -1283,12 +1487,20 @@ function CameraApp() {
         <div className="absolute inset-0 bg-black bg-opacity-90 flex flex-col items-center justify-center text-white p-6 z-20">
           <Camera className="w-16 h-16 mb-4" />
           <p className="text-lg mb-2">Camera access denied</p>
-          <p className="text-center text-sm">Please enable camera permissions in your browser settings.</p>
+          <p className="text-center text-sm">
+            Please enable camera permissions in your browser settings.
+          </p>
         </div>
       )}
 
       <div className="flex-1 relative">
-        <video ref={videoRef} autoPlay playsInline muted className="w-full h-full object-cover" />
+        <video
+          ref={videoRef}
+          autoPlay
+          playsInline
+          muted
+          className="w-full h-full object-cover"
+        />
         <canvas ref={canvasRef} className="hidden" />
       </div>
 
@@ -1296,8 +1508,8 @@ function CameraApp() {
         <div className="flex justify-between items-center">
           <button
             onClick={() => {
-              stopCamera()
-              setShowGallery(true)
+              stopCamera();
+              setShowGallery(true);
             }}
             className="flex flex-col items-center text-white"
           >
@@ -1309,12 +1521,14 @@ function CameraApp() {
 
           <button
             onClick={() => {
-              if (!isCapturing && !isUploading) capturePhoto()
+              if (!isCapturing && !isUploading) capturePhoto();
             }}
             disabled={isCapturing || isUploading || permissionDenied}
             className={cn(
               "w-20 h-20 rounded-full border-4 border-white flex items-center justify-center",
-              isCapturing || isUploading ? "bg-red-500" : "bg-white/30 hover:bg-white/40",
+              isCapturing || isUploading
+                ? "bg-red-500"
+                : "bg-white/30 hover:bg-white/40"
             )}
           >
             {isUploading ? (
@@ -1339,7 +1553,9 @@ function CameraApp() {
         </div>
 
         {(isUploading || isCapturing) && (
-          <div className="text-center text-white text-sm mt-4">{isCapturing ? "Capturing..." : "Saving photo..."}</div>
+          <div className="text-center text-white text-sm mt-4">
+            {isCapturing ? "Capturing..." : "Saving photo..."}
+          </div>
         )}
       </div>
 
@@ -1353,100 +1569,114 @@ function CameraApp() {
         </div>
       )}
     </div>
-  )
+  );
 }
 
 function NotesApp() {
-const [notes, setNotes] = useState<
-  Array<{ id: string; title: string; content: string; created_at: string; completed?: boolean; type: "notes" | "todos" }>
->([])
+  const [notes, setNotes] = useState<
+    Array<{
+      id: string;
+      title: string;
+      content: string;
+      created_at: string;
+      completed?: boolean;
+      type: "notes" | "todos";
+    }>
+  >([]);
 
-  const [showAddForm, setShowAddForm] = useState(false)
-  const [newTitle, setNewTitle] = useState("")
-  const [newContent, setNewContent] = useState("")
-  const [isSubmitting, setIsSubmitting] = useState(false)
-  const [searchTerm, setSearchTerm] = useState("")
-  const [viewMode, setViewMode] = useState<"notes" | "todos">("notes")
+  const [showAddForm, setShowAddForm] = useState(false);
+  const [newTitle, setNewTitle] = useState("");
+  const [newContent, setNewContent] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [viewMode, setViewMode] = useState<"notes" | "todos">("notes");
 
   useEffect(() => {
-    loadNotes()
-  }, [])
+    loadNotes();
+  }, []);
 
   const loadNotes = async () => {
     try {
-      const { redis } = await import("@/lib/redis")
-      const notesData = (await redis.hgetall("notes")) || {}
+      console.log("Loading notes..."); // Debug log
+      const { redis } = await import("@/lib/redis");
+      const notesData = (await redis.hgetall("notes")) || {};
+      console.log("Raw notes data from Redis:", notesData); // Debug log
+
       const notesList = Object.entries(notesData).map(([id, data]) => {
-        const parsed = JSON.parse(data as string)
-        return { id, ...parsed }
-      })
-      notesList.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
-      setNotes(notesList)
+        const parsed = JSON.parse(data as string);
+        return { id, ...parsed };
+      });
+
+      console.log("Processed notes list:", notesList); // Debug log
+      notesList.sort(
+        (a, b) =>
+          new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+      );
+      setNotes(notesList);
     } catch (error) {
-      console.error("Failed to load notes:", error)
+      console.error("Failed to load notes:", error);
     }
-  }
+  };
 
   const handleAddNote = async (e: React.FormEvent) => {
-    e.preventDefault()
-    if (!newTitle.trim()) return
+    e.preventDefault();
+    if (!newTitle.trim()) return;
 
-    setIsSubmitting(true)
+    setIsSubmitting(true);
     try {
-      const { redis } = await import("@/lib/redis")
-      const id = Date.now().toString()
-     const noteData = {
-  title: newTitle.trim(),
-  content: newContent.trim(),
-  created_at: new Date().toISOString(),
-  type: viewMode, 
-  completed: viewMode === "todos" ? false : undefined,
-}
+      const { redis } = await import("@/lib/redis");
+      const id = Date.now().toString();
+      const noteData = {
+        title: newTitle.trim(),
+        content: newContent.trim(),
+        created_at: new Date().toISOString(),
+        type: viewMode,
+        completed: viewMode === "todos" ? false : undefined,
+      };
 
-
-      await redis.hset("notes", { [id]: JSON.stringify(noteData) })
-      setNewTitle("")
-      setNewContent("")
-      setShowAddForm(false)
-      await loadNotes()
+      await redis.hset("notes", { [id]: JSON.stringify(noteData) });
+      setNewTitle("");
+      setNewContent("");
+      setShowAddForm(false);
+      await loadNotes();
     } catch (error) {
-      console.error("Failed to add note:", error)
+      console.error("Failed to add note:", error);
     } finally {
-      setIsSubmitting(false)
+      setIsSubmitting(false);
     }
-  }
+  };
 
   const handleDeleteNote = async (id: string) => {
     try {
-      const { redis } = await import("@/lib/redis")
-      await redis.hdel("notes", id)
-      await loadNotes()
+      const { redis } = await import("@/lib/redis");
+      await redis.hdel("notes", id);
+      await loadNotes();
     } catch (error) {
-      console.error("Failed to delete note:", error)
+      console.error("Failed to delete note:", error);
     }
-  }
+  };
 
   const handleToggleTodo = async (id: string) => {
     try {
-      const note = notes.find((n) => n.id === id)
-      if (!note) return
+      const note = notes.find((n) => n.id === id);
+      if (!note) return;
 
-      const { redis } = await import("@/lib/redis")
-      const updatedNote = { ...note, completed: !note.completed }
-      await redis.hset("notes", { [id]: JSON.stringify(updatedNote) })
-      await loadNotes()
+      const { redis } = await import("@/lib/redis");
+      const updatedNote = { ...note, completed: !note.completed };
+      await redis.hset("notes", { [id]: JSON.stringify(updatedNote) });
+      await loadNotes();
     } catch (error) {
-      console.error("Failed to toggle todo:", error)
+      console.error("Failed to toggle todo:", error);
     }
-  }
+  };
 
   const filteredNotes = notes.filter((note) => {
-  const matchesSearch =
-    note.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    note.content.toLowerCase().includes(searchTerm.toLowerCase())
-  const matchesMode = note.type === viewMode
-  return matchesSearch && matchesMode
-})
+    const matchesSearch =
+      note.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      note.content.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesMode = note.type === viewMode;
+    return matchesSearch && matchesMode;
+  });
 
   return (
     <div className="h-full bg-gray-900 text-white flex flex-col">
@@ -1457,7 +1687,9 @@ const [notes, setNotes] = useState<
               onClick={() => setViewMode("notes")}
               className={cn(
                 "px-3 py-1 rounded text-sm",
-                viewMode === "notes" ? "bg-blue-600 text-white" : "text-gray-300",
+                viewMode === "notes"
+                  ? "bg-blue-600 text-white"
+                  : "text-gray-300"
               )}
             >
               Notes
@@ -1466,13 +1698,18 @@ const [notes, setNotes] = useState<
               onClick={() => setViewMode("todos")}
               className={cn(
                 "px-3 py-1 rounded text-sm",
-                viewMode === "todos" ? "bg-blue-600 text-white" : "text-gray-300",
+                viewMode === "todos"
+                  ? "bg-blue-600 text-white"
+                  : "text-gray-300"
               )}
             >
               Todos
             </button>
           </div>
-          <button onClick={() => setShowAddForm(!showAddForm)} className="bg-blue-600 text-white p-2 rounded-full">
+          <button
+            onClick={() => setShowAddForm(!showAddForm)}
+            className="bg-blue-600 text-white p-2 rounded-full"
+          >
             {showAddForm ? "×" : "+"}
           </button>
         </div>
@@ -1497,7 +1734,9 @@ const [notes, setNotes] = useState<
               value={newTitle}
               onChange={(e) => setNewTitle(e.target.value)}
               className="w-full bg-gray-700 text-white px-3 py-2 rounded-md"
-              placeholder={viewMode === "notes" ? "Note title..." : "Todo item..."}
+              placeholder={
+                viewMode === "notes" ? "Note title..." : "Todo item..."
+              }
               required
             />
             {viewMode === "notes" && (
@@ -1508,8 +1747,14 @@ const [notes, setNotes] = useState<
                 placeholder="Note content..."
               />
             )}
-            <button type="submit" className="w-full bg-blue-600 text-white py-2 rounded-md" disabled={isSubmitting}>
-              {isSubmitting ? "Saving..." : `Add ${viewMode === "notes" ? "Note" : "Todo"}`}
+            <button
+              type="submit"
+              className="w-full bg-blue-600 text-white py-2 rounded-md"
+              disabled={isSubmitting}
+            >
+              {isSubmitting
+                ? "Saving..."
+                : `Add ${viewMode === "notes" ? "Note" : "Todo"}`}
             </button>
           </form>
         </div>
@@ -1520,7 +1765,10 @@ const [notes, setNotes] = useState<
           <div className="text-center text-gray-400 mt-8">
             <FileText className="w-16 h-16 mx-auto mb-4" />
             <p>No {viewMode} yet</p>
-            <p className="text-sm mt-2">Tap + to create your first {viewMode === "notes" ? "note" : "todo"}</p>
+            <p className="text-sm mt-2">
+              Tap + to create your first{" "}
+              {viewMode === "notes" ? "note" : "todo"}
+            </p>
           </div>
         ) : (
           <div className="space-y-3">
@@ -1534,24 +1782,43 @@ const [notes, setNotes] = useState<
                           onClick={() => handleToggleTodo(note.id)}
                           className={cn(
                             "w-5 h-5 rounded border-2 mr-3 flex items-center justify-center",
-                            note.completed ? "bg-green-600 border-green-600" : "border-gray-400",
+                            note.completed
+                              ? "bg-green-600 border-green-600"
+                              : "border-gray-400"
                           )}
                         >
-                          {note.completed && <span className="text-white text-xs">✓</span>}
+                          {note.completed && (
+                            <span className="text-white text-xs">✓</span>
+                          )}
                         </button>
                       </div>
                     )}
-                    <h3 className={cn("font-medium mb-1", note.completed ? "line-through text-gray-500" : "")}>
+                    <h3
+                      className={cn(
+                        "font-medium mb-1",
+                        note.completed ? "line-through text-gray-500" : ""
+                      )}
+                    >
                       {note.title}
                     </h3>
                     {note.content && (
-                      <p className={cn("text-sm text-gray-400", note.completed ? "line-through" : "")}>
+                      <p
+                        className={cn(
+                          "text-sm text-gray-400",
+                          note.completed ? "line-through" : ""
+                        )}
+                      >
                         {note.content}
                       </p>
                     )}
-                    <p className="text-xs text-gray-500 mt-2">{new Date(note.created_at).toLocaleDateString()}</p>
+                    <p className="text-xs text-gray-500 mt-2">
+                      {new Date(note.created_at).toLocaleDateString()}
+                    </p>
                   </div>
-                  <button onClick={() => handleDeleteNote(note.id)} className="text-red-500 p-1 ml-2">
+                  <button
+                    onClick={() => handleDeleteNote(note.id)}
+                    className="text-red-500 p-1 ml-2"
+                  >
                     ×
                   </button>
                 </div>
@@ -1561,101 +1828,110 @@ const [notes, setNotes] = useState<
         )}
       </div>
     </div>
-  )
+  );
 }
 
 function BrowserApp() {
-  const [url, setUrl] = useState("")
-  const [currentUrl, setCurrentUrl] = useState("")
-  const [isLoading, setIsLoading] = useState(false)
-  const [canGoBack, setCanGoBack] = useState(false)
-  const [canGoForward, setCanGoForward] = useState(false)
-  const [history, setHistory] = useState<string[]>([])
-  const [historyIndex, setHistoryIndex] = useState(-1)
-  const iframeRef = useRef<HTMLIFrameElement>(null)
+  const [url, setUrl] = useState("");
+  const [currentUrl, setCurrentUrl] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+  const [canGoBack, setCanGoBack] = useState(false);
+  const [canGoForward, setCanGoForward] = useState(false);
+  const [history, setHistory] = useState<string[]>([]);
+  const [historyIndex, setHistoryIndex] = useState(-1);
+  const iframeRef = useRef<HTMLIFrameElement>(null);
 
   const quickLinks = [
     { name: "Google", url: "https://www.google.com/search?igu=1" },
     { name: "Meta Mirror", url: "https://meta-mirror.vercel.app" },
     { name: "NeoMoji", url: "https://neomoji-beta.netlify.app" },
     { name: "NES", url: "https://tyson.jessejesse.com" },
-  ]
+  ];
 
   const formatUrl = (inputUrl: string) => {
-    if (!inputUrl) return ""
+    if (!inputUrl) return "";
     if (!inputUrl.includes(".") || inputUrl.includes(" ")) {
-      return `https://www.google.com/search?q=${encodeURIComponent(inputUrl)}`
+      return `https://www.google.com/search?q=${encodeURIComponent(inputUrl)}`;
     }
     if (!inputUrl.startsWith("http://") && !inputUrl.startsWith("https://")) {
-      return `https://${inputUrl}`
+      return `https://${inputUrl}`;
     }
-    return inputUrl
-  }
+    return inputUrl;
+  };
 
   const loadUrl = (targetUrl: string) => {
-    const formattedUrl = formatUrl(targetUrl)
-    if (!formattedUrl) return
+    const formattedUrl = formatUrl(targetUrl);
+    if (!formattedUrl) return;
 
-    setIsLoading(true)
-    setCurrentUrl(formattedUrl)
+    setIsLoading(true);
+    setCurrentUrl(formattedUrl);
 
-    const newHistory = history.slice(0, historyIndex + 1)
-    newHistory.push(formattedUrl)
-    setHistory(newHistory)
-    setHistoryIndex(newHistory.length - 1)
+    const newHistory = history.slice(0, historyIndex + 1);
+    newHistory.push(formattedUrl);
+    setHistory(newHistory);
+    setHistoryIndex(newHistory.length - 1);
 
-    setCanGoBack(newHistory.length > 1)
-    setCanGoForward(false)
-  }
+    setCanGoBack(newHistory.length > 1);
+    setCanGoForward(false);
+  };
 
   const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault()
-    loadUrl(url)
-  }
+    e.preventDefault();
+    loadUrl(url);
+  };
 
   const goBack = () => {
     if (canGoBack && historyIndex > 0) {
-      const newIndex = historyIndex - 1
-      setHistoryIndex(newIndex)
-      setCurrentUrl(history[newIndex])
-      setCanGoBack(newIndex > 0)
-      setCanGoForward(true)
+      const newIndex = historyIndex - 1;
+      setHistoryIndex(newIndex);
+      setCurrentUrl(history[newIndex]);
+      setCanGoBack(newIndex > 0);
+      setCanGoForward(true);
     }
-  }
+  };
 
   const goForward = () => {
     if (canGoForward && historyIndex < history.length - 1) {
-      const newIndex = historyIndex + 1
-      setHistoryIndex(newIndex)
-      setCurrentUrl(history[newIndex])
-      setCanGoForward(newIndex < history.length - 1)
-      setCanGoBack(true)
+      const newIndex = historyIndex + 1;
+      setHistoryIndex(newIndex);
+      setCurrentUrl(history[newIndex]);
+      setCanGoForward(newIndex < history.length - 1);
+      setCanGoBack(true);
     }
-  }
+  };
 
   const refresh = () => {
     if (currentUrl && iframeRef.current) {
-      setIsLoading(true)
-      iframeRef.current.src = currentUrl
+      setIsLoading(true);
+      iframeRef.current.src = currentUrl;
     }
-  }
+  };
 
   const goHome = () => {
-    setCurrentUrl("")
-    setIsLoading(false)
-  }
+    setCurrentUrl("");
+    setIsLoading(false);
+  };
 
   return (
     <div className="h-full bg-gray-200 flex flex-col">
       <div className="bg-white border-b border-gray-200 p-3">
         <div className="flex items-center gap-2 mb-3">
-          <button onClick={goHome} className="p-2 rounded-full bg-gray-100 hover:bg-gray-200" title="Home">
+          <button
+            onClick={goHome}
+            className="p-2 rounded-full bg-gray-100 hover:bg-gray-200"
+            title="Home"
+          >
             🏛️
           </button>
           <button
             onClick={goBack}
             disabled={!canGoBack}
-            className={cn("p-2 rounded-full", canGoBack ? "bg-gray-100 hover:bg-gray-200" : "bg-gray-50 text-gray-400")}
+            className={cn(
+              "p-2 rounded-full",
+              canGoBack
+                ? "bg-gray-100 hover:bg-gray-200"
+                : "bg-gray-50 text-gray-400"
+            )}
           >
             ←
           </button>
@@ -1664,12 +1940,17 @@ function BrowserApp() {
             disabled={!canGoForward}
             className={cn(
               "p-2 rounded-full",
-              canGoForward ? "bg-gray-100 hover:bg-gray-200" : "bg-gray-50 text-gray-400",
+              canGoForward
+                ? "bg-gray-100 hover:bg-gray-200"
+                : "bg-gray-50 text-gray-400"
             )}
           >
             →
           </button>
-          <button onClick={refresh} className="p-2 rounded-full bg-gray-100 hover:bg-gray-200">
+          <button
+            onClick={refresh}
+            className="p-2 rounded-full bg-gray-100 hover:bg-gray-200"
+          >
             ↻
           </button>
         </div>
@@ -1689,7 +1970,10 @@ function BrowserApp() {
               </div>
             )}
           </div>
-          <button type="submit" className="px-4 py-2 bg-blue-500 text-white rounded-full text-sm hover:bg-blue-600">
+          <button
+            type="submit"
+            className="px-4 py-2 bg-blue-500 text-white rounded-full text-sm hover:bg-blue-600"
+          >
             Go
           </button>
         </form>
@@ -1709,25 +1993,34 @@ function BrowserApp() {
           <div className="h-full bg-white p-6">
             <div className="text-center mb-6">
               <Globe className="w-16 h-16 mx-auto mb-4 text-gray-400" />
-              <h2 className="text-2xl font-bold text-gray-800 mb-2">Random Web Browser</h2>
+              <h2 className="text-2xl font-bold text-gray-800 mb-2">
+                Random Web Browser
+              </h2>
               <p className="text-center text-emerald-700 text-sm">¯\_(ツ)_/¯</p>
             </div>
 
             <div className="mb-6">
-              <h3 className="text-lg font-semibold text-gray-800 mb-3">Most Visited</h3>
+              <h3 className="text-lg font-semibold text-gray-800 mb-3">
+                Most Visited
+              </h3>
               <div className="grid grid-cols-2 gap-2">
                 {quickLinks.map((link, index) => (
                   <button
                     key={index}
                     onClick={() => {
-                      setUrl(link.url)
-                      loadUrl(link.url)
+                      setUrl(link.url);
+                      loadUrl(link.url);
                     }}
                     className={cn(
                       "p-3 rounded-lg text-white text-sm font-semibold flex items-center justify-center transition-all hover:scale-[1.02]",
-                      ["bg-blue-600", "bg-red-500", "bg-gray-800", "bg-purple-600", "bg-green-600", "bg-pink-600"][
-                        index % 6
-                      ],
+                      [
+                        "bg-blue-600",
+                        "bg-red-500",
+                        "bg-gray-800",
+                        "bg-purple-600",
+                        "bg-green-600",
+                        "bg-pink-600",
+                      ][index % 6]
                     )}
                   >
                     {link.name}
@@ -1743,67 +2036,69 @@ function BrowserApp() {
         )}
       </div>
     </div>
-  )
+  );
 }
 
 function CalculatorApp() {
-  const [display, setDisplay] = useState("0")
-  const [operation, setOperation] = useState<string | null>(null)
-  const [prevValue, setPrevValue] = useState<number | null>(null)
-  const [resetDisplay, setResetDisplay] = useState(false)
+  const [display, setDisplay] = useState("0");
+  const [operation, setOperation] = useState<string | null>(null);
+  const [prevValue, setPrevValue] = useState<number | null>(null);
+  const [resetDisplay, setResetDisplay] = useState(false);
 
   const handleNumberClick = (num: string) => {
     if (display === "0" || resetDisplay) {
-      setDisplay(num)
-      setResetDisplay(false)
+      setDisplay(num);
+      setResetDisplay(false);
     } else {
-      setDisplay(display + num)
+      setDisplay(display + num);
     }
-  }
+  };
 
   const handleOperationClick = (op: string) => {
-    setOperation(op)
-    setPrevValue(Number.parseFloat(display))
-    setResetDisplay(true)
-  }
+    setOperation(op);
+    setPrevValue(Number.parseFloat(display));
+    setResetDisplay(true);
+  };
 
   const handleEqualsClick = () => {
     if (operation && prevValue !== null) {
-      let result = 0
-      const currentValue = Number.parseFloat(display)
+      let result = 0;
+      const currentValue = Number.parseFloat(display);
 
       switch (operation) {
         case "+":
-          result = prevValue + currentValue
-          break
+          result = prevValue + currentValue;
+          break;
         case "-":
-          result = prevValue - currentValue
-          break
+          result = prevValue - currentValue;
+          break;
         case "×":
-          result = prevValue * currentValue
-          break
+          result = prevValue * currentValue;
+          break;
         case "÷":
-          result = prevValue / currentValue
-          break
+          result = prevValue / currentValue;
+          break;
       }
 
-      setDisplay(result.toString())
-      setOperation(null)
-      setPrevValue(null)
-      setResetDisplay(true)
+      setDisplay(result.toString());
+      setOperation(null);
+      setPrevValue(null);
+      setResetDisplay(true);
     }
-  }
+  };
 
   const handleClearClick = () => {
-    setDisplay("0")
-    setOperation(null)
-    setPrevValue(null)
-    setResetDisplay(false)
-  }
+    setDisplay("0");
+    setOperation(null);
+    setPrevValue(null);
+    setResetDisplay(false);
+  };
 
   return (
     <div className="flex flex-col h-full bg-black text-white">
-      <div className="h-16 flex items-end justify-end px-4 text-4xl font-light">{display}</div>
+      <div className="h-16 flex items-end justify-end px-4 text-4xl font-light">
+        {display}
+      </div>
 
       <div className="grid grid-cols-4 gap-x-1 gap-y-1 p-2 pb-4">
         <CalcButton onClick={handleClearClick} className="bg-gray-500">
@@ -1815,32 +2110,47 @@ function CalculatorApp() {
         <CalcButton onClick={() => {}} className="bg-gray-500">
           %
         </CalcButton>
-        <CalcButton onClick={() => handleOperationClick("÷")} className="bg-orange-500">
+        <CalcButton
+          onClick={() => handleOperationClick("÷")}
+          className="bg-orange-500"
+        >
           ÷
         </CalcButton>
 
         <CalcButton onClick={() => handleNumberClick("7")}>7</CalcButton>
         <CalcButton onClick={() => handleNumberClick("8")}>8</CalcButton>
         <CalcButton onClick={() => handleNumberClick("9")}>9</CalcButton>
-        <CalcButton onClick={() => handleOperationClick("×")} className="bg-orange-500">
+        <CalcButton
+          onClick={() => handleOperationClick("×")}
+          className="bg-orange-500"
+        >
           ×
         </CalcButton>
 
         <CalcButton onClick={() => handleNumberClick("4")}>4</CalcButton>
         <CalcButton onClick={() => handleNumberClick("5")}>5</CalcButton>
         <CalcButton onClick={() => handleNumberClick("6")}>6</CalcButton>
-        <CalcButton onClick={() => handleOperationClick("-")} className="bg-orange-500">
+        <CalcButton
+          onClick={() => handleOperationClick("-")}
+          className="bg-orange-500"
+        >
           -
         </CalcButton>
 
         <CalcButton onClick={() => handleNumberClick("1")}>1</CalcButton>
         <CalcButton onClick={() => handleNumberClick("2")}>2</CalcButton>
         <CalcButton onClick={() => handleNumberClick("3")}>3</CalcButton>
-        <CalcButton onClick={() => handleOperationClick("+")} className="bg-orange-500">
+        <CalcButton
+          onClick={() => handleOperationClick("+")}
+          className="bg-orange-500"
+        >
           +
         </CalcButton>
 
-        <CalcButton onClick={() => handleNumberClick("0")} className="col-span-2">
+        <CalcButton
+          onClick={() => handleNumberClick("0")}
+          className="col-span-2"
+        >
           0
         </CalcButton>
         <CalcButton onClick={() => handleNumberClick(".")}>.</CalcButton>
@@ -1849,7 +2159,7 @@ function CalculatorApp() {
         </CalcButton>
       </div>
     </div>
-  )
+  );
 }
 
 function CalcButton({
@@ -1857,27 +2167,32 @@ function CalcButton({
   onClick,
   className,
 }: {
-  children: React.ReactNode
-  onClick: () => void
-  className?: string
+  children: React.ReactNode;
+  onClick: () => void;
+  className?: string;
 }) {
   return (
     <button
       onClick={onClick}
-      className={cn("h-9 rounded-full flex items-center justify-center bg-gray-800 font-medium", className)}
+      className={cn(
+        "h-9 rounded-full flex items-center justify-center bg-gray-800 font-medium",
+        className
+      )}
     >
       {children}
     </button>
-  )
+  );
 }
 
 function CalendarApp() {
   return (
     <div className="flex flex-col h-full bg-gray-900 text-white">
-      <div className="h-16 flex items-center justify-center text-2xl font-light">Calendar</div>
+      <div className="h-16 flex items-center justify-center text-2xl font-light">
+        Calendar
+      </div>
       <div className="flex-1 flex items-center justify-center">
         <p className="text-gray-400">Coming soon...</p>
       </div>
     </div>
-  )
+  );
 }
