@@ -26,7 +26,7 @@ import { getContacts } from "@/lib/redis"
 import { saveEvent, getEvents } from "@/lib/redis"
 import { type PhoneSettings, defaultSettings, loadSettings, saveSettings } from "@/lib/settings"
 import { Play, Pause, SkipBack, SkipForward } from "lucide-react"
-import YouTubePlayer from "./components/YouTubePlayer"
+import YouTubePlayer from "/YouTubePlayer"
 
 
 export default function SmartphoneUI() {
@@ -724,8 +724,23 @@ function PhoneApp({ contacts }: { contacts: Array<{ name: string; phone: string 
   )
 }
 
-// Music App
-const sampleTracks = [
+declare global {
+  interface Window {
+    YT: any
+    onYouTubeIframeAPIReady: () => void
+  }
+}
+
+interface Track {
+  id: number
+  title: string
+  artist: string
+  url: string
+  image: string
+  videoID?: string
+}
+
+const sampleTracks: Track[] = [
   {
     id: 1,
     title: "You Only Live Once",
@@ -738,7 +753,8 @@ const sampleTracks = [
     title: "I was running through the six",
     artist: "Drake",
     url: "https://firebasestorage.googleapis.com/v0/b/jessejessexyz.appspot.com/o/mp3%2F06.%20I%20was%20running%20through%20the%20six%20with%20my%20woes%20-%20drake%20%5BjqScSp5l-AQ%5D.mp3?alt=media&token=63af8aa1-5494-4edf-b783-ac7d6077448e",
-    image: "https://i.ytimg.com/vi/jqScSp5l-AQ/hqdefault.jpg?sqp=-oaymwEmCOADEOgC8quKqQMa8AEB-AHeA4AC4AOKAgwIABABGHIgUig2MA8=&rs=AOn4CLB5hCc-GIMvrdn1RdxP477thq4SOQ",
+    image: "https://i.ytimg.com/vi/jqScSp5l-AQ/hqdefault.jpg",
+    videoId: "jqScSp5l-AQ",
   },
   {
     id: 3,
@@ -746,54 +762,98 @@ const sampleTracks = [
     artist: "Lane 8",
     url: "https://firebasestorage.googleapis.com/v0/b/jessejessexyz.appspot.com/o/mp3%2F14.%20Lane%208%20-%20Undercover%20feat.%20Matthew%20Dear%20%5BHSydHbGdIcY%5D.mp3?alt=media&token=dbc5121c-3037-4c4c-b366-68af0c1b1092",
     image: "https://i.ytimg.com/vi/PlJdteHjfoE/maxresdefault.jpg",
+    videoId: "HSydHbGdIcY",
   },
   {
     id: 4,
     title: "King of Everything",
     artist: "Wiz Khalifa",
     url: "https://firebasestorage.googleapis.com/v0/b/jessejessexyz.appspot.com/o/mp3%2F33.%20Wiz%20Khalifa%20-%20King%20of%20Everything%20%5BOfficial%20Video%5D%20%5B8d0cm_hcQes%5D.mp3?alt=media&token=d9aefd07-31f8-40d3-ba07-ab86c618c870",
-    image: "https://upload.wikimedia.org/wikipedia/en/1/19/Wiz_Khalifa_King_Of_Everything.jpg"
+    image: "https://upload.wikimedia.org/wikipedia/en/1/19/Wiz_Khalifa_King_Of_Everything.jpg",
+    videoId: "8d0cm_hcQes",
   },
-];
+]
 
-function MusicApp() {
-  const [currentTrackIndex, setCurrentTrackIndex] = useState(0);
-  const [isPlaying, setIsPlaying] = useState(false);
-  const audioRef = useRef<HTMLAudioElement | null>(null);
+function YouTubePlayer({ videoId }: { videoId: string }) {
+  const playerRef = useRef<HTMLDivElement>(null)
+  const [player, setPlayer] = useState<any>(null)
+
+  useEffect(() => {
+    if (!videoId) return
+
+    if (!window.YT) {
+      const tag = document.createElement("script")
+      tag.src = "https://www.youtube.com/iframe_api"
+      document.body.appendChild(tag)
+      window.onYouTubeIframeAPIReady = loadPlayer
+    } else {
+      loadPlayer()
+    }
+
+    function loadPlayer() {
+      if (!playerRef.current) return
+
+      const yt = new window.YT.Player(playerRef.current, {
+        height: "200",
+        width: "320",
+        videoId,
+        playerVars: {
+          autoplay: 0,
+          controls: 1,
+          modestbranding: 1,
+        },
+        events: {
+          onReady: (event: any) => {
+            setPlayer(event.target)
+          },
+        },
+      })
+    }
+
+    return () => {
+      player?.destroy()
+    }
+  }, [videoId])
+
+  return <div ref={playerRef} className="w-full max-w-sm aspect-video rounded overflow-hidden mb-4" />
+}
+
+export default function MusicApp() {
+  const [currentTrackIndex, setCurrentTrackIndex] = useState(0)
+  const [isPlaying, setIsPlaying] = useState(false)
+  const audioRef = useRef<HTMLAudioElement | null>(null)
+
+  const currentTrack = sampleTracks[currentTrackIndex]
 
   useEffect(() => {
     if (audioRef.current) {
-      if (isPlaying) {
-        audioRef.current.play();
-      } else {
-        audioRef.current.pause();
-      }
+      isPlaying ? audioRef.current.play() : audioRef.current.pause()
     }
-  }, [isPlaying, currentTrackIndex]);
+  }, [isPlaying, currentTrackIndex])
 
-  const playPauseToggle = () => setIsPlaying(!isPlaying);
+  const playPauseToggle = () => setIsPlaying(!isPlaying)
 
   const playPrev = () => {
-    setCurrentTrackIndex((idx) => (idx === 0 ? sampleTracks.length - 1 : idx - 1));
-    setIsPlaying(true);
-  };
+    setCurrentTrackIndex((idx) => (idx === 0 ? sampleTracks.length - 1 : idx - 1))
+    setIsPlaying(true)
+  }
 
   const playNext = () => {
-    setCurrentTrackIndex((idx) => (idx === sampleTracks.length - 1 ? 0 : idx + 1));
-    setIsPlaying(true);
-  };
-
-  const currentTrack = sampleTracks[currentTrackIndex];
+    setCurrentTrackIndex((idx) => (idx === sampleTracks.length - 1 ? 0 : idx + 1))
+    setIsPlaying(true)
+  }
 
   return (
     <div className="h-full bg-gray-900 text-white flex flex-col items-center justify-center p-4">
-      
-      <YouTubePlayer videoId="pT68FS3YbQ4" />
       <audio ref={audioRef} src={currentTrack.url} />
+
+      {currentTrack.videoId && (
+        <YouTubePlayer videoId={currentTrack.videoId} />
+      )}
 
       <img
         src={currentTrack.image}
-        alt={`${currentTrack.title} cover`}
+        alt={currentTrack.title}
         className="w-40 h-40 rounded-lg object-cover mb-4 shadow-lg"
       />
 
@@ -803,33 +863,25 @@ function MusicApp() {
       </div>
 
       <div className="flex items-center gap-8">
-        <button
-          onClick={playPrev}
-          aria-label="Previous Track"
-          className="p-3 rounded-full hover:bg-gray-800"
-        >
+        <button onClick={playPrev} className="p-3 rounded-full hover:bg-gray-800">
           <SkipBack className="w-8 h-8" />
         </button>
 
         <button
           onClick={playPauseToggle}
-          aria-label={isPlaying ? "Pause" : "Play"}
           className="p-4 rounded-full bg-white text-black flex items-center justify-center"
         >
           {isPlaying ? <Pause className="w-8 h-8" /> : <Play className="w-8 h-8" />}
         </button>
 
-        <button
-          onClick={playNext}
-          aria-label="Next Track"
-          className="p-3 rounded-full hover:bg-gray-800"
-        >
+        <button onClick={playNext} className="p-3 rounded-full hover:bg-gray-800">
           <SkipForward className="w-8 h-8" />
         </button>
       </div>
     </div>
-  );
+  )
 }
+
 
 
 // Contacts App
