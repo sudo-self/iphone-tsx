@@ -20,12 +20,12 @@ import {
   Globe,
   Settings,
   Music,
-  Maps,
 } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { getContacts } from "@/lib/redis"
 import { saveEvent, getEvents } from "@/lib/redis"
 import { type PhoneSettings, defaultSettings, loadSettings, saveSettings } from "@/lib/settings"
+import { Map as MapIcon } from "lucide-react";
 
 export default function SmartphoneUI() {
   const [isLocked, setIsLocked] = useState(true)
@@ -287,12 +287,12 @@ useEffect(() => {
                      onClick={() => openApp("Music")}
                      iconStyle={getAppIconStyle()}
                      />
-                     <AppIcon
-                     name="Maps"
-                     icon={<Maps />}
-                     onClick={() => openApp("Maps")}
-                     iconStyle={getAppIconStyle()}
-                     />
+                    <AppIcon
+                    name="Maps"
+                    icon={<MapIcon />} 
+                    onClick={() => openApp("Maps")}
+                    iconStyle={getAppIconStyle()}
+                    />
                   </div>
                 </div>
               )}
