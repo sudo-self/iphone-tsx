@@ -541,8 +541,8 @@ function SettingsApp({
 
   if (activeSection === "general") {
     return (
-      <div className="h-full bg-gray-900 text-white flex flex-col overflow-y-auto">
-        <div className="flex items-center mb-6 px-4 pt-4">
+      <div className="h-full bg-gray-900 text-white flex flex-col">
+        <div className="flex items-center mb-6 px-4 pt-4 flex-shrink-0">
           <button onClick={() => setActiveSection(null)} className="text-blue-400 mr-4">
             ← Back
           </button>
@@ -593,8 +593,8 @@ function SettingsApp({
 
   if (activeSection === "about") {
     return (
-      <div className="h-full bg-gray-900 text-white flex flex-col overflow-y-auto">
-        <div className="flex items-center mb-6 px-4 pt-4">
+      <div className="h-full bg-gray-900 text-white flex flex-col">
+        <div className="flex items-center mb-6 px-4 pt-4 flex-shrink-0">
           <button onClick={() => setActiveSection(null)} className="text-blue-400 mr-4">
             ← Back
           </button>
@@ -640,8 +640,8 @@ function SettingsApp({
   }
 
   return (
-    <div className="h-full bg-gray-900 text-white flex flex-col overflow-y-auto">
-      <div className="px-4 pt-4 pb-2">
+    <div className="h-full bg-gray-900 text-white flex flex-col">
+      <div className="px-4 pt-4 pb-2 flex-shrink-0">
         <h2 className="text-2xl font-bold">Settings</h2>
       </div>
 
@@ -1053,14 +1053,14 @@ function MapsApp({ setActiveApp }: { setActiveApp: (app: string | null) => void 
 
   return (
     <div className="h-full flex flex-col bg-gray-900 text-white">
-      <div className="flex items-center p-4 bg-gray-800">
+      <div className="flex items-center p-4 bg-gray-800 flex-shrink-0">
         <button onClick={() => setActiveApp(null)} className="text-blue-400 mr-4">
           ← Back
         </button>
         <h2 className="text-xl font-bold">Maps</h2>
       </div>
 
-      <div className="p-4">
+      <div className="p-4 flex-shrink-0">
         <div className="flex items-center bg-gray-800 rounded-full px-4 py-2 mb-4">
           <Search className="w-5 h-5 text-gray-400 mr-2" />
           <input
@@ -1073,7 +1073,7 @@ function MapsApp({ setActiveApp }: { setActiveApp: (app: string | null) => void 
         </div>
       </div>
 
-      <div className="flex-1 px-4 pb-4">
+      <div className="flex-1 overflow-y-auto px-4 pb-4">
         <div className="bg-gray-800 rounded-lg p-6 mb-4 text-center">
           <MapIcon className="w-16 h-16 text-blue-400 mx-auto mb-4" />
           <h3 className="text-xl font-bold mb-2">{selectedLocation}</h3>
