@@ -26,7 +26,6 @@ import { getContacts } from "@/lib/redis"
 import { saveEvent, getEvents } from "@/lib/redis"
 import { type PhoneSettings, defaultSettings, loadSettings, saveSettings } from "@/lib/settings"
 import { SkipBack, SkipForward } from "lucide-react"
-import MusicApp from "../components/MusicApp";
 
 
 export default function SmartphoneUI() {
@@ -726,16 +725,16 @@ function PhoneApp({ contacts }: { contacts: Array<{ name: string; phone: string 
 
 declare global {
   interface Window {
-    YT: any
-    onYouTubeIframeAPIReady: () => void
+    YT: any;
+    onYouTubeIframeAPIReady: () => void;
   }
 }
 
 interface Track {
-  id: number
-  title: string
-  artist: string
-  videoID: string
+  id: number;
+  title: string;
+  artist: string;
+  videoId: string; // keep this camelCase for clarity & consistency
 }
 
 const sampleTracks: Track[] = [
@@ -743,86 +742,159 @@ const sampleTracks: Track[] = [
     id: 1,
     title: "You Only Live Once",
     artist: "The Strokes",
-    videoID: "pT68FS3YbQ4",
+    videoId: "pT68FS3YbQ4",
   },
   {
     id: 2,
     title: "I was running through the six",
     artist: "Drake",
-    videoID: "jqScSp5l-AQ",
+    videoId: "jqScSp5l-AQ",
   },
   {
     id: 3,
     title: "Undercover",
     artist: "Lane 8",
-    videoID: "HSydHbGdIcY",
+    videoId: "HSydHbGdIcY",
   },
   {
     id: 4,
     title: "King of Everything",
     artist: "Wiz Khalifa",
-    videoID: "8d0cm_hcQes",
+    videoId: "8d0cm_hcQes",
   },
-]
+];
 
-function YouTubeMusicPlayer() {
-  const [currentIndex, setCurrentIndex] = useState(0)
-  const playerRef = useRef<HTMLDivElement>(null)
-  const ytPlayer = useRef<any>(null)
+ function MusicApp() {
+  const playerRef = useRef<HTMLDivElement>(null);
+  const ytPlayer = useRef<any>(null);
 
-  const currentTrack = sampleTracks[currentIndex]
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const [isReady, setIsReady] = useState(false);
+  const [isPlaying, setIsPlaying] = useState(false);
+  const [volume, setVolume] = useState(50);
+  const [progress, setProgress] = useState(0);
+  const [duration, setDuration] = useState(0);
+
+  const currentTrack = sampleTracks[currentIndex];
+
 
   useEffect(() => {
-    const tag = document.createElement("script")
-    tag.src = "https://www.youtube.com/iframe_api"
-    document.body.appendChild(tag)
+    if (!(window as any).YT) {
+      const tag = document.createElement("script");
+      tag.src = "https://www.youtube.com/iframe_api";
+      document.body.appendChild(tag);
+    }
 
     window.onYouTubeIframeAPIReady = () => {
       ytPlayer.current = new window.YT.Player(playerRef.current, {
         height: "360",
         width: "640",
-        videoId: currentTrack.videoID,
+        videoId: currentTrack.videoId,
+        playerVars: { autoplay: 0, controls: 0 },
         events: {
-          onReady: (event: any) => event.target.playVideo(),
+          onReady: (event: any) => {
+            setIsReady(true);
+            ytPlayer.current.setVolume(volume);
+            setDuration(ytPlayer.current.getDuration());
+          },
+          onStateChange: (e: any) => {
+            // Video ended: play next track
+            if (e.data === window.YT.PlayerState.ENDED) {
+              playNext();
+            }
+          },
         },
-      })
-    }
+      });
+    };
+  }, []);
 
-    return () => {
-      if (ytPlayer.current) ytPlayer.current.destroy()
-    }
-  }, [])
-
+  // When currentIndex changes, cue new video if player ready
   useEffect(() => {
-    if (ytPlayer.current?.cueVideoById) {
-      ytPlayer.current.cueVideoById(currentTrack.videoID)
-      ytPlayer.current.playVideo()
+    if (ytPlayer.current && isReady) {
+      ytPlayer.current.loadVideoById(currentTrack.videoId);
+      setIsPlaying(true);
     }
-  }, [currentIndex])
+  }, [currentIndex, isReady]);
 
-  const playPrev = () =>
-    setCurrentIndex((prev) => (prev === 0 ? sampleTracks.length - 1 : prev - 1))
+  // Play/pause control
+  useEffect(() => {
+    if (!ytPlayer.current) return;
+    isPlaying ? ytPlayer.current.playVideo() : ytPlayer.current.pauseVideo();
+  }, [isPlaying]);
 
-  const playNext = () =>
-    setCurrentIndex((prev) => (prev === sampleTracks.length - 1 ? 0 : prev + 1))
+  // Volume control
+  useEffect(() => {
+    if (ytPlayer.current) ytPlayer.current.setVolume(volume);
+  }, [volume]);
+
+  // Progress updater every second
+  useEffect(() => {
+    const interval = setInterval(() => {
+      if (ytPlayer.current && ytPlayer.current.getCurrentTime) {
+        setProgress(ytPlayer.current.getCurrentTime());
+        setDuration(ytPlayer.current.getDuration());
+      }
+    }, 1000);
+    return () => clearInterval(interval);
+  }, []);
+
+  const playPrev = () => {
+    setCurrentIndex((i) => (i === 0 ? sampleTracks.length - 1 : i - 1));
+  };
+
+  const playNext = () => {
+    setCurrentIndex((i) => (i === sampleTracks.length - 1 ? 0 : i + 1));
+  };
+
+  const seekTo = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const time = Number(e.target.value);
+    setProgress(time);
+    if (ytPlayer.current) ytPlayer.current.seekTo(time, true);
+  };
 
   return (
-    <div className="h-full bg-black text-white flex flex-col items-center justify-center p-4">
-      <h2 className="text-xl font-semibold mb-1">{currentTrack.title}</h2>
-      <p className="text-gray-400 mb-4">{currentTrack.artist}</p>
+    <div className="bg-black text-white min-h-screen flex flex-col items-center justify-center p-6 space-y-6">
+      <div ref={playerRef} />
 
-      <div ref={playerRef} className="mb-6 w-full max-w-[640px] aspect-video" />
+      <div className="text-center">
+        <h2 className="text-2xl font-bold">{currentTrack.title}</h2>
+        <p className="text-gray-400">{currentTrack.artist}</p>
+      </div>
+
+      <input
+        type="range"
+        min={0}
+        max={duration}
+        value={progress}
+        onChange={seekTo}
+        className="w-full max-w-md"
+      />
 
       <div className="flex items-center gap-8">
-        <button onClick={playPrev} className="p-3 rounded-full hover:bg-gray-800">
+        <button onClick={playPrev}>
           <SkipBack className="w-8 h-8" />
         </button>
-        <button onClick={playNext} className="p-3 rounded-full hover:bg-gray-800">
+        <button
+          onClick={() => setIsPlaying((prev) => !prev)}
+          className="px-6 py-3 bg-white text-black rounded-full text-lg"
+        >
+          {isPlaying ? "Pause" : "Play"}
+        </button>
+        <button onClick={playNext}>
           <SkipForward className="w-8 h-8" />
         </button>
       </div>
+
+      <input
+        type="range"
+        min={0}
+        max={100}
+        value={volume}
+        onChange={(e) => setVolume(Number(e.target.value))}
+        className="w-full max-w-md"
+      />
     </div>
-  )
+  );
 }
 
 
