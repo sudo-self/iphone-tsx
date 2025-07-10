@@ -729,26 +729,31 @@ const sampleTracks = [
     title: "You Only Live Once",
     artist: "The Strokes",
     url: "https://firebasestorage.googleapis.com/v0/b/jessejessexyz.appspot.com/o/YouOnlyLiveOnce.mp3?alt=media&token=0ff922f6-be29-48dd-b9c2-9138132bb160",
+    image: "https://upload.wikimedia.org/wikipedia/en/5/55/FirstImpressionsoftheEarth.jpg",
   },
   {
     id: 2,
     title: "I was running through the six",
     artist: "Drake",
     url: "https://firebasestorage.googleapis.com/v0/b/jessejessexyz.appspot.com/o/mp3%2F06.%20I%20was%20running%20through%20the%20six%20with%20my%20woes%20-%20drake%20%5BjqScSp5l-AQ%5D.mp3?alt=media&token=63af8aa1-5494-4edf-b783-ac7d6077448e",
+    image: "https://upload.wikimedia.org/wikipedia/en/b/b1/Drake_-_If_You%27re_Reading_This_It%27s_Too_Late.png",
   },
   {
     id: 3,
     title: "Undercover",
     artist: "Lane 8",
     url: "https://firebasestorage.googleapis.com/v0/b/jessejessexyz.appspot.com/o/mp3%2F14.%20Lane%208%20-%20Undercover%20feat.%20Matthew%20Dear%20%5BHSydHbGdIcY%5D.mp3?alt=media&token=dbc5121c-3037-4c4c-b366-68af0c1b1092",
+    image: "https://upload.wikimedia.org/wikipedia/en/f/f0/Lane_8_-_Little_by_Little.png",
   },
-   {
+  {
     id: 4,
     title: "King of Everything",
     artist: "Wiz Kalifa",
     url: "https://firebasestorage.googleapis.com/v0/b/jessejessexyz.appspot.com/o/mp3%2F33.%20Wiz%20Khalifa%20-%20King%20of%20Everything%20%5BOfficial%20Video%5D%20%5B8d0cm_hcQes%5D.mp3?alt=media&token=d9aefd07-31f8-40d3-ba07-ab86c618c870",
+    image: "https://upload.wikimedia.org/wikipedia/en/4/4f/Wiz_Khalifa_-_Khalifa.png",
   },
 ]
+
 
 function MusicApp() {
   const [currentTrackIndex, setCurrentTrackIndex] = useState(0)
@@ -779,35 +784,40 @@ function MusicApp() {
 
   const currentTrack = sampleTracks[currentTrackIndex]
 
-  return (
-    <div className="h-full bg-gray-900 text-white flex flex-col items-center justify-center p-4">
-      <audio ref={audioRef} src={currentTrack.url} />
+return (
+  <div className="h-full bg-gray-900 text-white flex flex-col items-center justify-center p-4">
+    <audio ref={audioRef} src={currentTrack.url} />
 
-      <div className="mb-6 text-center">
-        <h2 className="text-2xl font-semibold">{currentTrack.title}</h2>
-        <p className="text-gray-400">{currentTrack.artist}</p>
-      </div>
+    <img
+      src={currentTrack.image}
+      alt={`${currentTrack.title} cover`}
+      className="w-40 h-40 rounded-lg object-cover mb-4 shadow-lg"
+    />
 
-      <div className="flex items-center gap-8">
-        <button onClick={playPrev} aria-label="Previous Track" className="p-3 rounded-full hover:bg-gray-800">
-          <SkipBack className="w-8 h-8" />
-        </button>
-
-        <button
-          onClick={playPauseToggle}
-          aria-label={isPlaying ? "Pause" : "Play"}
-          className="p-4 rounded-full bg-white text-black flex items-center justify-center"
-        >
-          {isPlaying ? <Pause className="w-8 h-8" /> : <Play className="w-8 h-8" />}
-        </button>
-
-        <button onClick={playNext} aria-label="Next Track" className="p-3 rounded-full hover:bg-gray-800">
-          <SkipForward className="w-8 h-8" />
-        </button>
-      </div>
+    <div className="mb-6 text-center">
+      <h2 className="text-2xl font-semibold">{currentTrack.title}</h2>
+      <p className="text-gray-400">{currentTrack.artist}</p>
     </div>
-  )
-}
+
+    <div className="flex items-center gap-8">
+      <button onClick={playPrev} aria-label="Previous Track" className="p-3 rounded-full hover:bg-gray-800">
+        <SkipBack className="w-8 h-8" />
+      </button>
+
+      <button
+        onClick={playPauseToggle}
+        aria-label={isPlaying ? "Pause" : "Play"}
+        className="p-4 rounded-full bg-white text-black flex items-center justify-center"
+      >
+        {isPlaying ? <Pause className="w-8 h-8" /> : <Play className="w-8 h-8" />}
+      </button>
+
+      <button onClick={playNext} aria-label="Next Track" className="p-3 rounded-full hover:bg-gray-800">
+        <SkipForward className="w-8 h-8" />
+      </button>
+    </div>
+  </div>
+)
 
 
 // Contacts App
