@@ -955,7 +955,7 @@ async function uploadPhoto(file: File, filename: string): Promise<string | null>
   
     const { supabase } = await import("@/lib/supabase")
     const { data, error } = await supabase.storage
-      .from("photos-bucket") // Your bucket name
+      .from("iphone-tsx") 
       .upload(filename, file, {
         cacheControl: "3600",
         upsert: false,
@@ -1111,7 +1111,7 @@ function CameraApp() {
 
   if (showGallery) {
     return (
-      <div className="h-full w-full bg-black text-white flex flex-col overflow-hidden">
+      <div className="h-full w-full bg-black text-white flex flex-col overflow-y-auto">
         <div className="flex items-center justify-between p-4 bg-gray-900">
           <button onClick={() => setShowGallery(false)} className="text-blue-400">
             ← Camera
