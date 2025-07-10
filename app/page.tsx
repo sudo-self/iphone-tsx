@@ -788,12 +788,12 @@ function MusicApp() {
 
     window.onYouTubeIframeAPIReady = () => {
       ytPlayer.current = new window.YT.Player(playerRef.current, {
-        height: "240", // smaller height
-        width: "426",  // smaller width (16:9 aspect)
+        height: "326",
+        width: "326", 
         videoId: currentTrack.videoId,
         playerVars: {
           autoplay: 0,
-          controls: 1,  // show native controls
+          controls: 1,
           modestbranding: 1,
           rel: 0,
         },
@@ -813,7 +813,7 @@ function MusicApp() {
     };
   }, []);
 
-  // Load new video when currentIndex or readiness changes
+
   useEffect(() => {
     if (ytPlayer.current && isReady) {
       ytPlayer.current.loadVideoById(currentTrack.videoId);
@@ -821,19 +821,19 @@ function MusicApp() {
     }
   }, [currentIndex, isReady]);
 
-  // Play or pause the video
+
   useEffect(() => {
     if (!ytPlayer.current) return;
     if (isPlaying) ytPlayer.current.playVideo();
     else ytPlayer.current.pauseVideo();
   }, [isPlaying]);
 
-  // Update volume
+
   useEffect(() => {
     if (ytPlayer.current) ytPlayer.current.setVolume(volume);
   }, [volume]);
 
-  // Update progress and duration every second
+
   useEffect(() => {
     const interval = setInterval(() => {
       if (ytPlayer.current && ytPlayer.current.getCurrentTime) {
@@ -844,17 +844,17 @@ function MusicApp() {
     return () => clearInterval(interval);
   }, []);
 
-  // Play previous track
+
   const playPrev = () => {
     setCurrentIndex((i) => (i === 0 ? sampleTracks.length - 1 : i - 1));
   };
 
-  // Play next track
+
   const playNext = () => {
     setCurrentIndex((i) => (i === sampleTracks.length - 1 ? 0 : i + 1));
   };
 
-  // Seek video to selected time
+
   const seekTo = (e: React.ChangeEvent<HTMLInputElement>) => {
     const time = Number(e.target.value);
     setProgress(time);
@@ -862,7 +862,7 @@ function MusicApp() {
   };
 
   return (
-    <div className="bg-black text-white min-h-screen flex flex-col items-center justify-center p-6 space-y-6">
+    <div className="bg-black text-white min-h-screen flex flex-col items-center justify-center p-6 space-y-6 overflow-y-auto">
       <div
         ref={playerRef}
         style={{ maxWidth: "426px", width: "100%", marginBottom: "1rem" }}
@@ -910,53 +910,6 @@ function MusicApp() {
     </div>
   );
 }
-
-
-  return (
-    <div className="bg-black text-white min-h-screen flex flex-col items-center justify-center p-6 space-y-6">
-      <div ref={playerRef} />
-
-      <div className="text-center">
-        <h2 className="text-2xl font-bold">{currentTrack.title}</h2>
-        <p className="text-gray-400">{currentTrack.artist}</p>
-      </div>
-
-      <input
-        type="range"
-        min={0}
-        max={duration}
-        value={progress}
-        onChange={seekTo}
-        className="w-full max-w-md"
-      />
-
-      <div className="flex items-center gap-8">
-        <button onClick={playPrev}>
-          <SkipBack className="w-8 h-8" />
-        </button>
-        <button
-          onClick={() => setIsPlaying((prev) => !prev)}
-          className="px-6 py-3 bg-white text-black rounded-full text-lg"
-        >
-          {isPlaying ? "Pause" : "Play"}
-        </button>
-        <button onClick={playNext}>
-          <SkipForward className="w-8 h-8" />
-        </button>
-      </div>
-
-      <input
-        type="range"
-        min={0}
-        max={100}
-        value={volume}
-        onChange={(e) => setVolume(Number(e.target.value))}
-        className="w-full max-w-md"
-      />
-    </div>
-  );
-}
-
 
 // Contacts App
 function ContactsApp({
