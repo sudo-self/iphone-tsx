@@ -22,6 +22,7 @@ import {
   Music,
   MapIcon,
   FileText,
+  Loader2,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { getContacts } from "@/lib/redis";
@@ -31,6 +32,7 @@ import {
   loadSettings,
   saveSettings,
 } from "@/lib/settings";
+import { Redis } from "@upstash/redis";
 
 export default function SmartphoneUI() {
   const [isLocked, setIsLocked] = useState(true);
@@ -1573,52 +1575,60 @@ function CameraApp() {
 }
 
 function NotesApp() {
-  const [notes, setNotes] = useState<
-    Array<{
-      id: string;
-      title: string;
-      content: string;
-      created_at: string;
-      completed?: boolean;
-      type: "notes" | "todos";
-    }>
-  >([]);
-
+  const [notes, setNotes] = useState([]);
   const [showAddForm, setShowAddForm] = useState(false);
   const [newTitle, setNewTitle] = useState("");
   const [newContent, setNewContent] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
-  const [viewMode, setViewMode] = useState<"notes" | "todos">("notes");
+  const [viewMode, setViewMode] = useState("notes");
+  const [loading, setLoading] = useState(true);
 
+  // Load notes on mount and when viewMode changes
   useEffect(() => {
     loadNotes();
-  }, []);
+  }, [viewMode]);
 
+  // Simplified and robust loadNotes function
   const loadNotes = async () => {
+    console.log("Loading notes..."); // Debug log
+    setLoading(true);
     try {
-      console.log("Loading notes..."); // Debug log
       const { redis } = await import("@/lib/redis");
       const notesData = (await redis.hgetall("notes")) || {};
-      console.log("Raw notes data from Redis:", notesData); // Debug log
+      console.log("Raw Redis data:", notesData); // Debug log
 
-      const notesList = Object.entries(notesData).map(([id, data]) => {
-        const parsed = JSON.parse(data as string);
-        return { id, ...parsed };
-      });
+      const notesList = [];
+      for (const [id, data] of Object.entries(notesData)) {
+        try {
+          // Handle both string and object data
+          const parsedData = typeof data === "string" ? JSON.parse(data) : data;
+          notesList.push({
+            id,
+            title: parsedData.title || "",
+            content: parsedData.content || "",
+            created_at: parsedData.created_at || new Date().toISOString(),
+            type: parsedData.type || "notes",
+            completed: parsedData.completed || false,
+          });
+        } catch (error) {
+          console.error(`Error parsing note ${id}:`, error);
+        }
+      }
 
-      console.log("Processed notes list:", notesList); // Debug log
-      notesList.sort(
-        (a, b) =>
-          new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
-      );
+      // Sort by date (newest first)
+      notesList.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
       setNotes(notesList);
+      console.log("Processed notes:", notesList); // Debug log
     } catch (error) {
       console.error("Failed to load notes:", error);
+    } finally {
+      setLoading(false);
     }
   };
 
-  const handleAddNote = async (e: React.FormEvent) => {
+  // Add note handler with forced refresh
+  const handleAddNote = async (e) => {
     e.preventDefault();
     if (!newTitle.trim()) return;
 
@@ -1635,10 +1645,13 @@ function NotesApp() {
       };
 
       await redis.hset("notes", { [id]: JSON.stringify(noteData) });
+      console.log("Note added:", noteData); // Debug log
+
+      // Reset form and force reload
       setNewTitle("");
       setNewContent("");
       setShowAddForm(false);
-      await loadNotes();
+      await loadNotes(); // Force reload
     } catch (error) {
       console.error("Failed to add note:", error);
     } finally {
@@ -1646,30 +1659,18 @@ function NotesApp() {
     }
   };
 
-  const handleDeleteNote = async (id: string) => {
+  // Delete note handler
+  const handleDeleteNote = async (id) => {
     try {
       const { redis } = await import("@/lib/redis");
       await redis.hdel("notes", id);
-      await loadNotes();
+      await loadNotes(); // Force reload
     } catch (error) {
       console.error("Failed to delete note:", error);
     }
   };
 
-  const handleToggleTodo = async (id: string) => {
-    try {
-      const note = notes.find((n) => n.id === id);
-      if (!note) return;
-
-      const { redis } = await import("@/lib/redis");
-      const updatedNote = { ...note, completed: !note.completed };
-      await redis.hset("notes", { [id]: JSON.stringify(updatedNote) });
-      await loadNotes();
-    } catch (error) {
-      console.error("Failed to toggle todo:", error);
-    }
-  };
-
+  // Filter notes based on search and view mode
   const filteredNotes = notes.filter((note) => {
     const matchesSearch =
       note.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -1678,8 +1679,10 @@ function NotesApp() {
     return matchesSearch && matchesMode;
   });
 
+  // Render UI
   return (
     <div className="h-full bg-gray-900 text-white flex flex-col">
+      {/* Header and search */}
       <div className="p-4 bg-gray-800">
         <div className="flex items-center justify-between mb-4">
           <div className="flex bg-gray-700 rounded-lg p-1">
@@ -1726,6 +1729,7 @@ function NotesApp() {
         </div>
       </div>
 
+      {/* Add form */}
       {showAddForm && (
         <div className="p-4 bg-gray-800 border-b border-gray-700">
           <form onSubmit={handleAddNote} className="space-y-3">
@@ -1760,8 +1764,14 @@ function NotesApp() {
         </div>
       )}
 
+      {/* Notes list */}
       <div className="flex-1 overflow-y-auto p-4">
-        {filteredNotes.length === 0 ? (
+        {loading ? (
+          <div className="text-center text-gray-400 mt-8">
+            <Loader2 className="w-16 h-16 mx-auto mb-4 animate-spin" />
+            <p>Loading {viewMode}...</p>
+          </div>
+        ) : filteredNotes.length === 0 ? (
           <div className="text-center text-gray-400 mt-8">
             <FileText className="w-16 h-16 mx-auto mb-4" />
             <p>No {viewMode} yet</p>
@@ -1776,40 +1786,9 @@ function NotesApp() {
               <div key={note.id} className="bg-gray-800 rounded-lg p-4">
                 <div className="flex items-start justify-between">
                   <div className="flex-1">
-                    {viewMode === "todos" && (
-                      <div className="flex items-center mb-2">
-                        <button
-                          onClick={() => handleToggleTodo(note.id)}
-                          className={cn(
-                            "w-5 h-5 rounded border-2 mr-3 flex items-center justify-center",
-                            note.completed
-                              ? "bg-green-600 border-green-600"
-                              : "border-gray-400"
-                          )}
-                        >
-                          {note.completed && (
-                            <span className="text-white text-xs">✓</span>
-                          )}
-                        </button>
-                      </div>
-                    )}
-                    <h3
-                      className={cn(
-                        "font-medium mb-1",
-                        note.completed ? "line-through text-gray-500" : ""
-                      )}
-                    >
-                      {note.title}
-                    </h3>
+                    <h3 className="font-medium mb-1">{note.title}</h3>
                     {note.content && (
-                      <p
-                        className={cn(
-                          "text-sm text-gray-400",
-                          note.completed ? "line-through" : ""
-                        )}
-                      >
-                        {note.content}
-                      </p>
+                      <p className="text-sm text-gray-400">{note.content}</p>
                     )}
                     <p className="text-xs text-gray-500 mt-2">
                       {new Date(note.created_at).toLocaleDateString()}
