@@ -3,13 +3,13 @@ import "./globals.css";
 import "leaflet/dist/leaflet.css";
 
 export const metadata: Metadata = {
-  title: "iPhone TSX — Supabase & Redis integrations",
+  title: "iPhone TSX — Supabase & Redis DBs, Maps and Youtube APIs",
   description: "iPhone TSX featuring Supabase and Redis integration for a modern app experience.",
   generator: "v0.dev",
   metadataBase: new URL("https://iphone.jessejesse.com"),
   openGraph: {
-    title: "iPhone Mock Phone GUI — Supabase & Redis Integration Demo",
-    description: "A mock iPhone phone GUI featuring Supabase and Redis integration for a modern app experience.",
+    title: "iPhone TSX — Supabase & Redis DBs, Maps and Youtube APIs",
+    description: "iPhone TSX APIs featuring Supabase and Redis integration for a modern app experience.",
     url: "https://iphone.jessejesse.com",
     siteName: "iphone.jessejesse.com",
     images: [
