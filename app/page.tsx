@@ -721,6 +721,7 @@ function PhoneApp({ contacts }: { contacts: Array<{ name: string; phone: string 
     </div>
   )
 }
+}
 
 // Music App
 const sampleTracks = [
