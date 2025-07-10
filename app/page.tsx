@@ -614,7 +614,7 @@ function SettingsApp({
               </div>
               <div className="flex justify-between py-2 border-b border-gray-700">
                 <span className="text-gray-400">Model</span>
-                <span>TypeScript</span>
+                <span className="text-blue-500">TSX</span>
               </div>
               <div className="flex justify-between py-2 border-b border-gray-700">
                 <span className="text-gray-400">Storage</span>
@@ -659,7 +659,7 @@ function SettingsApp({
         </div>
 
         <div className="mt-8 text-center text-cyan-500 text-sm">
-          <p>¯\_(ツ)_/¯</p>
+          <p>¯\_(ツ)_/¯ </p>📱
         </div>
       </div>
     </div>
