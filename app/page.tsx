@@ -27,7 +27,7 @@ import { saveEvent, getEvents } from "@/lib/redis"
 import { type PhoneSettings, defaultSettings, loadSettings, saveSettings } from "@/lib/settings"
 import { Map as MapIcon } from "lucide-react";
 import L from "leaflet";
-import "leaflet/dist/leaflet.css";
+
 
 
 export default function SmartphoneUI() {
@@ -1050,45 +1050,31 @@ function ContactsApp({
   )
 }
 
-
-interface MapsAppProps {
-  setActiveApp: (app: string | null) => void;
-}
-
-function MapsApp({ setActiveApp }: MapsAppProps) {
-  const mapRef = useRef<HTMLDivElement | null>(null);
-  const leafletMapRef = useRef<L.Map | null>(null);
+function MapsApp({ setActiveApp }: { setActiveApp: (v: string | null) => void }) {
+  const mapRef = useRef<HTMLDivElement>(null);
+  const mapInstance = useRef<L.Map | null>(null);
 
   useEffect(() => {
-
-    if (typeof window === "undefined" || !mapRef.current || leafletMapRef.current) return;
-
-    delete (L.Icon.Default.prototype as any)._getIconUrl;
-    L.Icon.Default.mergeOptions({
-      iconRetinaUrl:
-        "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-icon-2x.png",
-      iconUrl:
-        "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-icon.png",
-      shadowUrl:
-        "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-shadow.png",
-    });
+    if (!mapRef.current || mapInstance.current) return;
 
 
-    leafletMapRef.current = L.map(mapRef.current).setView([40.7128, -74.006], 12);
+    const denverCoords: [number, number] = [39.7392, -104.9903];
+
+    mapInstance.current = L.map(mapRef.current).setView(denverCoords, 12);
 
     L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
       attribution:
         '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
-    }).addTo(leafletMapRef.current);
+    }).addTo(mapInstance.current);
 
-    L.marker([40.7128, -74.006])
-      .addTo(leafletMapRef.current)
-      .bindPopup("New York City")
+    L.marker(denverCoords)
+      .addTo(mapInstance.current)
+      .bindPopup("Denver, Colorado")
       .openPopup();
 
     return () => {
-      leafletMapRef.current?.remove();
-      leafletMapRef.current = null;
+      mapInstance.current?.remove();
+      mapInstance.current = null;
     };
   }, []);
 
@@ -1110,8 +1096,6 @@ function MapsApp({ setActiveApp }: MapsAppProps) {
     </div>
   );
 }
-
-
 
 // Calendar App
 function CalendarApp() {
