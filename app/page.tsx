@@ -1145,7 +1145,7 @@ function CameraApp() {
   }
 
   return (
-    <div className="h-full w-full bg-black relative overflow-hidden">
+    <div className="h-full w-full bg-black relative overflow-y-auto">
       {permissionDenied && (
         <div className="absolute inset-0 bg-black bg-opacity-90 flex flex-col items-center justify-center text-white p-6 z-20">
           <Camera className="w-16 h-16 mb-4" />
@@ -1340,7 +1340,7 @@ function BrowserApp() {
               type="text"
               value={url}
               onChange={(e) => setUrl(e.target.value)}
-              placeholder="Search or enter website URL"
+              placeholder="search or enter website URL"
               className="w-full px-4 py-2 bg-gray-100 rounded-full border-none outline-none text-sm"
             />
             {isLoading && (
@@ -1371,7 +1371,7 @@ function BrowserApp() {
             <div className="text-center mb-6">
               <Globe className="w-16 h-16 mx-auto mb-4 text-gray-400" />
               <h2 className="text-2xl font-bold text-gray-800 mb-2">Random Web Browser</h2>
-              <p className="text-gray-600 text-sm">iphone-tsx.vercel.app</p>
+              <p className="text-gray-600 text-sm">(iframe loader)</p>
             </div>
 
             <div className="mb-6">
@@ -1398,7 +1398,7 @@ function BrowserApp() {
             </div>
 
             <div className="text-center text-sm text-gray-500">
-              <p>Tip: search directly any website or URL</p>
+              <p>Tip: enter website URLs https://</p>
             </div>
           </div>
         )}
