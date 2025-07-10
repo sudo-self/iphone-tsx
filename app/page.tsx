@@ -1394,13 +1394,14 @@ function NotesApp() {
     try {
       const { redis } = await import("@/lib/redis")
       const id = Date.now().toString()
-      const noteData = {
-        title: newTitle.trim(),
-        content: newContent.trim(),
-        created_at: new Date().toISOString(),
-        completed: viewMode === "todos" ? false : null,
+     const noteData = {
+  title: newTitle.trim(),
+  content: newContent.trim(),
+  created_at: new Date().toISOString(),
+  type: viewMode, 
+  completed: viewMode === "todos" ? false : undefined,
+}
 
-      }
 
       await redis.hset("notes", { [id]: JSON.stringify(noteData) })
       setNewTitle("")
@@ -1439,13 +1440,13 @@ function NotesApp() {
   }
 
   const filteredNotes = notes.filter((note) => {
-    const matchesSearch =
-      note.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      note.content.toLowerCase().includes(searchTerm.toLowerCase())
-  const matchesMode = viewMode === "notes" ? note.completed === null : typeof note.completed === "boolean"
+  const matchesSearch =
+    note.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    note.content.toLowerCase().includes(searchTerm.toLowerCase())
+  const matchesMode = note.type === viewMode
+  return matchesSearch && matchesMode
+})
 
-    return matchesSearch && matchesMode
-  })
 
   return (
     <div className="h-full bg-gray-900 text-white flex flex-col">
