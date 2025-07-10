@@ -1051,58 +1051,61 @@ function ContactsApp({
 }
 
 
-  function MapsApp() {
-    const mapRef = useRef<HTMLDivElement | null>(null);
-    const leafletMapRef = useRef<L.Map | null>(null);
+function MapsApp({ setActiveApp }: { setActiveApp: (app: string | null) => void }) {
+  const mapRef = useRef<HTMLDivElement | null>(null);
+  const leafletMapRef = useRef<any>(null);
 
-    useEffect(() => {
+  useEffect(() => {
+    (async () => {
       if (!mapRef.current || leafletMapRef.current) return;
 
-  
-      leafletMapRef.current = L.map(mapRef.current).setView([39.7392, -104.9903], 12);
+      const L = await import("leaflet");
 
-   
+      leafletMapRef.current = L.map(mapRef.current).setView([40.7128, -74.006], 12);
+
       L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
         attribution:
           '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
       }).addTo(leafletMapRef.current);
 
-   
-      L.marker([39.7392, -104.9903])
+      L.marker([40.7128, -74.006])
         .addTo(leafletMapRef.current)
-        .bindPopup("Denver, Colorado")
+        .bindPopup("New York City")
         .openPopup();
+    })();
 
- 
-      return () => {
-        leafletMapRef.current?.remove();
-        leafletMapRef.current = null;
-      };
-    }, []);
+    return () => {
+      leafletMapRef.current?.remove();
+      leafletMapRef.current = null;
+    };
+  }, []);
 
-    return (
-      <div className="h-full flex flex-col bg-gray-900 text-white min-h-screen">
-        <div className="flex items-center p-4">
-          <button onClick={() => setActiveApp(null)} className="text-blue-400 mr-4">
-            ← Back
-          </button>
-          <h2 className="text-xl font-bold">Maps</h2>
-        </div>
-        <div className="flex-1 px-4 pb-4">
-          <div
-            ref={mapRef}
-            className="w-full rounded-lg"
-            style={{ height: "500px", minHeight: "300px" }}
-          />
-        </div>
+  return (
+    <div className="h-full flex flex-col bg-gray-900 text-white min-h-screen">
+      <div className="flex items-center p-4">
+        <button onClick={() => setActiveApp(null)} className="text-blue-400 mr-4">
+          ← Back
+        </button>
+        <h2 className="text-xl font-bold">Maps</h2>
       </div>
-    );
-  }
+      <div className="flex-1 px-4 pb-4">
+        <div
+          ref={mapRef}
+          className="w-full rounded-lg"
+          style={{ height: "500px", minHeight: "300px" }}
+        />
+      </div>
+    </div>
+  );
+}
+
+function Page() {
+  const [activeApp, setActiveApp] = useState<string | null>(null);
 
   return (
     <main className="flex items-center justify-center min-h-screen bg-gray-800 text-white">
       {activeApp === "Maps" ? (
-        <MapsApp />
+        <MapsApp setActiveApp={setActiveApp} />
       ) : (
         <button
           onClick={() => setActiveApp("Maps")}
@@ -1114,6 +1117,8 @@ function ContactsApp({
     </main>
   );
 }
+
+
 
 
 // Calendar App
