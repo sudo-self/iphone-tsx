@@ -745,135 +745,82 @@ const sampleTracks: Track[] = [
     id: 1,
     title: "You Only Live Once",
     artist: "The Strokes",
-    url: "https://firebasestorage.googleapis.com/v0/b/jessejessexyz.appspot.com/o/YouOnlyLiveOnce.mp3?alt=media&token=0ff922f6-be29-48dd-b9c2-9138132bb160",
-    image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQxzSLYX9mnAzHMZqHZ2ciJkBftJO2qri-Y0bk5sKCbOxI_d0bCoBQUT4EYGmEFP3rQLHBlnxYihPJOQucdstlmNQX1ZLP2-BiYECdRGKybdQ",
+    videoId: "pT68FS3YbQ4",
   },
   {
     id: 2,
     title: "I was running through the six",
     artist: "Drake",
-    url: "https://firebasestorage.googleapis.com/v0/b/jessejessexyz.appspot.com/o/mp3%2F06.%20I%20was%20running%20through%20the%20six%20with%20my%20woes%20-%20drake%20%5BjqScSp5l-AQ%5D.mp3?alt=media&token=63af8aa1-5494-4edf-b783-ac7d6077448e",
-    image: "https://i.ytimg.com/vi/jqScSp5l-AQ/hqdefault.jpg",
     videoId: "jqScSp5l-AQ",
   },
   {
     id: 3,
     title: "Undercover",
     artist: "Lane 8",
-    url: "https://firebasestorage.googleapis.com/v0/b/jessejessexyz.appspot.com/o/mp3%2F14.%20Lane%208%20-%20Undercover%20feat.%20Matthew%20Dear%20%5BHSydHbGdIcY%5D.mp3?alt=media&token=dbc5121c-3037-4c4c-b366-68af0c1b1092",
-    image: "https://i.ytimg.com/vi/PlJdteHjfoE/maxresdefault.jpg",
     videoId: "HSydHbGdIcY",
   },
   {
     id: 4,
     title: "King of Everything",
     artist: "Wiz Khalifa",
-    url: "https://firebasestorage.googleapis.com/v0/b/jessejessexyz.appspot.com/o/mp3%2F33.%20Wiz%20Khalifa%20-%20King%20of%20Everything%20%5BOfficial%20Video%5D%20%5B8d0cm_hcQes%5D.mp3?alt=media&token=d9aefd07-31f8-40d3-ba07-ab86c618c870",
-    image: "https://upload.wikimedia.org/wikipedia/en/1/19/Wiz_Khalifa_King_Of_Everything.jpg",
     videoId: "8d0cm_hcQes",
   },
 ]
 
-function YouTubePlayer({ videoId }: { videoId: string }) {
+function YouTubeMusicPlayer() {
+  const [currentIndex, setCurrentIndex] = useState(0)
   const playerRef = useRef<HTMLDivElement>(null)
-  const [player, setPlayer] = useState<any>(null)
+  const ytPlayer = useRef<any>(null)
+
+  const currentTrack = sampleTracks[currentIndex]
 
   useEffect(() => {
-    if (!videoId) return
+    const tag = document.createElement("script")
+    tag.src = "https://www.youtube.com/iframe_api"
+    document.body.appendChild(tag)
 
-    if (!window.YT) {
-      const tag = document.createElement("script")
-      tag.src = "https://www.youtube.com/iframe_api"
-      document.body.appendChild(tag)
-      window.onYouTubeIframeAPIReady = loadPlayer
-    } else {
-      loadPlayer()
-    }
-
-    function loadPlayer() {
-      if (!playerRef.current) return
-
-      const yt = new window.YT.Player(playerRef.current, {
-        height: "200",
-        width: "320",
-        videoId,
-        playerVars: {
-          autoplay: 0,
-          controls: 1,
-          modestbranding: 1,
-        },
+    ;(window as any).onYouTubeIframeAPIReady = () => {
+      ytPlayer.current = new window.YT.Player(playerRef.current, {
+        height: "360",
+        width: "640",
+        videoId: currentTrack.videoId,
         events: {
-          onReady: (event: any) => {
-            setPlayer(event.target)
-          },
+          onReady: (event: any) => event.target.playVideo(),
         },
       })
     }
 
     return () => {
-      player?.destroy()
+      if (ytPlayer.current) {
+        ytPlayer.current.destroy()
+      }
     }
-  }, [videoId])
-
-  return <div ref={playerRef} className="w-full max-w-sm aspect-video rounded overflow-hidden mb-4" />
-}
-
- function MusicApp() {
-  const [currentTrackIndex, setCurrentTrackIndex] = useState(0)
-  const [isPlaying, setIsPlaying] = useState(false)
-  const audioRef = useRef<HTMLAudioElement | null>(null)
-
-  const currentTrack = sampleTracks[currentTrackIndex]
+  }, [])
 
   useEffect(() => {
-    if (audioRef.current) {
-      isPlaying ? audioRef.current.play() : audioRef.current.pause()
+    if (ytPlayer.current?.cueVideoById) {
+      ytPlayer.current.cueVideoById(currentTrack.videoId)
+      ytPlayer.current.playVideo()
     }
-  }, [isPlaying, currentTrackIndex])
+  }, [currentIndex])
 
-  const playPauseToggle = () => setIsPlaying(!isPlaying)
+  const playPrev = () =>
+    setCurrentIndex((prev) => (prev === 0 ? sampleTracks.length - 1 : prev - 1))
 
-  const playPrev = () => {
-    setCurrentTrackIndex((idx) => (idx === 0 ? sampleTracks.length - 1 : idx - 1))
-    setIsPlaying(true)
-  }
-
-  const playNext = () => {
-    setCurrentTrackIndex((idx) => (idx === sampleTracks.length - 1 ? 0 : idx + 1))
-    setIsPlaying(true)
-  }
+  const playNext = () =>
+    setCurrentIndex((prev) => (prev === sampleTracks.length - 1 ? 0 : prev + 1))
 
   return (
-    <div className="h-full bg-gray-900 text-white flex flex-col items-center justify-center p-4">
-      <audio ref={audioRef} src={currentTrack.url} />
+    <div className="h-full bg-black text-white flex flex-col items-center justify-center p-4">
+      <h2 className="text-xl font-semibold mb-1">{currentTrack.title}</h2>
+      <p className="text-gray-400 mb-4">{currentTrack.artist}</p>
 
-      {currentTrack.videoId && (
-        <YouTubePlayer videoId={currentTrack.videoId} />
-      )}
-
-      <img
-        src={currentTrack.image}
-        alt={currentTrack.title}
-        className="w-40 h-40 rounded-lg object-cover mb-4 shadow-lg"
-      />
-
-      <div className="mb-6 text-center">
-        <h2 className="text-2xl font-semibold">{currentTrack.title}</h2>
-        <p className="text-gray-400">{currentTrack.artist}</p>
-      </div>
+      <div ref={playerRef} className="mb-6 w-full max-w-[640px] aspect-video" />
 
       <div className="flex items-center gap-8">
         <button onClick={playPrev} className="p-3 rounded-full hover:bg-gray-800">
           <SkipBack className="w-8 h-8" />
         </button>
-
-        <button
-          onClick={playPauseToggle}
-          className="p-4 rounded-full bg-white text-black flex items-center justify-center"
-        >
-          {isPlaying ? <Pause className="w-8 h-8" /> : <Play className="w-8 h-8" />}
-        </button>
-
         <button onClick={playNext} className="p-3 rounded-full hover:bg-gray-800">
           <SkipForward className="w-8 h-8" />
         </button>
@@ -881,6 +828,7 @@ function YouTubePlayer({ videoId }: { videoId: string }) {
     </div>
   )
 }
+
 
 
 
