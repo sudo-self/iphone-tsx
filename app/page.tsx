@@ -668,7 +668,7 @@ function SettingsApp({
         </div>
 
         <div className="mt-8 text-center text-cyan-500 text-sm">
-          <p>¯\_(ツ)_/¯ </p>📱
+          <p>¯\_(ツ)_/¯ 📱</p>
         </div>
       </div>
     </div>
@@ -744,7 +744,7 @@ const sampleTracks = [
   },
 ]
 
-export default function MusicApp() {
+function MusicApp() {
   const [currentTrackIndex, setCurrentTrackIndex] = useState(0)
   const [isPlaying, setIsPlaying] = useState(false)
   const audioRef = useRef<HTMLAudioElement | null>(null)
