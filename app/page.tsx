@@ -1448,7 +1448,6 @@ const [notes, setNotes] = useState<
   return matchesSearch && matchesMode
 })
 
-
   return (
     <div className="h-full bg-gray-900 text-white flex flex-col">
       <div className="p-4 bg-gray-800">
