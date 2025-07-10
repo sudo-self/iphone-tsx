@@ -1051,20 +1051,17 @@ function ContactsApp({
 }
 
 
-
-
 interface MapsAppProps {
   setActiveApp: (app: string | null) => void;
 }
 
-function MapsApp({ setActiveApp }: MapsAppProps) {
+export default function MapsApp({ setActiveApp }: MapsAppProps) {
   const mapRef = useRef<HTMLDivElement | null>(null);
   const leafletMapRef = useRef<L.Map | null>(null);
 
   useEffect(() => {
- 
-    if (typeof window === "undefined" || !mapRef.current || leafletMapRef.current) return;
 
+    if (typeof window === "undefined" || !mapRef.current || leafletMapRef.current) return;
 
     delete (L.Icon.Default.prototype as any)._getIconUrl;
     L.Icon.Default.mergeOptions({
@@ -1076,7 +1073,7 @@ function MapsApp({ setActiveApp }: MapsAppProps) {
         "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-shadow.png",
     });
 
- 
+
     leafletMapRef.current = L.map(mapRef.current).setView([40.7128, -74.006], 12);
 
     L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
@@ -1113,6 +1110,7 @@ function MapsApp({ setActiveApp }: MapsAppProps) {
     </div>
   );
 }
+
 
 
 // Calendar App
