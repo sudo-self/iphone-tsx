@@ -120,7 +120,7 @@ importers:
         specifier: latest
         version: 1.4.2(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
       leaflet:
-        specifier: ^1.9.4
+        specifier: latest
         version: 1.9.4
       lucide-react:
         specifier: ^0.454.0

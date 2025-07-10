@@ -1,4 +1,3 @@
-
 CREATE TABLE IF NOT EXISTS photos (
   id SERIAL PRIMARY KEY,
   filename VARCHAR(255) NOT NULL,
@@ -16,6 +15,3 @@ CREATE POLICY "Allow public read access" ON photos
 -- Policy: Allow anyone to insert photos
 CREATE POLICY "Allow public insert access" ON photos
   FOR INSERT WITH CHECK (true);
-
-
-

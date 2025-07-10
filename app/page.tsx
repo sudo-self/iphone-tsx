@@ -20,15 +20,12 @@ import {
   Globe,
   Settings,
   Music,
+  MapIcon,
+  FileText,
 } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { getContacts } from "@/lib/redis"
-import { saveEvent, getEvents } from "@/lib/redis"
 import { type PhoneSettings, defaultSettings, loadSettings, saveSettings } from "@/lib/settings"
-import { Map as MapIcon } from "lucide-react";
-import L from "leaflet";
-
-
 
 export default function SmartphoneUI() {
   const [isLocked, setIsLocked] = useState(true)
@@ -40,38 +37,35 @@ export default function SmartphoneUI() {
   const [isLoading, setIsLoading] = useState(false)
   const [settings, setSettings] = useState<PhoneSettings>(defaultSettings)
 
-useEffect(() => {
-  const updateTime = () => {
-    const now = new Date()
-    setCurrentTime(
-      now.toLocaleTimeString([], {
-        hour: "2-digit",
-        minute: "2-digit",
-        hour12: false,
-      })
-    )
-    setCurrentDate(
-      now.toLocaleDateString([], {
-        weekday: "long",
-        month: "long",
-        day: "numeric",
-      })
-    )
-  }
+  useEffect(() => {
+    const updateTime = () => {
+      const now = new Date()
+      setCurrentTime(
+        now.toLocaleTimeString([], {
+          hour: "2-digit",
+          minute: "2-digit",
+          hour12: false,
+        }),
+      )
+      setCurrentDate(
+        now.toLocaleDateString([], {
+          weekday: "long",
+          month: "long",
+          day: "numeric",
+        }),
+      )
+    }
 
-  updateTime()
-  const interval = setInterval(updateTime, 60000)
+    updateTime()
+    const interval = setInterval(updateTime, 60000)
 
-  return () => clearInterval(interval)
-}, [])
-
-
+    return () => clearInterval(interval)
+  }, [])
 
   useEffect(() => {
     const loadedSettings = loadSettings()
     setSettings(loadedSettings)
   }, [])
-
 
   useEffect(() => {
     const fetchContacts = async () => {
@@ -150,30 +144,25 @@ useEffect(() => {
   return (
     <div className="flex justify-center items-center min-h-screen bg-gray-200 p-4">
       <div className="relative w-full max-w-[375px] h-[750px] bg-black rounded-[40px] overflow-hidden shadow-2xl border-[14px] border-black">
-      
         <div className="absolute right-[-14px] top-[120px] w-[4px] h-[40px] bg-gray-700 rounded-r-sm"></div>
-     
+
         <div className="absolute left-[-14px] top-[100px] w-[4px] h-[30px] bg-gray-700 rounded-l-sm"></div>
         <div className="absolute left-[-14px] top-[140px] w-[4px] h-[30px] bg-gray-700 rounded-l-sm"></div>
-
 
         <div className="absolute top-0 left-1/2 transform -translate-x-1/2 w-[120px] h-[30px] bg-black rounded-b-[14px] z-50"></div>
 
         <div className="relative w-full h-full bg-gray-900 overflow-hidden">
-      
           <div
             className={cn(
               "absolute top-0 left-0 right-0 h-12 px-6 flex justify-between items-center z-40",
               settings.statusBarStyle === "dark" ? "text-gray-800" : "text-gray-200",
             )}
           >
-         
             <div className="flex flex-col text-left text-sm font-medium leading-tight">
               <span>{settings.deviceName}</span>
               <span className="text-xs">{currentTime}</span>
             </div>
 
-    
             <div className="flex items-center gap-2">
               <Signal className="w-4 h-4" />
               <Wifi className="w-4 h-4" />
@@ -185,7 +174,6 @@ useEffect(() => {
           </div>
 
           {isLocked ? (
-     
             <div
               className="absolute inset-0 flex flex-col items-center bg-cover bg-center"
               style={{ backgroundImage: `url('${settings.lockScreenWallpaper}')` }}
@@ -199,22 +187,17 @@ useEffect(() => {
                 <div className="p-4 rounded-full mb-4">
                   <Lock className="w-6 h-6 text-white" />
                 </div>
-               <button onClick={handleUnlock} className="text-white text-lg font-light flex items-center">
-  <ChevronLeft className="w-5 h-5 mr-1 animate-pulse" />
-  Tap to Unlock
-  <ChevronRight className="w-5 h-5 ml-1 animate-pulse" />
-</button>
-
-
+                <button onClick={handleUnlock} className="text-white text-lg font-light flex items-center">
+                  <ChevronLeft className="w-5 h-5 mr-1 animate-pulse" />
+                  Tap to Unlock
+                  <ChevronRight className="w-5 h-5 ml-1 animate-pulse" />
+                </button>
               </div>
             </div>
           ) : (
-        
             <div className="absolute inset-0 pt-12">
               {activeApp ? (
-            
                 <div className="h-full">
-            
                   <div className="h-12 flex items-center justify-between px-4 bg-gray-800">
                     <h2 className="text-white text-lg font-medium">{activeApp}</h2>
                     {(activeApp === "Contacts" || activeApp === "Phone") && (
@@ -224,7 +207,6 @@ useEffect(() => {
                     )}
                   </div>
 
-              
                   {activeApp === "Phone" && <PhoneApp contacts={contacts} />}
                   {activeApp === "Contacts" && <ContactsApp contacts={contacts} onContactsChange={refreshContacts} />}
                   {activeApp === "Calendar" && <CalendarApp />}
@@ -234,9 +216,9 @@ useEffect(() => {
                   {activeApp === "Music" && <MusicApp />}
                   {activeApp === "Maps" && <MapsApp setActiveApp={setActiveApp} />}
                   {activeApp === "Settings" && <SettingsApp settings={settings} onSettingsChange={updateSettings} />}
+                  {activeApp === "Notes" && <NotesApp />}
                 </div>
               ) : (
-          
                 <div
                   className="h-full flex flex-col bg-cover bg-center"
                   style={{ backgroundImage: `url('${settings.wallpaper}')` }}
@@ -285,22 +267,27 @@ useEffect(() => {
                       iconStyle={getAppIconStyle()}
                     />
                     <AppIcon
-                     name="Music"
-                     icon={<Music />}
-                     onClick={() => openApp("Music")}
-                     iconStyle={getAppIconStyle()}
-                     />
+                      name="Music"
+                      icon={<Music />}
+                      onClick={() => openApp("Music")}
+                      iconStyle={getAppIconStyle()}
+                    />
                     <AppIcon
-                    name="Maps"
-                    icon={<MapIcon />} 
-                    onClick={() => openApp("Maps")}
-                    iconStyle={getAppIconStyle()}
+                      name="Maps"
+                      icon={<MapIcon />}
+                      onClick={() => openApp("Maps")}
+                      iconStyle={getAppIconStyle()}
+                    />
+                    <AppIcon
+                      name="Notes"
+                      icon={<FileText />}
+                      onClick={() => openApp("Notes")}
+                      iconStyle={getAppIconStyle()}
                     />
                   </div>
                 </div>
               )}
 
-       
               <div
                 className={cn(
                   "absolute bottom-0 left-0 right-0 h-16 backdrop-blur-md flex justify-center items-center",
@@ -316,7 +303,6 @@ useEffect(() => {
     </div>
   )
 }
-
 
 function AppIcon({
   name,
@@ -338,7 +324,6 @@ function AppIcon({
     </button>
   )
 }
-
 
 function SettingsApp({
   settings,
@@ -629,7 +614,7 @@ function SettingsApp({
             <div className="space-y-3">
               <div className="flex justify-between py-2 border-b border-gray-700">
                 <span className="text-gray-400">Version</span>
-                 <span className="text-orange-400">719</span>
+                <span className="text-orange-400">719</span>
               </div>
               <div className="flex justify-between py-2 border-b border-gray-700">
                 <span className="text-gray-400">Model</span>
@@ -685,7 +670,6 @@ function SettingsApp({
   )
 }
 
-
 function PhoneApp({ contacts }: { contacts: Array<{ name: string; phone: string }> }) {
   const [searchTerm, setSearchTerm] = useState("")
 
@@ -732,32 +716,47 @@ function PhoneApp({ contacts }: { contacts: Array<{ name: string; phone: string 
   )
 }
 
-
 const SkipBack = (props: React.SVGProps<SVGSVGElement>) => (
-  <svg {...props} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
+  <svg
+    {...props}
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth={2}
+    strokeLinecap="round"
+    strokeLinejoin="round"
+  >
     <polygon points="19 20 9 12 19 4 19 20" />
     <line x1="5" y1="19" x2="5" y2="5" />
   </svg>
-);
+)
 const SkipForward = (props: React.SVGProps<SVGSVGElement>) => (
-  <svg {...props} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
+  <svg
+    {...props}
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth={2}
+    strokeLinecap="round"
+    strokeLinejoin="round"
+  >
     <polygon points="5 4 15 12 5 20 5 4" />
     <line x1="19" y1="5" x2="19" y2="19" />
   </svg>
-);
+)
 
 declare global {
   interface Window {
-    YT: any;
-    onYouTubeIframeAPIReady: () => void;
+    YT: any
+    onYouTubeIframeAPIReady: () => void
   }
 }
 
 interface Track {
-  id: number;
-  title: string;
-  artist: string;
-  videoId: string;
+  id: number
+  title: string
+  artist: string
+  videoId: string
 }
 
 const sampleTracks: Track[] = [
@@ -765,29 +764,27 @@ const sampleTracks: Track[] = [
   { id: 2, title: "I was running through the six", artist: "Drake", videoId: "jqScSp5l-AQ" },
   { id: 3, title: "Undercover", artist: "Lane 8", videoId: "HSydHbGdIcY" },
   { id: 4, title: "King of Everything", artist: "Wiz Khalifa", videoId: "8d0cm_hcQes" },
-];
+]
 
 function MusicApp() {
-  const playerRef = useRef<HTMLDivElement>(null);
-  const ytPlayer = useRef<any>(null);
+  const playerRef = useRef<HTMLDivElement>(null)
+  const ytPlayer = useRef<any>(null)
 
-  const [currentIndex, setCurrentIndex] = useState(0);
-  const [isReady, setIsReady] = useState(false);
-  const [isPlaying, setIsPlaying] = useState(false);
-  const [volume, setVolume] = useState(50);
-  const [progress, setProgress] = useState(0);
-  const [duration, setDuration] = useState(0);
+  const [currentIndex, setCurrentIndex] = useState(0)
+  const [isReady, setIsReady] = useState(false)
+  const [isPlaying, setIsPlaying] = useState(false)
+  const [volume, setVolume] = useState(50)
+  const [progress, setProgress] = useState(0)
+  const [duration, setDuration] = useState(0)
 
-  const currentTrack = sampleTracks[currentIndex];
-
+  const currentTrack = sampleTracks[currentIndex]
 
   useEffect(() => {
     if (!window.YT) {
-      const tag = document.createElement("script");
-      tag.src = "https://www.youtube.com/iframe_api";
-      document.body.appendChild(tag);
+      const tag = document.createElement("script")
+      tag.src = "https://www.youtube.com/iframe_api"
+      document.body.appendChild(tag)
     }
-
 
     window.onYouTubeIframeAPIReady = () => {
       ytPlayer.current = new window.YT.Player(playerRef.current, {
@@ -802,85 +799,75 @@ function MusicApp() {
         },
         events: {
           onReady: (event: any) => {
-            setIsReady(true);
-            ytPlayer.current.setVolume(volume);
-            setDuration(ytPlayer.current.getDuration());
+            setIsReady(true)
+            ytPlayer.current.setVolume(volume)
+            setDuration(ytPlayer.current.getDuration())
           },
           onStateChange: (e: any) => {
             if (e.data === window.YT.PlayerState.ENDED) {
-              playNext();
+              playNext()
             }
           },
         },
-      });
-    };
-  }, []);
-
+      })
+    }
+  }, [])
 
   useEffect(() => {
     if (ytPlayer.current && isReady) {
-      ytPlayer.current.loadVideoById(currentTrack.videoId);
-      setIsPlaying(true);
-      setProgress(0);
- 
+      ytPlayer.current.loadVideoById(currentTrack.videoId)
+      setIsPlaying(true)
+      setProgress(0)
     }
-  }, [currentIndex, isReady, currentTrack.videoId]);
+  }, [currentIndex, isReady, currentTrack.videoId])
 
   useEffect(() => {
-    if (!ytPlayer.current || !isReady) return;
+    if (!ytPlayer.current || !isReady) return
     if (isPlaying) {
-      ytPlayer.current.playVideo();
+      ytPlayer.current.playVideo()
     } else {
-      ytPlayer.current.pauseVideo();
+      ytPlayer.current.pauseVideo()
     }
-  }, [isPlaying, isReady]);
-
+  }, [isPlaying, isReady])
 
   useEffect(() => {
     if (ytPlayer.current && isReady) {
-      ytPlayer.current.setVolume(volume);
+      ytPlayer.current.setVolume(volume)
     }
-  }, [volume, isReady]);
-
+  }, [volume, isReady])
 
   useEffect(() => {
-    if (!ytPlayer.current) return;
+    if (!ytPlayer.current) return
 
     const interval = setInterval(() => {
       if (ytPlayer.current && ytPlayer.current.getCurrentTime) {
-        setProgress(ytPlayer.current.getCurrentTime());
-        setDuration(ytPlayer.current.getDuration());
+        setProgress(ytPlayer.current.getCurrentTime())
+        setDuration(ytPlayer.current.getDuration())
       }
-    }, 1000);
+    }, 1000)
 
-    return () => clearInterval(interval);
-  }, []);
-
+    return () => clearInterval(interval)
+  }, [])
 
   const playPrev = () => {
-    setCurrentIndex(i => (i === 0 ? sampleTracks.length - 1 : i - 1));
-  };
+    setCurrentIndex((i) => (i === 0 ? sampleTracks.length - 1 : i - 1))
+  }
 
   const playNext = () => {
-    setCurrentIndex(i => (i === sampleTracks.length - 1 ? 0 : i + 1));
-  };
-
+    setCurrentIndex((i) => (i === sampleTracks.length - 1 ? 0 : i + 1))
+  }
 
   const seekTo = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const time = Number(e.target.value);
-    setProgress(time);
+    const time = Number(e.target.value)
+    setProgress(time)
     if (ytPlayer.current && isReady) {
-      ytPlayer.current.seekTo(time, true);
+      ytPlayer.current.seekTo(time, true)
     }
-  };
+  }
 
   return (
-<div className="bg-black text-white min-h-screen flex flex-col items-center p-6 space-y-6 overflow-y-auto">
-
-      <div
-        ref={playerRef}
-        style={{ maxWidth: "426px", width: "100%", marginBottom: "1rem" }}
-      />
+    <div className="bg-black text-white min-h-screen flex flex-col items-center p-6 space-y-6 overflow-y-auto">
+      <div ref={playerRef} style={{ maxWidth: "426px", width: "100%", marginBottom: "1rem" }} />
 
       <div className="text-center">
         <h2 className="text-2xl font-bold">{currentTrack.title}</h2>
@@ -902,7 +889,7 @@ function MusicApp() {
           <SkipBack className="w-8 h-8" />
         </button>
         <button
-          onClick={() => setIsPlaying(p => !p)}
+          onClick={() => setIsPlaying((p) => !p)}
           className="px-6 py-3 bg-white text-black rounded-full text-lg"
           aria-label={isPlaying ? "Pause" : "Play"}
           type="button"
@@ -924,7 +911,7 @@ function MusicApp() {
         aria-label="Volume control"
       />
     </div>
-  );
+  )
 }
 
 function ContactsApp({
@@ -1048,247 +1035,77 @@ function ContactsApp({
   )
 }
 
-
 function MapsApp({ setActiveApp }: { setActiveApp: (app: string | null) => void }) {
-  const mapRef = useRef<HTMLDivElement | null>(null);
-  const leafletMapRef = useRef<any>(null);
+  const [selectedLocation, setSelectedLocation] = useState("Denver, CO")
+  const [searchQuery, setSearchQuery] = useState("")
 
-  useEffect(() => {
-    (async () => {
-      if (!mapRef.current || leafletMapRef.current) return;
+  const locations = [
+    { name: "Denver, CO", coords: "39.7392°N, 104.9903°W", description: "Mile High City" },
+    { name: "New York, NY", coords: "40.7128°N, 74.0060°W", description: "The Big Apple" },
+    { name: "Los Angeles, CA", coords: "34.0522°N, 118.2437°W", description: "City of Angels" },
+    { name: "Chicago, IL", coords: "41.8781°N, 87.6298°W", description: "Windy City" },
+    { name: "Miami, FL", coords: "25.7617°N, 80.1918°W", description: "Magic City" },
+  ]
 
-      const L = await import("leaflet");
-
-   
-      delete (L.Icon.Default.prototype as any)._getIconUrl;
-      L.Icon.Default.mergeOptions({
-        iconRetinaUrl:
-          "https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon-2x.png",
-        iconUrl: "https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png",
-        shadowUrl: "https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png",
-      });
-
-
-      const denverCoords = [39.7392, -104.9903];
-
-      leafletMapRef.current = L.map(mapRef.current).setView(denverCoords, 12);
-
-      L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
-        attribution:
-          '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
-      }).addTo(leafletMapRef.current);
-
-      L.marker(denverCoords)
-        .addTo(leafletMapRef.current)
-        .bindPopup("Denver, Colorado")
-        .openPopup();
-    })();
-
-    return () => {
-      leafletMapRef.current?.remove();
-      leafletMapRef.current = null;
-    };
-  }, []);
+  const filteredLocations = locations.filter((location) =>
+    location.name.toLowerCase().includes(searchQuery.toLowerCase()),
+  )
 
   return (
-    <div className="h-full flex flex-col bg-gray-900 text-white min-h-screen">
-      <div className="flex items-center p-4">
-          <button
-                onClick={() => {
-                  console.log("Back clicked");
-                  setActiveApp(null);
-                }}
-                className="text-blue-400 mr-4"
-              >
-                ← Back
-              </button>
+    <div className="h-full flex flex-col bg-gray-900 text-white">
+      <div className="flex items-center p-4 bg-gray-800">
+        <button onClick={() => setActiveApp(null)} className="text-blue-400 mr-4">
+          ← Back
+        </button>
         <h2 className="text-xl font-bold">Maps</h2>
       </div>
-      <div className="flex-1 px-4 pb-4">
-        <div
-          ref={mapRef}
-          className="w-full rounded-lg"
-          style={{ height: "500px", minHeight: "300px" }}
-        />
-      </div>
-    </div>
-  );
-}
 
-function CalendarApp() {
-  const days = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"]
-  const today = new Date()
-  const [viewDate, setViewDate] = useState(new Date(today.getFullYear(), today.getMonth(), 1))
-  const [selectedDate, setSelectedDate] = useState("")
-  const [newEvent, setNewEvent] = useState("")
-  const [events, setEvents] = useState<Record<string, string>>({})
-
-  const currentDay = today.getDate()
-  const currentMonth = viewDate.toLocaleString("default", { month: "long" })
-  const currentYear = viewDate.getFullYear()
-
-  const daysInMonth = new Date(currentYear, viewDate.getMonth() + 1, 0).getDate()
-  const firstDayOfMonth = new Date(currentYear, viewDate.getMonth(), 1).getDay()
-
-  const calendarDays = Array.from({ length: 42 }, (_, i) => {
-    const day = i - firstDayOfMonth + 1
-    return day > 0 && day <= daysInMonth ? day : null
-  })
-
-  useEffect(() => {
-    const load = async () => {
-      const stored = await getEvents()
-      setEvents(stored)
-    }
-    load()
-  }, [])
-
-  const handleAddEvent = async () => {
-    if (!selectedDate || !newEvent) return
-    await saveEvent(selectedDate, newEvent)
-    setEvents((prev) => ({ ...prev, [selectedDate]: newEvent }))
-    setNewEvent("")
-  }
-
-  return (
- <div className="h-full overflow-y-auto flex flex-col bg-gray-900 text-white">
-      <div className="flex justify-between items-center mb-6">
-        <button onClick={() => setViewDate(new Date(currentYear, viewDate.getMonth() - 1, 1))}>←</button>
-        <h2 className="text-xl font-bold">
-          {currentMonth} {currentYear}
-        </h2>
-        <button onClick={() => setViewDate(new Date(currentYear, viewDate.getMonth() + 1, 1))}>→</button>
-      </div>
-
-      <div className="grid grid-cols-7 gap-1 mb-2">
-        {days.map((day) => (
-          <div key={day} className="text-center text-sm text-gray-400">
-            {day}
-          </div>
-        ))}
-      </div>
-
-      <div className="grid grid-cols-7 gap-1">
-        {calendarDays.map((day, index) => {
-          const dateStr = day
-            ? `${currentYear}-${String(viewDate.getMonth() + 1).padStart(2, "0")}-${String(day).padStart(2, "0")}`
-            : ""
-
-          return (
-            <div
-              key={index}
-              onClick={() => day && setSelectedDate(dateStr)}
-              className={cn(
-                "h-10 flex items-center justify-center rounded-full text-sm cursor-pointer",
-                dateStr === selectedDate
-                  ? "bg-blue-600"
-                  : day === currentDay &&
-                      viewDate.getMonth() === today.getMonth() &&
-                      viewDate.getFullYear() === today.getFullYear()
-                    ? "bg-white text-black"
-                    : day
-                      ? "hover:bg-gray-800"
-                      : "text-gray-700",
-              )}
-            >
-              {day}
-            </div>
-          )
-        })}
-      </div>
-
-      {selectedDate && (
-        <div className="mt-6">
-          <h3 className="text-lg font-medium mb-2">Add Event for {selectedDate}</h3>
+      <div className="p-4">
+        <div className="flex items-center bg-gray-800 rounded-full px-4 py-2 mb-4">
+          <Search className="w-5 h-5 text-gray-400 mr-2" />
           <input
             type="text"
-            value={newEvent}
-            onChange={(e) => setNewEvent(e.target.value)}
-            placeholder="Event description..."
-            className="w-full p-2 rounded bg-gray-800 border border-gray-700 mb-2"
+            placeholder="Search locations"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="bg-transparent border-none outline-none flex-1 text-white"
           />
-          <button onClick={handleAddEvent} className="bg-blue-600 text-white px-4 py-2 rounded text-sm">
-            Save
-          </button>
         </div>
-      )}
+      </div>
 
-      <div className="mt-6">
-        <h3 className="text-lg font-medium mb-3">Calendar Events</h3>
-        <div className="space-y-3">
-          {Object.entries(events).map(([date, event]) => (
-            <div key={date} className="p-3 bg-gray-800 rounded-lg">
-              <div className="text-sm text-blue-400">{date}</div>
-              <div className="font-medium">{event}</div>
+      <div className="flex-1 px-4 pb-4">
+        <div className="bg-gray-800 rounded-lg p-6 mb-4 text-center">
+          <MapIcon className="w-16 h-16 text-blue-400 mx-auto mb-4" />
+          <h3 className="text-xl font-bold mb-2">{selectedLocation}</h3>
+          <p className="text-gray-400 mb-4">{locations.find((loc) => loc.name === selectedLocation)?.coords}</p>
+          <div className="w-full h-32 bg-gray-700 rounded-lg flex items-center justify-center">
+            <div className="text-center">
+              <div className="w-8 h-8 bg-blue-500 rounded-full mx-auto mb-2"></div>
+              <p className="text-sm text-gray-400">Map View</p>
             </div>
+          </div>
+        </div>
+
+        <div className="space-y-2">
+          <h4 className="text-lg font-medium mb-3">Locations</h4>
+          {filteredLocations.map((location, index) => (
+            <button
+              key={index}
+              onClick={() => setSelectedLocation(location.name)}
+              className={cn(
+                "w-full p-3 rounded-lg text-left transition-colors",
+                selectedLocation === location.name ? "bg-blue-600" : "bg-gray-800 hover:bg-gray-700",
+              )}
+            >
+              <div className="font-medium">{location.name}</div>
+              <div className="text-sm text-gray-400">{location.description}</div>
+              <div className="text-xs text-gray-500">{location.coords}</div>
+            </button>
           ))}
-          {Object.keys(events).length === 0 && <div className="text-center text-gray-500">No events saved</div>}
         </div>
       </div>
     </div>
   )
-}
-
-async function uploadPhoto(file: File, filename: string): Promise<string | null> {
-  try {
-  
-    const { supabase } = await import("@/lib/supabase")
-    const { data, error } = await supabase.storage
-      .from("iphone-tsx") 
-      .upload(filename, file, {
-        cacheControl: "3600",
-        upsert: false,
-      })
-
-    if (error) {
-      console.error("Supabase upload error:", error)
-      return null
-    }
-
-
-    const { publicURL, error: urlError } = supabase.storage
-      .from("photos-bucket")
-      .getPublicUrl(filename)
-
-    if (urlError) {
-      console.error("Supabase public URL error:", urlError)
-      return null
-    }
-
-    return publicURL || null
-  } catch (err) {
-    console.error("Upload exception:", err)
-    return null
-  }
-}
-
-
-async function getPhotos(): Promise<Array<{ filename: string; url: string; created_at: string }>> {
-  try {
-    const { supabase } = await import("@/lib/supabase")
-    const { data, error } = await supabase.storage.from("photos-bucket").list("", {
-      limit: 100,
-      sortBy: { column: "created_at", order: "desc" },
-    })
-
-    if (error) {
-      console.error("Supabase list error:", error)
-      return []
-    }
-
-    if (!data) return []
-
-    
-    const photos = data.map((file) => {
-      const url = supabase.storage.from("photos-bucket").getPublicUrl(file.name).publicURL || ""
-      return { filename: file.name, url, created_at: file.created_at || "" }
-    })
-
-    return photos
-  } catch (err) {
-    console.error("Get photos exception:", err)
-    return []
-  }
 }
 
 function CameraApp() {
@@ -1310,7 +1127,6 @@ function CameraApp() {
     }
     return stopCamera
   }, [showGallery, facingMode])
-
 
   useEffect(() => {
     loadPhotos()
@@ -1339,8 +1155,33 @@ function CameraApp() {
   }
 
   async function loadPhotos() {
-    const photosList = await getPhotos()
-    setPhotos(photosList)
+    try {
+      const { supabase } = await import("@/lib/supabase")
+      const { data, error } = await supabase.storage.from("photos-bucket").list("", {
+        limit: 100,
+        sortBy: { column: "created_at", order: "desc" },
+      })
+
+      if (error) {
+        console.error("Supabase list error:", error)
+        return
+      }
+
+      if (!data) return
+
+      const photosList = data.map((file) => {
+        const { data: urlData } = supabase.storage.from("photos-bucket").getPublicUrl(file.name)
+        return {
+          filename: file.name,
+          url: urlData.publicUrl || "",
+          created_at: file.created_at || "",
+        }
+      })
+
+      setPhotos(photosList)
+    } catch (error) {
+      console.error("Failed to load photos:", error)
+    }
   }
 
   async function capturePhoto() {
@@ -1357,32 +1198,44 @@ function CameraApp() {
     canvas.height = video.videoHeight
     ctx.drawImage(video, 0, 0, canvas.width, canvas.height)
 
-    canvas.toBlob(async (blob) => {
-      if (!blob) {
-        setIsCapturing(false)
-        setIsUploading(false)
-        return
-      }
-
-      const fileName = `photo_${Date.now()}.jpg`
-      const file = new File([blob], fileName, { type: "image/jpeg" })
-
-      try {
-        const url = await uploadPhoto(file, fileName)
-        if (url) {
-          setPhotos((prev) => [{ filename: fileName, url, created_at: new Date().toISOString() }, ...prev])
-        } else {
-          console.warn("Upload returned no URL")
+    canvas.toBlob(
+      async (blob) => {
+        if (!blob) {
+          setIsCapturing(false)
+          setIsUploading(false)
+          return
         }
-      } catch (err) {
-        console.error("Upload failed:", err)
-      } finally {
-        setIsCapturing(false)
-        setIsUploading(false)
-      }
-    }, "image/jpeg", 0.8)
-  }
 
+        const fileName = `photo_${Date.now()}.jpg`
+        const file = new File([blob], fileName, { type: "image/jpeg" })
+
+        try {
+          const { supabase } = await import("@/lib/supabase")
+          const { data, error } = await supabase.storage.from("photos-bucket").upload(fileName, file, {
+            cacheControl: "3600",
+            upsert: false,
+          })
+
+          if (error) {
+            console.error("Supabase upload error:", error)
+          } else {
+            const { data: urlData } = supabase.storage.from("photos-bucket").getPublicUrl(fileName)
+            const url = urlData.publicUrl
+            if (url) {
+              setPhotos((prev) => [{ filename: fileName, url, created_at: new Date().toISOString() }, ...prev])
+            }
+          }
+        } catch (err) {
+          console.error("Upload failed:", err)
+        } finally {
+          setIsCapturing(false)
+          setIsUploading(false)
+        }
+      },
+      "image/jpeg",
+      0.8,
+    )
+  }
 
   async function switchCamera() {
     setFacingMode((current) => (current === "user" ? "environment" : "user"))
@@ -1390,26 +1243,27 @@ function CameraApp() {
 
   if (showGallery) {
     return (
-      <div className="h-full w-full bg-black text-white flex flex-col overflow-y-auto">
-        <div className="flex items-center justify-between p-4 bg-gray-900">
+      <div className="h-full w-full bg-black text-white flex flex-col">
+        <div className="flex items-center justify-between p-4 bg-gray-900 flex-shrink-0">
           <button onClick={() => setShowGallery(false)} className="text-blue-400">
             ← Camera
           </button>
           <h2 className="text-lg font-medium">Photos ({photos.length})</h2>
-          <div />
+          <div className="w-16" />
         </div>
-        <div className="flex-grow overflow-y-auto px-1 pb-6">
+        <div className="flex-1 overflow-y-auto px-2 pb-6">
           {photos.length === 0 ? (
             <div className="text-center text-gray-400 mt-8">
+              <Camera className="w-16 h-16 mx-auto mb-4" />
               <p>No photos yet</p>
-              <p className="text-sm mt-2">Supabase Bucket</p>
+              <p className="text-sm mt-2">Take some photos to see them here</p>
             </div>
           ) : (
             <div className="grid grid-cols-3 gap-1">
               {photos.map((photo, index) => (
                 <div key={index} className="aspect-square">
                   <img
-                    src={photo.url || "/placeholder.svg"}
+                    src={photo.url || "/placeholder.svg?height=150&width=150"}
                     alt={photo.filename}
                     className="w-full h-full object-cover rounded"
                     loading="lazy"
@@ -1424,74 +1278,77 @@ function CameraApp() {
   }
 
   return (
-    <div className="h-full w-full bg-black relative overflow-y-auto">
+    <div className="h-full w-full bg-black relative flex flex-col">
       {permissionDenied && (
         <div className="absolute inset-0 bg-black bg-opacity-90 flex flex-col items-center justify-center text-white p-6 z-20">
           <Camera className="w-16 h-16 mb-4" />
           <p className="text-lg mb-2">Camera access denied</p>
-          <p className="text-center text-sm">
-            Please enable camera permissions in your browser settings.
-          </p>
+          <p className="text-center text-sm">Please enable camera permissions in your browser settings.</p>
         </div>
       )}
 
-      <video ref={videoRef} autoPlay playsInline muted className="w-full h-full object-cover" />
-      <canvas ref={canvasRef} className="hidden" />
-
-      <div className="absolute bottom-0 left-0 right-0 p-4 z-10 flex justify-between items-center bg-black/30 backdrop-blur-md">
-        <button
-          onClick={(e) => {
-            e.stopPropagation()
-            stopCamera()
-            setShowGallery(true)
-          }}
-          className="text-white bg-white/20 px-4 py-2 rounded-full text-sm"
-        >
-          Gallery
-        </button>
-
-        <button
-          onClick={(e) => {
-            e.stopPropagation()
-            switchCamera()
-          }}
-          disabled={isCapturing || isUploading}
-          className={cn(
-            "w-16 h-16 rounded-full border-4 border-white flex items-center justify-center",
-            isCapturing || isUploading ? "bg-red-500" : "bg-white/30"
-          )}
-        >
-          {isUploading ? (
-            <div className="w-6 h-6 border-2 border-white border-t-transparent rounded-full animate-spin" />
-          ) : (
-            <div className="w-12 h-12 bg-white rounded-full" />
-          )}
-        </button>
-
-        <button
-          onClick={(e) => {
-            e.stopPropagation()
-            if (!isCapturing && !isUploading) capturePhoto()
-          }}
-          disabled={isCapturing || isUploading || permissionDenied}
-          className={cn(
-            "w-16 h-16 rounded-full bg-white text-black flex items-center justify-center text-lg font-bold select-none",
-            isCapturing || isUploading ? "opacity-50 cursor-not-allowed" : "hover:bg-gray-300"
-          )}
-        >
-          ●
-        </button>
+      <div className="flex-1 relative">
+        <video ref={videoRef} autoPlay playsInline muted className="w-full h-full object-cover" />
+        <canvas ref={canvasRef} className="hidden" />
       </div>
 
-      {(isUploading || isCapturing) && (
-        <div className="absolute bottom-24 w-full text-center text-white text-sm">Saving photo...</div>
-      )}
+      <div className="flex-shrink-0 p-6 bg-black/50 backdrop-blur-sm">
+        <div className="flex justify-between items-center">
+          <button
+            onClick={() => {
+              stopCamera()
+              setShowGallery(true)
+            }}
+            className="flex flex-col items-center text-white"
+          >
+            <div className="w-12 h-12 bg-white/20 rounded-lg flex items-center justify-center mb-1">
+              <div className="w-6 h-6 bg-white/60 rounded"></div>
+            </div>
+            <span className="text-xs">Gallery</span>
+          </button>
+
+          <button
+            onClick={() => {
+              if (!isCapturing && !isUploading) capturePhoto()
+            }}
+            disabled={isCapturing || isUploading || permissionDenied}
+            className={cn(
+              "w-20 h-20 rounded-full border-4 border-white flex items-center justify-center",
+              isCapturing || isUploading ? "bg-red-500" : "bg-white/30 hover:bg-white/40",
+            )}
+          >
+            {isUploading ? (
+              <div className="w-8 h-8 border-2 border-white border-t-transparent rounded-full animate-spin" />
+            ) : (
+              <div className="w-16 h-16 bg-white rounded-full"></div>
+            )}
+          </button>
+
+          <button
+            onClick={switchCamera}
+            disabled={isCapturing || isUploading}
+            className="flex flex-col items-center text-white"
+          >
+            <div className="w-12 h-12 bg-white/20 rounded-lg flex items-center justify-center mb-1">
+              <div className="w-6 h-6 border-2 border-white/60 rounded-full flex items-center justify-center">
+                <div className="w-2 h-2 bg-white/60 rounded-full"></div>
+              </div>
+            </div>
+            <span className="text-xs">Flip</span>
+          </button>
+        </div>
+
+        {(isUploading || isCapturing) && (
+          <div className="text-center text-white text-sm mt-4">{isCapturing ? "Capturing..." : "Saving photo..."}</div>
+        )}
+      </div>
 
       {!stream && !permissionDenied && (
         <div className="absolute inset-0 bg-black flex items-center justify-center">
           <div className="text-center text-white p-4">
             <Camera className="w-16 h-16 mx-auto mb-4 text-gray-400" />
-            <p className="text-lg mb-2">Allow camera access to take photos</p>
+            <p className="text-lg mb-2">Starting camera...</p>
+            <p className="text-sm text-gray-400">Please allow camera access</p>
           </div>
         </div>
       )}
@@ -1499,7 +1356,210 @@ function CameraApp() {
   )
 }
 
+function NotesApp() {
+  const [notes, setNotes] = useState<
+    Array<{ id: string; title: string; content: string; created_at: string; completed?: boolean }>
+  >([])
+  const [showAddForm, setShowAddForm] = useState(false)
+  const [newTitle, setNewTitle] = useState("")
+  const [newContent, setNewContent] = useState("")
+  const [isSubmitting, setIsSubmitting] = useState(false)
+  const [searchTerm, setSearchTerm] = useState("")
+  const [viewMode, setViewMode] = useState<"notes" | "todos">("notes")
 
+  useEffect(() => {
+    loadNotes()
+  }, [])
+
+  const loadNotes = async () => {
+    try {
+      const { redis } = await import("@/lib/redis")
+      const notesData = (await redis.hgetall("notes")) || {}
+      const notesList = Object.entries(notesData).map(([id, data]) => {
+        const parsed = JSON.parse(data as string)
+        return { id, ...parsed }
+      })
+      notesList.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
+      setNotes(notesList)
+    } catch (error) {
+      console.error("Failed to load notes:", error)
+    }
+  }
+
+  const handleAddNote = async (e: React.FormEvent) => {
+    e.preventDefault()
+    if (!newTitle.trim()) return
+
+    setIsSubmitting(true)
+    try {
+      const { redis } = await import("@/lib/redis")
+      const id = Date.now().toString()
+      const noteData = {
+        title: newTitle.trim(),
+        content: newContent.trim(),
+        created_at: new Date().toISOString(),
+        completed: viewMode === "todos" ? false : undefined,
+      }
+
+      await redis.hset("notes", { [id]: JSON.stringify(noteData) })
+      setNewTitle("")
+      setNewContent("")
+      setShowAddForm(false)
+      await loadNotes()
+    } catch (error) {
+      console.error("Failed to add note:", error)
+    } finally {
+      setIsSubmitting(false)
+    }
+  }
+
+  const handleDeleteNote = async (id: string) => {
+    try {
+      const { redis } = await import("@/lib/redis")
+      await redis.hdel("notes", id)
+      await loadNotes()
+    } catch (error) {
+      console.error("Failed to delete note:", error)
+    }
+  }
+
+  const handleToggleTodo = async (id: string) => {
+    try {
+      const note = notes.find((n) => n.id === id)
+      if (!note) return
+
+      const { redis } = await import("@/lib/redis")
+      const updatedNote = { ...note, completed: !note.completed }
+      await redis.hset("notes", { [id]: JSON.stringify(updatedNote) })
+      await loadNotes()
+    } catch (error) {
+      console.error("Failed to toggle todo:", error)
+    }
+  }
+
+  const filteredNotes = notes.filter((note) => {
+    const matchesSearch =
+      note.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      note.content.toLowerCase().includes(searchTerm.toLowerCase())
+    const matchesMode = viewMode === "notes" ? note.completed === undefined : note.completed !== undefined
+    return matchesSearch && matchesMode
+  })
+
+  return (
+    <div className="h-full bg-gray-900 text-white flex flex-col">
+      <div className="p-4 bg-gray-800">
+        <div className="flex items-center justify-between mb-4">
+          <div className="flex bg-gray-700 rounded-lg p-1">
+            <button
+              onClick={() => setViewMode("notes")}
+              className={cn(
+                "px-3 py-1 rounded text-sm",
+                viewMode === "notes" ? "bg-blue-600 text-white" : "text-gray-300",
+              )}
+            >
+              Notes
+            </button>
+            <button
+              onClick={() => setViewMode("todos")}
+              className={cn(
+                "px-3 py-1 rounded text-sm",
+                viewMode === "todos" ? "bg-blue-600 text-white" : "text-gray-300",
+              )}
+            >
+              Todos
+            </button>
+          </div>
+          <button onClick={() => setShowAddForm(!showAddForm)} className="bg-blue-600 text-white p-2 rounded-full">
+            {showAddForm ? "×" : "+"}
+          </button>
+        </div>
+
+        <div className="flex items-center bg-gray-700 rounded-full px-4 py-2">
+          <Search className="w-5 h-5 text-gray-400 mr-2" />
+          <input
+            type="text"
+            placeholder={`Search ${viewMode}...`}
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="bg-transparent border-none outline-none flex-1 text-white"
+          />
+        </div>
+      </div>
+
+      {showAddForm && (
+        <div className="p-4 bg-gray-800 border-b border-gray-700">
+          <form onSubmit={handleAddNote} className="space-y-3">
+            <input
+              type="text"
+              value={newTitle}
+              onChange={(e) => setNewTitle(e.target.value)}
+              className="w-full bg-gray-700 text-white px-3 py-2 rounded-md"
+              placeholder={viewMode === "notes" ? "Note title..." : "Todo item..."}
+              required
+            />
+            {viewMode === "notes" && (
+              <textarea
+                value={newContent}
+                onChange={(e) => setNewContent(e.target.value)}
+                className="w-full bg-gray-700 text-white px-3 py-2 rounded-md h-20 resize-none"
+                placeholder="Note content..."
+              />
+            )}
+            <button type="submit" className="w-full bg-blue-600 text-white py-2 rounded-md" disabled={isSubmitting}>
+              {isSubmitting ? "Saving..." : `Add ${viewMode === "notes" ? "Note" : "Todo"}`}
+            </button>
+          </form>
+        </div>
+      )}
+
+      <div className="flex-1 overflow-y-auto p-4">
+        {filteredNotes.length === 0 ? (
+          <div className="text-center text-gray-400 mt-8">
+            <FileText className="w-16 h-16 mx-auto mb-4" />
+            <p>No {viewMode} yet</p>
+            <p className="text-sm mt-2">Tap + to create your first {viewMode === "notes" ? "note" : "todo"}</p>
+          </div>
+        ) : (
+          <div className="space-y-3">
+            {filteredNotes.map((note) => (
+              <div key={note.id} className="bg-gray-800 rounded-lg p-4">
+                <div className="flex items-start justify-between">
+                  <div className="flex-1">
+                    {viewMode === "todos" && (
+                      <div className="flex items-center mb-2">
+                        <button
+                          onClick={() => handleToggleTodo(note.id)}
+                          className={cn(
+                            "w-5 h-5 rounded border-2 mr-3 flex items-center justify-center",
+                            note.completed ? "bg-green-600 border-green-600" : "border-gray-400",
+                          )}
+                        >
+                          {note.completed && <span className="text-white text-xs">✓</span>}
+                        </button>
+                      </div>
+                    )}
+                    <h3 className={cn("font-medium mb-1", note.completed ? "line-through text-gray-500" : "")}>
+                      {note.title}
+                    </h3>
+                    {note.content && (
+                      <p className={cn("text-sm text-gray-400", note.completed ? "line-through" : "")}>
+                        {note.content}
+                      </p>
+                    )}
+                    <p className="text-xs text-gray-500 mt-2">{new Date(note.created_at).toLocaleDateString()}</p>
+                  </div>
+                  <button onClick={() => handleDeleteNote(note.id)} className="text-red-500 p-1 ml-2">
+                    ×
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+    </div>
+  )
+}
 
 function BrowserApp() {
   const [url, setUrl] = useState("")
@@ -1515,7 +1575,7 @@ function BrowserApp() {
     { name: "Google", url: "https://www.google.com/search?igu=1" },
     { name: "Meta Mirror", url: "https://meta-mirror.vercel.app" },
     { name: "NeoMoji", url: "https://neomoji-beta.netlify.app" },
-    { name: "NES", url: "https://tyson.JesseJesse.com" },
+    { name: "NES", url: "https://tyson.jessejesse.com" },
   ]
 
   const formatUrl = (inputUrl: string) => {
@@ -1584,11 +1644,10 @@ function BrowserApp() {
 
   return (
     <div className="h-full bg-gray-200 flex flex-col">
-    
       <div className="bg-white border-b border-gray-200 p-3">
         <div className="flex items-center gap-2 mb-3">
           <button onClick={goHome} className="p-2 rounded-full bg-gray-100 hover:bg-gray-200" title="Home">
-          🏛️
+            🏛️
           </button>
           <button
             onClick={goBack}
@@ -1612,7 +1671,6 @@ function BrowserApp() {
           </button>
         </div>
 
-       
         <form onSubmit={handleSubmit} className="flex items-center gap-2">
           <div className="flex-1 relative">
             <input
@@ -1634,7 +1692,6 @@ function BrowserApp() {
         </form>
       </div>
 
-    
       <div className="flex-1 relative">
         {currentUrl ? (
           <iframe
@@ -1650,9 +1707,7 @@ function BrowserApp() {
             <div className="text-center mb-6">
               <Globe className="w-16 h-16 mx-auto mb-4 text-gray-400" />
               <h2 className="text-2xl font-bold text-gray-800 mb-2">Random Web Browser</h2>
-             <p className="text-center text-emerald-700 text-sm">
-            ¯\_(ツ)_/¯
-             </p>
+              <p className="text-center text-emerald-700 text-sm">¯\_(ツ)_/¯</p>
             </div>
 
             <div className="mb-6">
@@ -1745,10 +1800,8 @@ function CalculatorApp() {
 
   return (
     <div className="flex flex-col h-full bg-black text-white">
-    
       <div className="h-16 flex items-end justify-end px-4 text-4xl font-light">{display}</div>
 
-     
       <div className="grid grid-cols-4 gap-x-1 gap-y-1 p-2 pb-4">
         <CalcButton onClick={handleClearClick} className="bg-gray-500">
           AC
@@ -1812,5 +1865,16 @@ function CalcButton({
     >
       {children}
     </button>
+  )
+}
+
+function CalendarApp() {
+  return (
+    <div className="flex flex-col h-full bg-gray-900 text-white">
+      <div className="h-16 flex items-center justify-center text-2xl font-light">Calendar</div>
+      <div className="flex-1 flex items-center justify-center">
+        <p className="text-gray-400">Coming soon...</p>
+      </div>
+    </div>
   )
 }
