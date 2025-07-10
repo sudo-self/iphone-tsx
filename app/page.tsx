@@ -726,9 +726,9 @@ function PhoneApp({ contacts }: { contacts: Array<{ name: string; phone: string 
 const sampleTracks = [
   {
     id: 1,
-    title: "Relaxing Tune",
-    artist: "Artist A",
-    url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3",
+    title: "You Only Live Once",
+    artist: "The Strokes",
+    url: "https://firebasestorage.googleapis.com/v0/b/jessejessexyz.appspot.com/o/YouOnlyLiveOnce.mp3?alt=media&token=0ff922f6-be29-48dd-b9c2-9138132bb160",
   },
   {
     id: 2,
