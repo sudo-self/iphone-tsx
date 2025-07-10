@@ -732,15 +732,21 @@ const sampleTracks = [
   },
   {
     id: 2,
-    title: "Upbeat Beat",
-    artist: "Artist B",
-    url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3",
+    title: "I was running through the six",
+    artist: "Drake",
+    url: "https://firebasestorage.googleapis.com/v0/b/jessejessexyz.appspot.com/o/mp3%2F06.%20I%20was%20running%20through%20the%20six%20with%20my%20woes%20-%20drake%20%5BjqScSp5l-AQ%5D.mp3?alt=media&token=63af8aa1-5494-4edf-b783-ac7d6077448e",
   },
   {
     id: 3,
-    title: "Chill Vibes",
-    artist: "Artist C",
-    url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3",
+    title: "Undercover",
+    artist: "Lane 8",
+    url: "https://firebasestorage.googleapis.com/v0/b/jessejessexyz.appspot.com/o/mp3%2F14.%20Lane%208%20-%20Undercover%20feat.%20Matthew%20Dear%20%5BHSydHbGdIcY%5D.mp3?alt=media&token=dbc5121c-3037-4c4c-b366-68af0c1b1092",
+  },
+   {
+    id: 4,
+    title: "King of Everything",
+    artist: "Wiz Kalifa",
+    url: "https://firebasestorage.googleapis.com/v0/b/jessejessexyz.appspot.com/o/mp3%2F33.%20Wiz%20Khalifa%20-%20King%20of%20Everything%20%5BOfficial%20Video%5D%20%5B8d0cm_hcQes%5D.mp3?alt=media&token=d9aefd07-31f8-40d3-ba07-ab86c618c870",
   },
 ]
 
