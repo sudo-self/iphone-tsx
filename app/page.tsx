@@ -26,6 +26,7 @@ import { getContacts } from "@/lib/redis"
 import { saveEvent, getEvents } from "@/lib/redis"
 import { type PhoneSettings, defaultSettings, loadSettings, saveSettings } from "@/lib/settings"
 import { SkipBack, SkipForward } from "lucide-react"
+import MusicApp from "../components/MusicApp";
 
 
 export default function SmartphoneUI() {
