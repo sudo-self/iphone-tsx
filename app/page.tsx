@@ -749,76 +749,85 @@ const sampleTracks = [
   {
     id: 4,
     title: "King of Everything",
-    artist: "Wiz Kalifa",
+    artist: "Wiz Khalifa",
     url: "https://firebasestorage.googleapis.com/v0/b/jessejessexyz.appspot.com/o/mp3%2F33.%20Wiz%20Khalifa%20-%20King%20of%20Everything%20%5BOfficial%20Video%5D%20%5B8d0cm_hcQes%5D.mp3?alt=media&token=d9aefd07-31f8-40d3-ba07-ab86c618c870",
     image: "https://upload.wikimedia.org/wikipedia/en/4/4f/Wiz_Khalifa_-_Khalifa.png",
   },
-]
-
+];
 
 function MusicApp() {
-  const [currentTrackIndex, setCurrentTrackIndex] = useState(0)
-  const [isPlaying, setIsPlaying] = useState(false)
-  const audioRef = useRef<HTMLAudioElement | null>(null)
+  const [currentTrackIndex, setCurrentTrackIndex] = useState(0);
+  const [isPlaying, setIsPlaying] = useState(false);
+  const audioRef = useRef<HTMLAudioElement | null>(null);
 
   useEffect(() => {
     if (audioRef.current) {
       if (isPlaying) {
-        audioRef.current.play()
+        audioRef.current.play();
       } else {
-        audioRef.current.pause()
+        audioRef.current.pause();
       }
     }
-  }, [isPlaying, currentTrackIndex])
+  }, [isPlaying, currentTrackIndex]);
 
-  const playPauseToggle = () => setIsPlaying(!isPlaying)
+  const playPauseToggle = () => setIsPlaying(!isPlaying);
 
   const playPrev = () => {
-    setCurrentTrackIndex((idx) => (idx === 0 ? sampleTracks.length - 1 : idx - 1))
-    setIsPlaying(true)
-  }
+    setCurrentTrackIndex((idx) => (idx === 0 ? sampleTracks.length - 1 : idx - 1));
+    setIsPlaying(true);
+  };
 
   const playNext = () => {
-    setCurrentTrackIndex((idx) => (idx === sampleTracks.length - 1 ? 0 : idx + 1))
-    setIsPlaying(true)
-  }
+    setCurrentTrackIndex((idx) => (idx === sampleTracks.length - 1 ? 0 : idx + 1));
+    setIsPlaying(true);
+  };
 
-  const currentTrack = sampleTracks[currentTrackIndex]
+  const currentTrack = sampleTracks[currentTrackIndex];
 
-return (
-  <div className="h-full bg-gray-900 text-white flex flex-col items-center justify-center p-4">
-    <audio ref={audioRef} src={currentTrack.url} />
+  return (
+    <div className="h-full bg-gray-900 text-white flex flex-col items-center justify-center p-4">
+      <audio ref={audioRef} src={currentTrack.url} />
 
-    <img
-      src={currentTrack.image}
-      alt={`${currentTrack.title} cover`}
-      className="w-40 h-40 rounded-lg object-cover mb-4 shadow-lg"
-    />
+      <img
+        src={currentTrack.image}
+        alt={`${currentTrack.title} cover`}
+        className="w-40 h-40 rounded-lg object-cover mb-4 shadow-lg"
+      />
 
-    <div className="mb-6 text-center">
-      <h2 className="text-2xl font-semibold">{currentTrack.title}</h2>
-      <p className="text-gray-400">{currentTrack.artist}</p>
+      <div className="mb-6 text-center">
+        <h2 className="text-2xl font-semibold">{currentTrack.title}</h2>
+        <p className="text-gray-400">{currentTrack.artist}</p>
+      </div>
+
+      <div className="flex items-center gap-8">
+        <button
+          onClick={playPrev}
+          aria-label="Previous Track"
+          className="p-3 rounded-full hover:bg-gray-800"
+        >
+          <SkipBack className="w-8 h-8" />
+        </button>
+
+        <button
+          onClick={playPauseToggle}
+          aria-label={isPlaying ? "Pause" : "Play"}
+          className="p-4 rounded-full bg-white text-black flex items-center justify-center"
+        >
+          {isPlaying ? <Pause className="w-8 h-8" /> : <Play className="w-8 h-8" />}
+        </button>
+
+        <button
+          onClick={playNext}
+          aria-label="Next Track"
+          className="p-3 rounded-full hover:bg-gray-800"
+        >
+          <SkipForward className="w-8 h-8" />
+        </button>
+      </div>
     </div>
+  );
+}
 
-    <div className="flex items-center gap-8">
-      <button onClick={playPrev} aria-label="Previous Track" className="p-3 rounded-full hover:bg-gray-800">
-        <SkipBack className="w-8 h-8" />
-      </button>
-
-      <button
-        onClick={playPauseToggle}
-        aria-label={isPlaying ? "Pause" : "Play"}
-        className="p-4 rounded-full bg-white text-black flex items-center justify-center"
-      >
-        {isPlaying ? <Pause className="w-8 h-8" /> : <Play className="w-8 h-8" />}
-      </button>
-
-      <button onClick={playNext} aria-label="Next Track" className="p-3 rounded-full hover:bg-gray-800">
-        <SkipForward className="w-8 h-8" />
-      </button>
-    </div>
-  </div>
-)
 
 
 // Contacts App
