@@ -1055,7 +1055,7 @@ interface MapsAppProps {
   setActiveApp: (app: string | null) => void;
 }
 
-export default function MapsApp({ setActiveApp }: MapsAppProps) {
+function MapsApp({ setActiveApp }: MapsAppProps) {
   const mapRef = useRef<HTMLDivElement | null>(null);
   const leafletMapRef = useRef<L.Map | null>(null);
 
