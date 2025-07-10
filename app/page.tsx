@@ -347,8 +347,8 @@ function SettingsApp({
   const [activeSection, setActiveSection] = useState<string | null>(null)
 
   const settingSections = [
-    { id: "display", name: "Display & Brightness", icon: "🌟" },
-    { id: "wallpaper", name: "Wallpaper", icon: "🖼️" },
+    { id: "display", name: "Display", icon: "🤩" },
+    { id: "wallpaper", name: "Wallpaper", icon: "📱</" },
     { id: "general", name: "General", icon: "⚙️" },
     { id: "about", name: "About", icon: "ℹ️" },
   ]
@@ -678,7 +678,7 @@ function SettingsApp({
         </div>
 
         <div className="mt-8 text-center text-cyan-500 text-sm">
-          <p>¯\_(ツ)_/¯ 📱</p>
+          <p>¯\_(ツ)_/¯</p>
         </div>
       </div>
     </div>
@@ -927,8 +927,6 @@ function MusicApp() {
   );
 }
 
-
-// Contacts App
 function ContactsApp({
   contacts,
   onContactsChange,
@@ -1117,14 +1115,6 @@ function MapsApp({ setActiveApp }: { setActiveApp: (app: string | null) => void 
   );
 }
 
-
-
-
-
-
-
-
-// Calendar App
 function CalendarApp() {
   const days = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"]
   const today = new Date()
@@ -1593,12 +1583,12 @@ function BrowserApp() {
   }
 
   return (
-    <div className="h-full bg-gray-100 flex flex-col">
-      {/* Toolbar */}
+    <div className="h-full bg-gray-200 flex flex-col">
+    
       <div className="bg-white border-b border-gray-200 p-3">
         <div className="flex items-center gap-2 mb-3">
           <button onClick={goHome} className="p-2 rounded-full bg-gray-100 hover:bg-gray-200" title="Home">
-            🏠
+          🏛️
           </button>
           <button
             onClick={goBack}
@@ -1660,11 +1650,13 @@ function BrowserApp() {
             <div className="text-center mb-6">
               <Globe className="w-16 h-16 mx-auto mb-4 text-gray-400" />
               <h2 className="text-2xl font-bold text-gray-800 mb-2">Random Web Browser</h2>
-              <p className="text-gray-600 text-sm">(iframe loader)</p>
+             <p className="text-center text-emerald-700 text-sm">
+            ¯\_(ツ)_/¯
+             </p>
             </div>
 
             <div className="mb-6">
-              <h3 className="text-lg font-semibold text-gray-800 mb-3">Quick Links</h3>
+              <h3 className="text-lg font-semibold text-gray-800 mb-3">Most Visited</h3>
               <div className="grid grid-cols-2 gap-2">
                 {quickLinks.map((link, index) => (
                   <button
@@ -1686,8 +1678,8 @@ function BrowserApp() {
               </div>
             </div>
 
-            <div className="text-center text-sm text-gray-500">
-              <p>Tip: enter website URLs https://</p>
+            <div className="text-center text-sm text-emerald-700">
+              <p>Tip: enter search terms website URLs</p>
             </div>
           </div>
         )}
