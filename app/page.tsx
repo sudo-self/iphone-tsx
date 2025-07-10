@@ -25,8 +25,7 @@ import { cn } from "@/lib/utils"
 import { getContacts } from "@/lib/redis"
 import { saveEvent, getEvents } from "@/lib/redis"
 import { type PhoneSettings, defaultSettings, loadSettings, saveSettings } from "@/lib/settings"
-import { Play, Pause, SkipBack, SkipForward } from "lucide-react"
-
+import { SkipBack, SkipForward } from "lucide-react"
 
 
 export default function SmartphoneUI() {
@@ -735,9 +734,7 @@ interface Track {
   id: number
   title: string
   artist: string
-  url: string
-  image: string
-  videoID?: string
+  videoID: string
 }
 
 const sampleTracks: Track[] = [
@@ -745,25 +742,25 @@ const sampleTracks: Track[] = [
     id: 1,
     title: "You Only Live Once",
     artist: "The Strokes",
-    videoId: "pT68FS3YbQ4",
+    videoID: "pT68FS3YbQ4",
   },
   {
     id: 2,
     title: "I was running through the six",
     artist: "Drake",
-    videoId: "jqScSp5l-AQ",
+    videoID: "jqScSp5l-AQ",
   },
   {
     id: 3,
     title: "Undercover",
     artist: "Lane 8",
-    videoId: "HSydHbGdIcY",
+    videoID: "HSydHbGdIcY",
   },
   {
     id: 4,
     title: "King of Everything",
     artist: "Wiz Khalifa",
-    videoId: "8d0cm_hcQes",
+    videoID: "8d0cm_hcQes",
   },
 ]
 
@@ -779,11 +776,11 @@ function YouTubeMusicPlayer() {
     tag.src = "https://www.youtube.com/iframe_api"
     document.body.appendChild(tag)
 
-    ;(window as any).onYouTubeIframeAPIReady = () => {
+    window.onYouTubeIframeAPIReady = () => {
       ytPlayer.current = new window.YT.Player(playerRef.current, {
         height: "360",
         width: "640",
-        videoId: currentTrack.videoId,
+        videoId: currentTrack.videoID,
         events: {
           onReady: (event: any) => event.target.playVideo(),
         },
@@ -791,15 +788,13 @@ function YouTubeMusicPlayer() {
     }
 
     return () => {
-      if (ytPlayer.current) {
-        ytPlayer.current.destroy()
-      }
+      if (ytPlayer.current) ytPlayer.current.destroy()
     }
   }, [])
 
   useEffect(() => {
     if (ytPlayer.current?.cueVideoById) {
-      ytPlayer.current.cueVideoById(currentTrack.videoId)
+      ytPlayer.current.cueVideoById(currentTrack.videoID)
       ytPlayer.current.playVideo()
     }
   }, [currentIndex])
@@ -828,8 +823,6 @@ function YouTubeMusicPlayer() {
     </div>
   )
 }
-
-
 
 
 // Contacts App
