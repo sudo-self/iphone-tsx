@@ -25,7 +25,7 @@ import { cn } from "@/lib/utils"
 import { getContacts } from "@/lib/redis"
 import { saveEvent, getEvents } from "@/lib/redis"
 import { type PhoneSettings, defaultSettings, loadSettings, saveSettings } from "@/lib/settings"
-import { SkipBack, SkipForward } from "lucide-react"
+import { SkipBack, SkipForward } from "lucide-react";
 
 
 export default function SmartphoneUI() {
@@ -723,6 +723,7 @@ function PhoneApp({ contacts }: { contacts: Array<{ name: string; phone: string 
   )
 }
 
+
 declare global {
   interface Window {
     YT: any;
@@ -734,7 +735,7 @@ interface Track {
   id: number;
   title: string;
   artist: string;
-  videoId: string; // keep this camelCase for clarity & consistency
+  videoId: string;
 }
 
 const sampleTracks: Track[] = [
@@ -764,7 +765,7 @@ const sampleTracks: Track[] = [
   },
 ];
 
- function MusicApp() {
+function MusicApp() {
   const playerRef = useRef<HTMLDivElement>(null);
   const ytPlayer = useRef<any>(null);
 
@@ -777,7 +778,7 @@ const sampleTracks: Track[] = [
 
   const currentTrack = sampleTracks[currentIndex];
 
-
+  // Load YouTube IFrame API
   useEffect(() => {
     if (!(window as any).YT) {
       const tag = document.createElement("script");
@@ -787,18 +788,22 @@ const sampleTracks: Track[] = [
 
     window.onYouTubeIframeAPIReady = () => {
       ytPlayer.current = new window.YT.Player(playerRef.current, {
-        height: "360",
-        width: "640",
+        height: "240", // smaller height
+        width: "426",  // smaller width (16:9 aspect)
         videoId: currentTrack.videoId,
-        playerVars: { autoplay: 0, controls: 0 },
+        playerVars: {
+          autoplay: 0,
+          controls: 1,  // show native controls
+          modestbranding: 1,
+          rel: 0,
+        },
         events: {
-          onReady: (event: any) => {
+          onReady: () => {
             setIsReady(true);
             ytPlayer.current.setVolume(volume);
             setDuration(ytPlayer.current.getDuration());
           },
           onStateChange: (e: any) => {
-            // Video ended: play next track
             if (e.data === window.YT.PlayerState.ENDED) {
               playNext();
             }
@@ -808,7 +813,7 @@ const sampleTracks: Track[] = [
     };
   }, []);
 
-  // When currentIndex changes, cue new video if player ready
+  // Load new video when currentIndex or readiness changes
   useEffect(() => {
     if (ytPlayer.current && isReady) {
       ytPlayer.current.loadVideoById(currentTrack.videoId);
@@ -816,18 +821,19 @@ const sampleTracks: Track[] = [
     }
   }, [currentIndex, isReady]);
 
-  // Play/pause control
+  // Play or pause the video
   useEffect(() => {
     if (!ytPlayer.current) return;
-    isPlaying ? ytPlayer.current.playVideo() : ytPlayer.current.pauseVideo();
+    if (isPlaying) ytPlayer.current.playVideo();
+    else ytPlayer.current.pauseVideo();
   }, [isPlaying]);
 
-  // Volume control
+  // Update volume
   useEffect(() => {
     if (ytPlayer.current) ytPlayer.current.setVolume(volume);
   }, [volume]);
 
-  // Progress updater every second
+  // Update progress and duration every second
   useEffect(() => {
     const interval = setInterval(() => {
       if (ytPlayer.current && ytPlayer.current.getCurrentTime) {
@@ -838,19 +844,73 @@ const sampleTracks: Track[] = [
     return () => clearInterval(interval);
   }, []);
 
+  // Play previous track
   const playPrev = () => {
     setCurrentIndex((i) => (i === 0 ? sampleTracks.length - 1 : i - 1));
   };
 
+  // Play next track
   const playNext = () => {
     setCurrentIndex((i) => (i === sampleTracks.length - 1 ? 0 : i + 1));
   };
 
+  // Seek video to selected time
   const seekTo = (e: React.ChangeEvent<HTMLInputElement>) => {
     const time = Number(e.target.value);
     setProgress(time);
     if (ytPlayer.current) ytPlayer.current.seekTo(time, true);
   };
+
+  return (
+    <div className="bg-black text-white min-h-screen flex flex-col items-center justify-center p-6 space-y-6">
+      <div
+        ref={playerRef}
+        style={{ maxWidth: "426px", width: "100%", marginBottom: "1rem" }}
+      />
+
+      <div className="text-center">
+        <h2 className="text-2xl font-bold">{currentTrack.title}</h2>
+        <p className="text-gray-400">{currentTrack.artist}</p>
+      </div>
+
+      <input
+        type="range"
+        min={0}
+        max={duration}
+        value={progress}
+        onChange={seekTo}
+        className="w-full max-w-md"
+      />
+
+      <div className="flex items-center gap-8">
+        <button onClick={playPrev} aria-label="Previous Track">
+          <SkipBack className="w-8 h-8" />
+        </button>
+        <button
+          onClick={() => setIsPlaying((p) => !p)}
+          className="px-6 py-3 bg-white text-black rounded-full text-lg"
+          aria-label={isPlaying ? "Pause" : "Play"}
+        >
+          {isPlaying ? "Pause" : "Play"}
+        </button>
+        <button onClick={playNext} aria-label="Next Track">
+          <SkipForward className="w-8 h-8" />
+        </button>
+      </div>
+
+      <input
+        type="range"
+        min={0}
+        max={100}
+        value={volume}
+        onChange={(e) => setVolume(Number(e.target.value))}
+        className="w-full max-w-md"
+        aria-label="Volume control"
+      />
+    </div>
+  );
+}
+
 
   return (
     <div className="bg-black text-white min-h-screen flex flex-col items-center justify-center p-6 space-y-6">
