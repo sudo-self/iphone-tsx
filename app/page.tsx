@@ -1061,16 +1061,28 @@ function MapsApp({ setActiveApp }: { setActiveApp: (app: string | null) => void 
 
       const L = await import("leaflet");
 
-      leafletMapRef.current = L.map(mapRef.current).setView([40.7128, -74.006], 12);
+   
+      delete (L.Icon.Default.prototype as any)._getIconUrl;
+      L.Icon.Default.mergeOptions({
+        iconRetinaUrl:
+          "https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon-2x.png",
+        iconUrl: "https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png",
+        shadowUrl: "https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png",
+      });
+
+
+      const denverCoords = [39.7392, -104.9903];
+
+      leafletMapRef.current = L.map(mapRef.current).setView(denverCoords, 12);
 
       L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
         attribution:
           '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
       }).addTo(leafletMapRef.current);
 
-      L.marker([40.7128, -74.006])
+      L.marker(denverCoords)
         .addTo(leafletMapRef.current)
-        .bindPopup("New York City")
+        .bindPopup("Denver, Colorado")
         .openPopup();
     })();
 
@@ -1099,24 +1111,6 @@ function MapsApp({ setActiveApp }: { setActiveApp: (app: string | null) => void 
   );
 }
 
-function Page() {
-  const [activeApp, setActiveApp] = useState<string | null>(null);
-
-  return (
-    <main className="flex items-center justify-center min-h-screen bg-gray-800 text-white">
-      {activeApp === "Maps" ? (
-        <MapsApp setActiveApp={setActiveApp} />
-      ) : (
-        <button
-          onClick={() => setActiveApp("Maps")}
-          className="p-4 bg-blue-600 rounded hover:bg-blue-700 transition"
-        >
-          Open Maps
-        </button>
-      )}
-    </main>
-  );
-}
 
 
 
