@@ -348,7 +348,7 @@ function SettingsApp({
 
   const settingSections = [
     { id: "display", name: "Display", icon: "🤩" },
-    { id: "wallpaper", name: "Wallpaper", icon: "📱</" },
+    { id: "wallpaper", name: "Wallpaper", icon: "📱" },
     { id: "general", name: "General", icon: "⚙️" },
     { id: "about", name: "About", icon: "ℹ️" },
   ]
