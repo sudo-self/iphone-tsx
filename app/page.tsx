@@ -1357,9 +1357,10 @@ function CameraApp() {
 }
 
 function NotesApp() {
-  const [notes, setNotes] = useState<
-    Array<{ id: string; title: string; content: string; created_at: string; completed?: boolean }>
-  >([])
+const [notes, setNotes] = useState<
+  Array<{ id: string; title: string; content: string; created_at: string; completed?: boolean; type: "notes" | "todos" }>
+>([])
+
   const [showAddForm, setShowAddForm] = useState(false)
   const [newTitle, setNewTitle] = useState("")
   const [newContent, setNewContent] = useState("")
