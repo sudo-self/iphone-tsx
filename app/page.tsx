@@ -20,6 +20,7 @@ import {
   Globe,
   Settings,
   Music,
+  Maps,
 } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { getContacts } from "@/lib/redis"
