@@ -186,7 +186,7 @@ export default function SmartphoneUI() {
               <Wifi className="w-4 h-4" />
               <div className="flex items-center">
                 {settings.batteryPercentage && (
-                  <span className="text-xs mr-1 text-green-700">
+                  <span className="text-xs mr-1 text-cyan-500">
                     {batteryLevel}%
                   </span>
                 )}
