@@ -2207,7 +2207,7 @@ function CalendarApp() {
     
 function Game() {
   const GRID_SIZE = 20
-  const CANVAS_SIZE = 200 // Smaller size for the icon view
+  const CANVAS_SIZE = 200 
   const INITIAL_SNAKE = [{ x: 5, y: 5 }]
   const INITIAL_FOOD = { x: 8, y: 8 }
   const INITIAL_DIRECTION = { x: 0, y: 0 }
@@ -2220,7 +2220,7 @@ function Game() {
   const [food, setFood] = useState<Position>(INITIAL_FOOD)
   const [direction, setDirection] = useState<Direction>(INITIAL_DIRECTION)
 
-  // Simplified version for the icon view
+
   useEffect(() => {
     const canvas = canvasRef.current
     if (!canvas) return
@@ -2228,11 +2228,11 @@ function Game() {
     const ctx = canvas.getContext('2d')
     if (!ctx) return
 
-    // Clear canvas
+  
     ctx.fillStyle = "rgba(0, 0, 0, 0.8)"
     ctx.fillRect(0, 0, CANVAS_SIZE, CANVAS_SIZE)
 
-    // Draw grid
+
     ctx.strokeStyle = "rgba(0, 255, 255, 0.1)"
     ctx.lineWidth = 0.5
     for (let i = 0; i <= CANVAS_SIZE; i += GRID_SIZE) {
@@ -2246,18 +2246,18 @@ function Game() {
       ctx.stroke()
     }
 
-    // Draw snake
+
     snake.forEach((segment) => {
       ctx.fillStyle = "#00ff00"
       ctx.fillRect(segment.x * GRID_SIZE + 1, segment.y * GRID_SIZE + 1, GRID_SIZE - 2, GRID_SIZE - 2)
     })
 
-    // Draw food
+ 
     ctx.fillStyle = "#ff0000"
     ctx.fillRect(food.x * GRID_SIZE + 1, food.y * GRID_SIZE + 1, GRID_SIZE - 2, GRID_SIZE - 2)
   }, [snake, food])
 
-  // Simple animation for the icon
+ 
   useEffect(() => {
     const interval = setInterval(() => {
       setSnake(prevSnake => {
@@ -2292,40 +2292,45 @@ function Game() {
 
 
 function SnakeApp() {
-  const GRID_SIZE = 20
-  const CANVAS_SIZE = 400
-  const INITIAL_SNAKE = [{ x: 10, y: 10 }]
-  const INITIAL_FOOD = { x: 15, y: 15 }
-  const INITIAL_DIRECTION = { x: 0, y: 0 }
 
-  type Position = { x: number; y: number }
-  type Direction = { x: number; y: number }
-  type Particle = { x: number; y: number; vx: number; vy: number; life: number; maxLife: number }
+  const GRID_SIZE = 20;
+  const CANVAS_SIZE = 400;
+  const INITIAL_SNAKE = [{ x: 10, y: 10 }];
+  const INITIAL_FOOD = { x: 15, y: 15 };
+  const INITIAL_DIRECTION = { x: 0, y: 0 };
 
-  const canvasRef = useRef<HTMLCanvasElement>(null)
-  const backgroundRef = useRef<HTMLCanvasElement>(null)
-  const [snake, setSnake] = useState<Position[]>(INITIAL_SNAKE)
-  const [food, setFood] = useState<Position>(INITIAL_FOOD)
-  const [direction, setDirection] = useState<Direction>(INITIAL_DIRECTION)
-  const [gameRunning, setGameRunning] = useState(false)
-  const [gameOver, setGameOver] = useState(false)
-  const [score, setScore] = useState(0)
-  const [highScore, setHighScore] = useState(0)
-  const [particles, setParticles] = useState<Particle[]>([])
+
+  type Position = { x: number; y: number };
+  type Direction = { x: number; y: number };
+  type Particle = { x: number; y: number; vx: number; vy: number; life: number; maxLife: number };
+
+
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const backgroundRef = useRef<HTMLCanvasElement>(null);
+  const [snake, setSnake] = useState<Position[]>(INITIAL_SNAKE);
+  const [food, setFood] = useState<Position>(INITIAL_FOOD);
+  const [direction, setDirection] = useState<Direction>(INITIAL_DIRECTION);
+  const [gameRunning, setGameRunning] = useState(false);
+  const [gameOver, setGameOver] = useState(false);
+  const [score, setScore] = useState(0);
+  const [highScore, setHighScore] = useState(0);
+  const [particles, setParticles] = useState<Particle[]>([]);
+  const touchStartPos = useRef<{ x: number; y: number } | null>(null);
+
 
   const generateFood = useCallback((snakeBody: Position[]): Position => {
-    let newFood: Position
+    let newFood: Position;
     do {
       newFood = {
         x: Math.floor(Math.random() * (CANVAS_SIZE / GRID_SIZE)),
         y: Math.floor(Math.random() * (CANVAS_SIZE / GRID_SIZE)),
-      }
-    } while (snakeBody.some((segment) => segment.x === newFood.x && segment.y === newFood.y))
-    return newFood
-  }, [])
+      };
+    } while (snakeBody.some((segment) => segment.x === newFood.x && segment.y === newFood.y));
+    return newFood;
+  }, []);
 
   const createParticles = useCallback((x: number, y: number, count = 8) => {
-    const newParticles: Particle[] = []
+    const newParticles: Particle[] = [];
     for (let i = 0; i < count; i++) {
       newParticles.push({
         x: x * GRID_SIZE + GRID_SIZE / 2,
@@ -2334,97 +2339,177 @@ function SnakeApp() {
         vy: (Math.random() - 0.5) * 4,
         life: 30,
         maxLife: 30,
-      })
+      });
     }
-    setParticles((prev) => [...prev, ...newParticles])
-  }, [])
+    setParticles((prev) => [...prev, ...newParticles]);
+  }, []);
 
   const checkCollision = useCallback((head: Position, snakeBody: Position[]): boolean => {
     if (head.x < 0 || head.x >= CANVAS_SIZE / GRID_SIZE || head.y < 0 || head.y >= CANVAS_SIZE / GRID_SIZE) {
-      return true
+      return true;
     }
-    return snakeBody.some((segment) => segment.x === head.x && segment.y === head.y)
-  }, [])
+    return snakeBody.some((segment) => segment.x === head.x && segment.y === head.y);
+  }, []);
 
   const moveSnake = useCallback(() => {
-    if (!gameRunning || gameOver) return
+    if (!gameRunning || gameOver) return;
 
     setSnake((currentSnake) => {
-      const newSnake = [...currentSnake]
-      const head = { ...newSnake[0] }
+      const newSnake = [...currentSnake];
+      const head = { ...newSnake[0] };
 
-      head.x += direction.x
-      head.y += direction.y
+      head.x += direction.x;
+      head.y += direction.y;
 
       if (checkCollision(head, newSnake)) {
-        setGameOver(true)
-        setGameRunning(false)
-        createParticles(head.x, head.y, 15)
-        return currentSnake
+        setGameOver(true);
+        setGameRunning(false);
+        createParticles(head.x, head.y, 15);
+        return currentSnake;
       }
 
-      newSnake.unshift(head)
+      newSnake.unshift(head);
 
       if (head.x === food.x && head.y === food.y) {
-        setScore((prev) => prev + 10)
-        setFood(generateFood(newSnake))
-        createParticles(food.x, food.y, 12)
+        setScore((prev) => prev + 10);
+        setFood(generateFood(newSnake));
+        createParticles(food.x, food.y, 12);
       } else {
-        newSnake.pop()
+        newSnake.pop();
       }
 
-      return newSnake
-    })
-  }, [direction, food, gameRunning, gameOver, checkCollision, generateFood, createParticles])
+      return newSnake;
+    });
+  }, [direction, food, gameRunning, gameOver, checkCollision, generateFood, createParticles]);
+
 
   const handleKeyPress = useCallback((e: KeyboardEvent) => {
-    if (!gameRunning) return
+    if (!gameRunning) return;
 
     switch (e.key) {
       case "ArrowUp":
-        if (direction.y === 0) setDirection({ x: 0, y: -1 })
-        break
+        if (direction.y === 0) setDirection({ x: 0, y: -1 });
+        break;
       case "ArrowDown":
-        if (direction.y === 0) setDirection({ x: 0, y: 1 })
-        break
+        if (direction.y === 0) setDirection({ x: 0, y: 1 });
+        break;
       case "ArrowLeft":
-        if (direction.x === 0) setDirection({ x: -1, y: 0 })
-        break
+        if (direction.x === 0) setDirection({ x: -1, y: 0 });
+        break;
       case "ArrowRight":
-        if (direction.x === 0) setDirection({ x: 1, y: 0 })
-        break
+        if (direction.x === 0) setDirection({ x: 1, y: 0 });
+        break;
       case " ":
-        e.preventDefault()
-        setGameRunning(false)
-        break
+        e.preventDefault();
+        setGameRunning(false);
+        break;
     }
-  }, [direction, gameRunning])
+  }, [direction, gameRunning]);
+
+  const handleTouchStart = useCallback((e: TouchEvent) => {
+    if (!gameRunning) return;
+    e.preventDefault();
+    const touch = e.touches[0];
+    touchStartPos.current = { x: touch.clientX, y: touch.clientY };
+  }, [gameRunning]);
+
+  const handleTouchMove = useCallback((e: TouchEvent) => {
+    if (!gameRunning || !touchStartPos.current) return;
+    e.preventDefault();
+  }, [gameRunning]);
+
+  const handleTouchEnd = useCallback((e: TouchEvent) => {
+    if (!touchStartPos.current || !gameRunning) return;
+    e.preventDefault();
+    
+    const touch = e.changedTouches[0];
+    const endPos = { x: touch.clientX, y: touch.clientY };
+    const startPos = touchStartPos.current;
+    
+    const dx = endPos.x - startPos.x;
+    const dy = endPos.y - startPos.y;
+    const absDx = Math.abs(dx);
+    const absDy = Math.abs(dy);
+    
+
+    if (Math.max(absDx, absDy) > 20) { 
+      if (absDx > absDy) {
+     
+        if (dx > 0 && direction.x === 0) {
+          setDirection({ x: 1, y: 0 }); // Right
+        } else if (dx < 0 && direction.x === 0) {
+          setDirection({ x: -1, y: 0 }); // Left
+        }
+      } else {
+   
+        if (dy > 0 && direction.y === 0) {
+          setDirection({ x: 0, y: 1 }); // Down
+        } else if (dy < 0 && direction.y === 0) {
+          setDirection({ x: 0, y: -1 }); // Up
+        }
+      }
+    }
+    
+    touchStartPos.current = null;
+  }, [gameRunning, direction]);
+
 
   const startGame = () => {
-    setSnake(INITIAL_SNAKE)
-    setFood(INITIAL_FOOD)
-    setDirection({ x: 1, y: 0 })
-    setGameRunning(true)
-    setGameOver(false)
-    setScore(0)
-    setParticles([])
-  }
+    setSnake(INITIAL_SNAKE);
+    setFood(INITIAL_FOOD);
+    setDirection({ x: 1, y: 0 });
+    setGameRunning(true);
+    setGameOver(false);
+    setScore(0);
+    setParticles([]);
+  };
 
   const resetGame = () => {
-    setSnake(INITIAL_SNAKE)
-    setFood(INITIAL_FOOD)
-    setDirection(INITIAL_DIRECTION)
-    setGameRunning(false)
-    setGameOver(false)
-    setScore(0)
-    setParticles([])
-  }
+    setSnake(INITIAL_SNAKE);
+    setFood(INITIAL_FOOD);
+    setDirection(INITIAL_DIRECTION);
+    setGameRunning(false);
+    setGameOver(false);
+    setScore(0);
+    setParticles([]);
+  };
 
   const togglePause = () => {
     if (!gameOver) {
-      setGameRunning(!gameRunning)
+      setGameRunning(!gameRunning);
     }
-  }
+  };
+
+
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+
+
+    canvas.addEventListener('touchstart', handleTouchStart, { passive: false });
+    canvas.addEventListener('touchmove', handleTouchMove, { passive: false });
+    canvas.addEventListener('touchend', handleTouchEnd, { passive: false });
+
+    return () => {
+      canvas.removeEventListener('touchstart', handleTouchStart);
+      canvas.removeEventListener('touchmove', handleTouchMove);
+      canvas.removeEventListener('touchend', handleTouchEnd);
+    };
+  }, [handleTouchStart, handleTouchMove, handleTouchEnd]);
+
+  useEffect(() => {
+    window.addEventListener("keydown", handleKeyPress);
+    return () => window.removeEventListener("keydown", handleKeyPress);
+  }, [handleKeyPress]);
+
+  useEffect(() => {
+    if (gameRunning) {
+      document.body.style.overflow = 'hidden';
+      return () => {
+        document.body.style.overflow = '';
+      };
+    }
+  }, [gameRunning]);
 
   useEffect(() => {
     const updateParticles = () => {
@@ -2438,83 +2523,83 @@ function SnakeApp() {
             vx: particle.vx * 0.98,
             vy: particle.vy * 0.98,
           }))
-          .filter((particle) => particle.life > 0),
-      )
-    }
+          .filter((particle) => particle.life > 0)
+      );
+    };
 
-    const particleInterval = setInterval(updateParticles, 16)
-    return () => clearInterval(particleInterval)
-  }, [])
-
-  useEffect(() => {
-    const gameInterval = setInterval(moveSnake, 150)
-    return () => clearInterval(gameInterval)
-  }, [moveSnake])
+    const particleInterval = setInterval(updateParticles, 16);
+    return () => clearInterval(particleInterval);
+  }, []);
 
   useEffect(() => {
-    window.addEventListener("keydown", handleKeyPress)
-    return () => window.removeEventListener("keydown", handleKeyPress)
-  }, [handleKeyPress])
+    const gameInterval = setInterval(moveSnake, 150);
+    return () => clearInterval(gameInterval);
+  }, [moveSnake]);
 
   useEffect(() => {
     if (score > highScore) {
-      setHighScore(score)
+      setHighScore(score);
     }
-  }, [score, highScore])
+  }, [score, highScore]);
+
 
   useEffect(() => {
-    const canvas = canvasRef.current
-    if (!canvas) return
+    const canvas = canvasRef.current;
+    if (!canvas) return;
 
-    const ctx = canvas.getContext("2d")
-    if (!ctx) return
+    const ctx = canvas.getContext("2d");
+    if (!ctx) return;
 
-    ctx.fillStyle = "rgba(0, 0, 0, 0.9)"
-    ctx.fillRect(0, 0, CANVAS_SIZE, CANVAS_SIZE)
 
-    ctx.strokeStyle = "rgba(0, 255, 255, 0.2)"
-    ctx.lineWidth = 1
-    ctx.shadowColor = "rgba(0, 255, 255, 0.5)"
-    ctx.shadowBlur = 2
+    ctx.fillStyle = "rgba(0, 0, 0, 0.9)";
+    ctx.fillRect(0, 0, CANVAS_SIZE, CANVAS_SIZE);
+
+
+    ctx.strokeStyle = "rgba(0, 255, 255, 0.2)";
+    ctx.lineWidth = 1;
+    ctx.shadowColor = "rgba(0, 255, 255, 0.5)";
+    ctx.shadowBlur = 2;
     for (let i = 0; i <= CANVAS_SIZE; i += GRID_SIZE) {
-      ctx.beginPath()
-      ctx.moveTo(i, 0)
-      ctx.lineTo(i, CANVAS_SIZE)
-      ctx.stroke()
-      ctx.beginPath()
-      ctx.moveTo(0, i)
-      ctx.lineTo(CANVAS_SIZE, i)
-      ctx.stroke()
+      ctx.beginPath();
+      ctx.moveTo(i, 0);
+      ctx.lineTo(i, CANVAS_SIZE);
+      ctx.stroke();
+      ctx.beginPath();
+      ctx.moveTo(0, i);
+      ctx.lineTo(CANVAS_SIZE, i);
+      ctx.stroke();
     }
 
+
     snake.forEach((segment, index) => {
-      const isHead = index === 0
-      ctx.shadowColor = isHead ? "rgba(0, 255, 0, 0.8)" : "rgba(0, 255, 0, 0.4)"
-      ctx.shadowBlur = isHead ? 15 : 8
+      const isHead = index === 0;
+      ctx.shadowColor = isHead ? "rgba(0, 255, 0, 0.8)" : "rgba(0, 255, 0, 0.4)";
+      ctx.shadowBlur = isHead ? 15 : 8;
 
       const gradient = ctx.createLinearGradient(
         segment.x * GRID_SIZE,
         segment.y * GRID_SIZE,
         segment.x * GRID_SIZE + GRID_SIZE,
-        segment.y * GRID_SIZE + GRID_SIZE,
-      )
+        segment.y * GRID_SIZE + GRID_SIZE
+      );
 
       if (isHead) {
-        gradient.addColorStop(0, "#00ff00")
-        gradient.addColorStop(1, "#00cc00")
+        gradient.addColorStop(0, "#00ff00");
+        gradient.addColorStop(1, "#00cc00");
       } else {
-        gradient.addColorStop(0, "#00cc00")
-        gradient.addColorStop(1, "#008800")
+        gradient.addColorStop(0, "#00cc00");
+        gradient.addColorStop(1, "#008800");
       }
 
-      ctx.fillStyle = gradient
-      ctx.fillRect(segment.x * GRID_SIZE + 2, segment.y * GRID_SIZE + 2, GRID_SIZE - 4, GRID_SIZE - 4)
-    })
+      ctx.fillStyle = gradient;
+      ctx.fillRect(segment.x * GRID_SIZE + 2, segment.y * GRID_SIZE + 2, GRID_SIZE - 4, GRID_SIZE - 4);
+    });
 
-    const time = Date.now() * 0.005
-    const pulseIntensity = Math.sin(time) * 0.3 + 0.7
-    ctx.shadowColor = `rgba(255, 0, 0, ${pulseIntensity})`
-    ctx.shadowBlur = 20
+
+    const time = Date.now() * 0.005;
+    const pulseIntensity = Math.sin(time) * 0.3 + 0.7;
+    ctx.shadowColor = `rgba(255, 0, 0, ${pulseIntensity})`;
+    ctx.shadowBlur = 20;
 
     const foodGradient = ctx.createRadialGradient(
       food.x * GRID_SIZE + GRID_SIZE / 2,
@@ -2522,24 +2607,26 @@ function SnakeApp() {
       0,
       food.x * GRID_SIZE + GRID_SIZE / 2,
       food.y * GRID_SIZE + GRID_SIZE / 2,
-      GRID_SIZE / 2,
-    )
-    foodGradient.addColorStop(0, "#ff0000")
-    foodGradient.addColorStop(1, "#cc0000")
+      GRID_SIZE / 2
+    );
+    foodGradient.addColorStop(0, "#ff0000");
+    foodGradient.addColorStop(1, "#cc0000");
 
-    ctx.fillStyle = foodGradient
-    ctx.fillRect(food.x * GRID_SIZE + 2, food.y * GRID_SIZE + 2, GRID_SIZE - 4, GRID_SIZE - 4)
+    ctx.fillStyle = foodGradient;
+    ctx.fillRect(food.x * GRID_SIZE + 2, food.y * GRID_SIZE + 2, GRID_SIZE - 4, GRID_SIZE - 4);
+
 
     particles.forEach((particle) => {
-      const alpha = particle.life / particle.maxLife
-      ctx.shadowColor = `rgba(0, 255, 255, ${alpha})`
-      ctx.shadowBlur = 5
-      ctx.fillStyle = `rgba(0, 255, 255, ${alpha})`
-      ctx.fillRect(particle.x - 1, particle.y - 1, 2, 2)
-    })
+      const alpha = particle.life / particle.maxLife;
+      ctx.shadowColor = `rgba(0, 255, 255, ${alpha})`;
+      ctx.shadowBlur = 5;
+      ctx.fillStyle = `rgba(0, 255, 255, ${alpha})`;
+      ctx.fillRect(particle.x - 1, particle.y - 1, 2, 2);
+    });
 
-    ctx.shadowBlur = 0
-  }, [snake, food, particles])
+    ctx.shadowBlur = 0;
+  }, [snake, food, particles]);
+
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-900 via-purple-900 to-black flex items-center justify-center p-4 relative overflow-hidden">
@@ -2571,7 +2658,7 @@ function SnakeApp() {
               ref={canvasRef}
               width={CANVAS_SIZE}
               height={CANVAS_SIZE}
-              className="border-2 border-cyan-500/50 rounded-lg shadow-lg shadow-cyan-500/30 bg-black/50"
+              className="border-2 border-cyan-500/50 rounded-lg shadow-lg shadow-cyan-500/30 bg-black/50 touch-none"
             />
             {!gameRunning && !gameOver && score === 0 && (
               <div className="absolute inset-0 flex items-center justify-center bg-black/70 rounded-lg">
@@ -2638,13 +2725,16 @@ function SnakeApp() {
           )}
 
           <div className="text-center text-xs text-gray-400 space-y-1 font-mono border-t border-cyan-500/20 pt-4">
+            <p className="text-cyan-300">Arrow Keys / Swipe • Move</p>
             <p className="text-cyan-300">Spacebar • Pause</p>
           </div>
         </div>
       </div>
     </div>
-  )
+  );
 }
+
+export default SnakeApp;
 
 
 
