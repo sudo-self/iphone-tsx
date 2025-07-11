@@ -1884,7 +1884,7 @@ function BrowserApp() {
     { name: "Paper.js", url: "https://clouds.jessejesse.com" },
     { name: "Next.js", url: "https://meta-mirror.vercel.app" },
     { name: "Emu.js", url: "https://retro.jessejesse.com" },
-    { name: "Blockchain", url: "https://web3.jessejesse.com/" },
+    { name: "Web3", url: "https://web3.jessejesse.com/" },
   ];
 
   const formatUrl = (inputUrl: string) => {
@@ -1960,7 +1960,7 @@ function BrowserApp() {
             className="p-2 rounded-full bg-gray-100 hover:bg-gray-200"
             title="Home"
           >
-          ★ Home 
+          🌐
           </button>
           <button
             onClick={goBack}
@@ -1990,7 +1990,7 @@ function BrowserApp() {
             onClick={refresh}
             className="p-2 rounded-full bg-gray-100 hover:bg-gray-200"
           >
-            RAB ★
+          🔄
           </button>
         </div>
 
@@ -2033,14 +2033,14 @@ function BrowserApp() {
             <div className="text-center mb-6">
               <Globe className="w-16 h-16 mx-auto mb-4 text-blue-500" />
               <h2 className="text-2xl font-bold text-gray-700 mb-2">
-                Random Ass Browser
+                Random A$$ Browser
               </h2>
               <p className="text-center text-emerald-700 text-sm">¯\_(ツ)_/¯</p>
             </div>
 
             <div className="mb-6">
               <h3 className="text-lg font-semibold text-gray-800 mb-3">
-                JS FrameWorks
+                JS Frameworks
               </h3>
               <div className="grid grid-cols-2 gap-2">
                 {quickLinks.map((link, index) => (
@@ -2069,7 +2069,7 @@ function BrowserApp() {
             </div>
 
           <div className="text-center text-xs text-emerald-600">
-  <p>React + Next.js + Tailwind + Redis DB</p>
+  <p>React + Next.js + Tailwind + Redis + Vercel</p>
 </div>
 
           </div>
