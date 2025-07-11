@@ -2068,9 +2068,10 @@ function BrowserApp() {
               </div>
             </div>
 
-          <div className="text-center text-xs text-emerald-600">
-  <p>React + Next.js + Tailwind + Redis + Vercel</p>
+         <div className="text-center text-xs text-emerald-400 bg-gradient-to-r from-gray-900 via-gray-800 to-gray-900 py-2 shadow-sm">
+  <p className="tracking-wide">React + Next.js + Tailwind + Redis + Vercel</p>
 </div>
+
 
           </div>
         )}
