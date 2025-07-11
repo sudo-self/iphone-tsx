@@ -35,7 +35,7 @@ import {
 } from "@/lib/settings";
 import { Redis } from "@upstash/redis";
 
-import SnakeGame from "./SnakeGame";
+import SnakeGame from "/SnakeGame";
 
 export default function SmartphoneUI() {
   const [isLocked, setIsLocked] = useState(true);
