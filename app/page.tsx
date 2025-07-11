@@ -921,6 +921,30 @@ const sampleTracks: Track[] = [
     artist: "Wiz Khalifa",
     videoId: "8d0cm_hcQes",
   },
+  {
+    id: 5,
+    title: "Cant Sleep",
+    artist: "Super 8 Tab",
+    videoId: "1coNgmWS0fs",
+  },
+  {
+    id: 7,
+    title: "Addicted",
+    artist: "Logic",
+    videoId: "3dofrKm_Usw",
+  },
+   {
+    id: 8,
+    title: "Palm Trees",
+    artist: "Flatbush Zombies",
+    videoId: "kfzRXseSBIM",
+  },
+  {
+    id: 9,
+    title: "Time is the Enemy",
+    artist: "Quantic",
+    videoId: "nvUeo5sagkA",
+  },
 ];
 
 function MusicApp() {
