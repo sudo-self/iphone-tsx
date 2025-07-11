@@ -3,6 +3,7 @@ import "./globals.css";
 import "leaflet/dist/leaflet.css";
 import ClientSessionProvider from "@/components/ClientSessionProvider";
 
+
 export const metadata: Metadata = {
   title: "iPhone TSX — Supabase & Redis DBs, Maps and Youtube APIs",
   description:
