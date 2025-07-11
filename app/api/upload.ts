@@ -1,6 +1,5 @@
-
+// pages/api/upload.ts
 import type { NextApiRequest, NextApiResponse } from "next";
-import fetch from "node-fetch";
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   const { accessToken, fileName, fileContent } = req.body;
@@ -10,21 +9,16 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   }
 
   try {
-    
     const metadata = {
       name: fileName,
       mimeType: "text/plain",
     };
 
- 
-    const url = "https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart";
-
-
-    const boundary = "-------314159265358979323846";
+    const boundary = "foo_bar_baz";
     const delimiter = `\r\n--${boundary}\r\n`;
     const closeDelimiter = `\r\n--${boundary}--`;
 
-    const multipartRequestBody =
+    const body =
       delimiter +
       "Content-Type: application/json; charset=UTF-8\r\n\r\n" +
       JSON.stringify(metadata) +
@@ -33,24 +27,24 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       fileContent +
       closeDelimiter;
 
-    const response = await fetch(url, {
+    const response = await fetch("https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart", {
       method: "POST",
       headers: {
         Authorization: `Bearer ${accessToken}`,
-        "Content-Type": `multipart/related; boundary=${boundary}`,
+        "Content-Type": `multipart/related; boundary="foo_bar_baz"`,
       },
-      body: multipartRequestBody,
+      body,
     });
 
+    const data = await response.json();
     if (!response.ok) {
-      const errorData = await response.json();
-      return res.status(response.status).json({ error: errorData.error.message });
+      return res.status(response.status).json({ error: data.error?.message || "Upload failed" });
     }
 
-    const data = await response.json();
     return res.status(200).json({ fileId: data.id });
-  } catch (error: any) {
-    return res.status(500).json({ error: error.message || "Upload failed" });
+  } catch (err: any) {
+    return res.status(500).json({ error: err.message });
   }
 }
+
 
