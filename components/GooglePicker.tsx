@@ -13,30 +13,38 @@ export default function GooglePicker({ onPick }: GooglePickerProps) {
 
   useEffect(() => {
     const loadPicker = () => {
-      if ((window as any).google && (window as any).google.picker) {
-        setPickerReady(true);
-      } else {
-        const script = document.createElement("script");
-        script.src = "https://apis.google.com/js/api.js";
-        script.onload = () => {
-          (window as any).gapi.load("picker", {
-            callback: () => setPickerReady(true),
-          });
-        };
-        document.body.appendChild(script);
-      }
+      const script = document.createElement("script");
+      script.src = "https://apis.google.com/js/api.js";
+      script.onload = () => {
+        (window as any).gapi.load("client:auth2", {
+          callback: () => {
+            (window as any).gapi.load("picker", {
+              callback: () => {
+                setPickerReady(true);
+              },
+            });
+          },
+        });
+      };
+      document.body.appendChild(script);
     };
 
-    loadPicker();
+    if (!(window as any).gapi) {
+      loadPicker();
+    } else {
+      (window as any).gapi.load("picker", {
+        callback: () => setPickerReady(true),
+      });
+    }
   }, []);
 
   const openPicker = () => {
-    const token =
-      (session as any)?.accessToken ||
-      (session as any)?.access_token ||
-      (session as any)?.id_token;
+    const token = (session as any)?.accessToken;
 
-    if (!token) return alert("Missing access token");
+    if (!token) {
+      alert("Missing access token");
+      return;
+    }
 
     const view = new (window as any).google.picker.DocsView()
       .setIncludeFolders(true)
@@ -47,7 +55,7 @@ export default function GooglePicker({ onPick }: GooglePickerProps) {
       .setOAuthToken(token)
       .setDeveloperKey(process.env.NEXT_PUBLIC_PICKER_API_KEY)
       .setCallback((data: any) => {
-        if (data.action === "picked") {
+        if (data.action === "picked" && data.docs.length > 0) {
           onPick(data.docs[0]);
         }
       })
@@ -66,3 +74,4 @@ export default function GooglePicker({ onPick }: GooglePickerProps) {
     </button>
   );
 }
+
