@@ -49,6 +49,7 @@ import SettingsApp from "./SettingsApp";
 import NotesApp from "./NotesApp";
 import SnakeApp from "./SnakeApp";
 import { Redis } from "@upstash/redis";
+import DriveApp from "@/components/DriveApp";
 
 export default function SmartphoneUI() {
   const [isLocked, setIsLocked] = useState(true);
@@ -801,7 +802,9 @@ function SettingsApp({
 }
 
 
-function DriveApp() {
+
+
+export default function Page() {
   return (
     <main className="min-h-screen p-8">
       <DriveApp />
