@@ -1,12 +1,12 @@
 import { Redis } from "@upstash/redis";
 
-// Initialize Redis client with the provided credentials
+
 export const redis = new Redis({
   url: "https://crack-hen-56730.upstash.io",
   token: "Ad2aAAIjcDFmMzYzNWIzYmNjMjM0Yjg4OGJhM2M4Yjc4N2FlZmFmOHAxMA",
 });
 
-// Helper functions for contact management
+
 export async function getContacts() {
   try {
     const contacts = (await redis.hgetall("contacts")) || {};
@@ -40,7 +40,7 @@ export async function deleteContact(name: string) {
   }
 }
 
-// Calendar event helpers
+
 export async function saveEvent(date: string, event: string) {
   try {
     await redis.hset("calendar:events", { [date]: event });
