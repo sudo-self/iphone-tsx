@@ -631,7 +631,7 @@ function SettingsApp({
             </div>
 
             <div>
-              <h3 className="text-lg font-medium mb-3">Status Bar</h3>
+              <h3 className="text-lg font-medium mb-3 overflow-y-auto">Status Bar</h3>
               <div className="space-y-3">
                 <label className="flex items-center justify-between">
                   <span>Show Battery Percentage</span>
@@ -694,7 +694,7 @@ function SettingsApp({
             </div>
 
             <div>
-              <h3 className="text-lg font-medium mb-3">Reset Settings</h3>
+              <h3 className="text-lg font-medium mb-3">Factory Mode</h3>
               <button
                 onClick={() => {
                   const defaultSettings = {
@@ -713,7 +713,7 @@ function SettingsApp({
                 }}
                 className="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700"
               >
-                Reset
+                Reset iPhone
               </button>
             </div>
           </div>
@@ -732,7 +732,6 @@ function SettingsApp({
           >
             ← Back
           </button>
-          <h2 className="text-xl font-bold">About</h2>
         </div>
 
         <div className="flex-1 overflow-y-auto px-4 pb-4">
@@ -742,21 +741,21 @@ function SettingsApp({
                 <Phone className="w-10 h-10 text-white" />
               </div>
               <h3 className="text-xl font-bold">{settings.deviceName}</h3>
-              <p className="text-gray-400">iphone.JesseJesse.com</p>
+              <p className="text-gray-400">JesseJesse.com</p>
             </div>
 
             <div className="space-y-3">
               <div className="flex justify-between py-2 border-b border-gray-700">
                 <span className="text-gray-400">Version</span>
-                <span className="text-orange-400">719</span>
+                <span className="text-orange-400">2.23</span>
               </div>
               <div className="flex justify-between py-2 border-b border-gray-700">
                 <span className="text-gray-400">Model</span>
-                <span className="text-blue-500">TSX</span>
+                <span className="text-blue-500">US</span>
               </div>
               <div className="flex justify-between py-2 border-b border-gray-700">
                 <span className="text-gray-400">Storage</span>
-                <span className="text-yellow-400">2TB</span>
+                <span className="text-yellow-400">20TB</span>
               </div>
               <div className="flex justify-between py-2 border-b border-gray-700">
                 <span className="text-gray-400">Battery Health</span>
@@ -764,9 +763,10 @@ function SettingsApp({
               </div>
             </div>
 
-            <div className="mt-8 text-center text-gray-400 text-sm">
-              <p>Next.js 15.4</p>
-            </div>
+          <div className="mt-4 text-center text-pink-400 text-xs">
+  <p>npx create-next-app@latest iphone-tsx</p>
+</div>
+
           </div>
         </div>
       </div>
@@ -797,7 +797,7 @@ function SettingsApp({
         </div>
 
         <div className="mt-8 text-center text-cyan-500 text-sm">
-          <p>¯\_(ツ)_/¯</p>
+         <p>ⓛⓞⓥⓔ</p>
         </div>
       </div>
     </div>
@@ -950,7 +950,40 @@ const sampleTracks: Track[] = [
     artist: "Wiz Khalifa",
     videoId: "8d0cm_hcQes",
   },
+  {
+    id: 5,
+    title: "Cant Sleep",
+    artist: "Super 8 Tab",
+    videoId: "1coNgmWS0fs",
+  },
+  {
+    id: 7,
+    title: "Addicted",
+    artist: "Logic",
+    videoId: "3dofrKm_Usw",
+  },
+   {
+    id: 8,
+    title: "Palm Trees",
+    artist: "Flatbush Zombies",
+    videoId: "kfzRXseSBIM",
+  },
+  {
+    id: 9,
+    title: "Time is the Enemy",
+    artist: "Quantic",
+    videoId: "nvUeo5sagkA",
+  },
+  {
+    id: 10,
+    title: "Chill Drive",
+    artist: "Lo-Fi",
+    videoId: "iicfmXFALM8",
+
+  },
 ];
+
+
 
 function MusicApp() {
   const playerRef = useRef<HTMLDivElement>(null);
@@ -1638,12 +1671,12 @@ function NotesApp() {
   const [viewMode, setViewMode] = useState("notes");
   const [loading, setLoading] = useState(true);
 
-  // Load notes on mount and when viewMode changes
+
   useEffect(() => {
     loadNotes();
   }, [viewMode]);
 
-  // Simplified and robust loadNotes function
+
   const loadNotes = async () => {
     console.log("Loading notes..."); // Debug log
     setLoading(true);
@@ -1655,7 +1688,7 @@ function NotesApp() {
       const notesList = [];
       for (const [id, data] of Object.entries(notesData)) {
         try {
-          // Handle both string and object data
+        
           const parsedData = typeof data === "string" ? JSON.parse(data) : data;
           notesList.push({
             id,
@@ -1670,7 +1703,7 @@ function NotesApp() {
         }
       }
 
-      // Sort by date (newest first)
+
       notesList.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
       setNotes(notesList);
       console.log("Processed notes:", notesList); // Debug log
@@ -1681,7 +1714,7 @@ function NotesApp() {
     }
   };
 
-  // Add note handler with forced refresh
+
   const handleAddNote = async (e) => {
     e.preventDefault();
     if (!newTitle.trim()) return;
@@ -1701,11 +1734,11 @@ function NotesApp() {
       await redis.hset("notes", { [id]: JSON.stringify(noteData) });
       console.log("Note added:", noteData); // Debug log
 
-      // Reset form and force reload
+
       setNewTitle("");
       setNewContent("");
       setShowAddForm(false);
-      await loadNotes(); // Force reload
+      await loadNotes();
     } catch (error) {
       console.error("Failed to add note:", error);
     } finally {
@@ -1713,7 +1746,7 @@ function NotesApp() {
     }
   };
 
-  // Delete note handler
+
   const handleDeleteNote = async (id) => {
     try {
       const { redis } = await import("@/lib/redis");
@@ -1724,7 +1757,7 @@ function NotesApp() {
     }
   };
 
-  // Filter notes based on search and view mode
+
   const filteredNotes = notes.filter((note) => {
     const matchesSearch =
       note.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -1876,9 +1909,11 @@ function BrowserApp() {
 
   const quickLinks = [
     { name: "Google", url: "https://www.google.com/search?igu=1" },
-    { name: "Meta Mirror", url: "https://meta-mirror.vercel.app" },
-    { name: "Sudo-Self", url: "https://sudo-self.com" },
-    { name: "Punch-OUT!", url: "https://tyson.jessejesse.com" },
+    { name: "Three.js", url: "https://rose.jessejesse.xyz/" },
+    { name: "Paper.js", url: "https://clouds.jessejesse.com" },
+    { name: "Next.js", url: "https://meta-mirror.vercel.app" },
+    { name: "Emu.js", url: "https://retro.jessejesse.com" },
+    { name: "Web3", url: "https://web3.jessejesse.com/" },
   ];
 
   const formatUrl = (inputUrl: string) => {
@@ -1954,7 +1989,7 @@ function BrowserApp() {
             className="p-2 rounded-full bg-gray-100 hover:bg-gray-200"
             title="Home"
           >
-            🏛️
+          🌐
           </button>
           <button
             onClick={goBack}
@@ -1984,7 +2019,7 @@ function BrowserApp() {
             onClick={refresh}
             className="p-2 rounded-full bg-gray-100 hover:bg-gray-200"
           >
-            ↻
+          🔄
           </button>
         </div>
 
@@ -2025,8 +2060,8 @@ function BrowserApp() {
         ) : (
           <div className="h-full bg-white p-6">
             <div className="text-center mb-6">
-              <Globe className="w-16 h-16 mx-auto mb-4 text-gray-400" />
-              <h2 className="text-2xl font-bold text-gray-800 mb-2">
+              <Globe className="w-16 h-16 mx-auto mb-4 text-blue-500" />
+              <h2 className="text-2xl font-bold text-gray-700 mb-2">
                 Random Web Browser
               </h2>
               <p className="text-center text-emerald-700 text-sm">¯\_(ツ)_/¯</p>
@@ -2034,7 +2069,7 @@ function BrowserApp() {
 
             <div className="mb-6">
               <h3 className="text-lg font-semibold text-gray-800 mb-3">
-                Most Visited
+                Java Frameworks
               </h3>
               <div className="grid grid-cols-2 gap-2">
                 {quickLinks.map((link, index) => (
@@ -2062,9 +2097,11 @@ function BrowserApp() {
               </div>
             </div>
 
-            <div className="text-center text-sm text-emerald-700">
-              <p>random</p>
-            </div>
+         <div className="text-center text-xs text-emerald-400 bg-gradient-to-r from-gray-900 via-gray-800 to-gray-900 py-2 shadow-sm">
+  <p className="tracking-wide">React + Next.js + Tailwind + Redis + Vercel</p>
+</div>
+
+
           </div>
         )}
       </div>
@@ -2226,7 +2263,7 @@ function CalendarApp() {
   const [viewMode, setViewMode] = useState<'month' | 'year'>('month');
   const [currentMonth, setCurrentMonth] = useState(new Date().getMonth());
 
-  // Load events from Redis
+
   useEffect(() => {
     const loadEvents = async () => {
       try {
@@ -2241,7 +2278,7 @@ function CalendarApp() {
     loadEvents();
   }, []);
 
-  // Calendar operations
+
   const saveEvent = async (date: string, event: string) => {
     try {
       await redis.hset('calendar:events', { [date]: event });
@@ -2266,7 +2303,7 @@ function CalendarApp() {
     }
   };
 
-  // Generate single month view
+  
   const generateMonth = (month: number) => {
     const year = currentDate.getFullYear();
     const firstDay = new Date(year, month, 1);
@@ -2275,12 +2312,12 @@ function CalendarApp() {
     const startingDay = firstDay.getDay();
 
     const days = [];
-    // Empty cells for days before the first of the month
+ 
     for (let i = 0; i < startingDay; i++) {
       days.push(<div key={`empty-${i}`} className="h-8"></div>);
     }
 
-    // Days of the month
+  
     for (let day = 1; day <= daysInMonth; day++) {
       const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
       const hasEvent = events[dateStr];
