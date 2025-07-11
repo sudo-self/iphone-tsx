@@ -1,8 +1,7 @@
 "use client";
 
 import type React from "react";
-
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useCallback, useRef } from "react"
 import {
   Battery,
   Signal,
@@ -234,10 +233,20 @@ export default function SmartphoneUI() {
                         {isLoading ? "Loading..." : "Refresh"}
                       </button>
                     )}
-                    {activeApp === "Snake" && (
-                      <button onClick={goHome} className="text-white text-sm">
-                        Exit
-                      </button>
+
+                     {activeApp === 'Snake' ? (
+                     <div className="app-window">
+                     <button onClick={closeApp}>Close</button>
+                        <SnakeApp />
+                       </div>
+      ) : (
+        <div className="app-grid">
+          <AppIcon
+            name="Snake"
+            icon={<Game />}
+            onClick={() => openApp("Snake")}
+            iconStyle={getAppIconStyle()}
+          />
                     )}
                   </div>
 
@@ -263,81 +272,132 @@ export default function SmartphoneUI() {
                     />
                   )}
                   {activeApp === "Notes" && <NotesApp />}
-                  {activeApp === "Snake" && <SnakeGame />}
                 </div>
               ) : (
-                <div
-                  className="h-full flex flex-col bg-cover bg-center"
-                  style={{ backgroundImage: `url('${settings.wallpaper}')` }}
-                >
-                  <div className="flex-1 grid grid-cols-4 gap-4 p-6 mt-8">
-                    <AppIcon
-                      name="Phone"
-                      icon={<Phone />}
-                      onClick={() => openApp("Phone")}
-                      iconStyle={getAppIconStyle()}
-                    />
-                    <AppIcon
-                      name="Contacts"
-                      icon={<User />}
-                      onClick={() => openApp("Contacts")}
-                      iconStyle={getAppIconStyle()}
-                    />
-                    <AppIcon
-                      name="Calendar"
-                      icon={<Calendar />}
-                      onClick={() => openApp("Calendar")}
-                      iconStyle={getAppIconStyle()}
-                    />
-                    <AppIcon
-                      name="Calculator"
-                      icon={<Calculator />}
-                      onClick={() => openApp("Calculator")}
-                      iconStyle={getAppIconStyle()}
-                    />
-                    <AppIcon
-                      name="Camera"
-                      icon={<Camera />}
-                      onClick={() => openApp("Camera")}
-                      iconStyle={getAppIconStyle()}
-                    />
-                    <AppIcon
-                      name="Browser"
-                      icon={<Globe />}
-                      onClick={() => openApp("Browser")}
-                      iconStyle={getAppIconStyle()}
-                    />
-                    <AppIcon
-                      name="Settings"
-                      icon={<Settings />}
-                      onClick={() => openApp("Settings")}
-                      iconStyle={getAppIconStyle()}
-                    />
-                    <AppIcon
-                      name="Music"
-                      icon={<Music />}
-                      onClick={() => openApp("Music")}
-                      iconStyle={getAppIconStyle()}
-                    />
-                    <AppIcon
-                      name="Maps"
-                      icon={<MapIcon />}
-                      onClick={() => openApp("Maps")}
-                      iconStyle={getAppIconStyle()}
-                    />
-                    <AppIcon
-                      name="Notes"
-                      icon={<FileText />}
-                      onClick={() => openApp("Notes")}
-                      iconStyle={getAppIconStyle()}
-                    />
-                    <AppIcon
-                      name="Snake"
-                      icon={<Game />}
-                      onClick={() => openApp("Snake")}
-                      iconStyle={getAppIconStyle()}
-                    />
-                  </div>
+  <div className="absolute inset-0 pt-12">
+    {activeApp ? (
+      <div className="h-full">
+        <div className="h-12 flex items-center justify-between px-4 bg-gray-800">
+          <h2 className="text-white text-lg font-medium">
+            {activeApp}
+          </h2>
+          {(activeApp === "Contacts" || activeApp === "Phone") && (
+            <button
+              onClick={refreshContacts}
+              className="text-blue-400 text-sm"
+              disabled={isLoading}
+            >
+              {isLoading ? "Loading..." : "Refresh"}
+            </button>
+          )}
+          <button 
+            onClick={() => setActiveApp(null)} 
+            className="text-white text-sm"
+          >
+            Close
+          </button>
+        </div>
+
+        {/* App content area */}
+        <div className="h-[calc(100%-3rem)] overflow-auto">
+          {activeApp === "Phone" && <PhoneApp contacts={contacts} />}
+          {activeApp === "Contacts" && (
+            <ContactsApp
+              contacts={contacts}
+              onContactsChange={refreshContacts}
+            />
+          )}
+          {activeApp === "Calendar" && <CalendarApp />}
+          {activeApp === "Calculator" && <CalculatorApp />}
+          {activeApp === "Camera" && <CameraApp />}
+          {activeApp === "Browser" && <BrowserApp />}
+          {activeApp === "Music" && <MusicApp />}
+          {activeApp === "Maps" && (
+            <MapsApp setActiveApp={setActiveApp} />
+          )}
+          {activeApp === "Settings" && (
+            <SettingsApp
+              settings={settings}
+              onSettingsChange={updateSettings}
+            />
+          )}
+          {activeApp === "Notes" && <NotesApp />}
+          {activeApp === "Snake" && <SnakeApp />}
+        </div>
+      </div>
+    ) : (
+      <div
+        className="h-full flex flex-col bg-cover bg-center"
+        style={{ backgroundImage: `url('${settings.wallpaper}')` }}
+      >
+        <div className="flex-1 grid grid-cols-4 gap-4 p-6 mt-8">
+          <AppIcon
+            name="Phone"
+            icon={<Phone />}
+            onClick={() => openApp("Phone")}
+            iconStyle={getAppIconStyle()}
+          />
+          <AppIcon
+            name="Contacts"
+            icon={<User />}
+            onClick={() => openApp("Contacts")}
+            iconStyle={getAppIconStyle()}
+          />
+          <AppIcon
+            name="Calendar"
+            icon={<Calendar />}
+            onClick={() => openApp("Calendar")}
+            iconStyle={getAppIconStyle()}
+          />
+          <AppIcon
+            name="Calculator"
+            icon={<Calculator />}
+            onClick={() => openApp("Calculator")}
+            iconStyle={getAppIconStyle()}
+          />
+          <AppIcon
+            name="Camera"
+            icon={<Camera />}
+            onClick={() => openApp("Camera")}
+            iconStyle={getAppIconStyle()}
+          />
+          <AppIcon
+            name="Browser"
+            icon={<Globe />}
+            onClick={() => openApp("Browser")}
+            iconStyle={getAppIconStyle()}
+          />
+          <AppIcon
+            name="Settings"
+            icon={<Settings />}
+            onClick={() => openApp("Settings")}
+            iconStyle={getAppIconStyle()}
+          />
+          <AppIcon
+            name="Music"
+            icon={<Music />}
+            onClick={() => openApp("Music")}
+            iconStyle={getAppIconStyle()}
+          />
+          <AppIcon
+            name="Maps"
+            icon={<MapIcon />}
+            onClick={() => openApp("Maps")}
+            iconStyle={getAppIconStyle()}
+          />
+          <AppIcon
+            name="Notes"
+            icon={<FileText />}
+            onClick={() => openApp("Notes")}
+            iconStyle={getAppIconStyle()}
+          />
+          <AppIcon
+            name="Snake"
+            icon={<Game />}
+            onClick={() => openApp("Snake")}
+            iconStyle={getAppIconStyle()}
+          />
+        </div>
                 </div>
               )}
 
@@ -2198,10 +2258,450 @@ function CalendarApp() {
     </div>
   );
 }
+    
+function Game() {
+  const GRID_SIZE = 20
+  const CANVAS_SIZE = 200 // Smaller size for the icon view
+  const INITIAL_SNAKE = [{ x: 5, y: 5 }]
+  const INITIAL_FOOD = { x: 8, y: 8 }
+  const INITIAL_DIRECTION = { x: 0, y: 0 }
+
+  type Position = { x: number; y: number }
+  type Direction = { x: number; y: number }
+
+  const canvasRef = useRef<HTMLCanvasElement>(null)
+  const [snake, setSnake] = useState<Position[]>(INITIAL_SNAKE)
+  const [food, setFood] = useState<Position>(INITIAL_FOOD)
+  const [direction, setDirection] = useState<Direction>(INITIAL_DIRECTION)
+
+  // Simplified version for the icon view
+  useEffect(() => {
+    const canvas = canvasRef.current
+    if (!canvas) return
+
+    const ctx = canvas.getContext('2d')
+    if (!ctx) return
+
+    // Clear canvas
+    ctx.fillStyle = "rgba(0, 0, 0, 0.8)"
+    ctx.fillRect(0, 0, CANVAS_SIZE, CANVAS_SIZE)
+
+    // Draw grid
+    ctx.strokeStyle = "rgba(0, 255, 255, 0.1)"
+    ctx.lineWidth = 0.5
+    for (let i = 0; i <= CANVAS_SIZE; i += GRID_SIZE) {
+      ctx.beginPath()
+      ctx.moveTo(i, 0)
+      ctx.lineTo(i, CANVAS_SIZE)
+      ctx.stroke()
+      ctx.beginPath()
+      ctx.moveTo(0, i)
+      ctx.lineTo(CANVAS_SIZE, i)
+      ctx.stroke()
+    }
+
+    // Draw snake
+    snake.forEach((segment) => {
+      ctx.fillStyle = "#00ff00"
+      ctx.fillRect(segment.x * GRID_SIZE + 1, segment.y * GRID_SIZE + 1, GRID_SIZE - 2, GRID_SIZE - 2)
+    })
+
+    // Draw food
+    ctx.fillStyle = "#ff0000"
+    ctx.fillRect(food.x * GRID_SIZE + 1, food.y * GRID_SIZE + 1, GRID_SIZE - 2, GRID_SIZE - 2)
+  }, [snake, food])
+
+  // Simple animation for the icon
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setSnake(prevSnake => {
+        const head = { ...prevSnake[0] }
+       
+        if (head.x <= 2) direction.x = 1
+        if (head.x >= 8) direction.x = -1
+        if (head.y <= 2) direction.y = 1
+        if (head.y >= 8) direction.y = -1
+        
+        head.x += direction.x
+        head.y += direction.y
+        
+        const newSnake = [head, ...prevSnake.slice(0, 3)]
+        
+        return newSnake
+      })
+    }, 300)
+
+    return () => clearInterval(interval)
+  }, [])
+
+  return (
+    <canvas
+      ref={canvasRef}
+      width={CANVAS_SIZE}
+      height={CANVAS_SIZE}
+      className="w-full h-full"
+    />
+  )
+}
+
+
+function SnakeApp() {
+  const GRID_SIZE = 20
+  const CANVAS_SIZE = 400
+  const INITIAL_SNAKE = [{ x: 10, y: 10 }]
+  const INITIAL_FOOD = { x: 15, y: 15 }
+  const INITIAL_DIRECTION = { x: 0, y: 0 }
+
+  type Position = { x: number; y: number }
+  type Direction = { x: number; y: number }
+  type Particle = { x: number; y: number; vx: number; vy: number; life: number; maxLife: number }
+
+  const canvasRef = useRef<HTMLCanvasElement>(null)
+  const backgroundRef = useRef<HTMLCanvasElement>(null)
+  const [snake, setSnake] = useState<Position[]>(INITIAL_SNAKE)
+  const [food, setFood] = useState<Position>(INITIAL_FOOD)
+  const [direction, setDirection] = useState<Direction>(INITIAL_DIRECTION)
+  const [gameRunning, setGameRunning] = useState(false)
+  const [gameOver, setGameOver] = useState(false)
+  const [score, setScore] = useState(0)
+  const [highScore, setHighScore] = useState(0)
+  const [particles, setParticles] = useState<Particle[]>([])
+
+  const generateFood = useCallback((snakeBody: Position[]): Position => {
+    let newFood: Position
+    do {
+      newFood = {
+        x: Math.floor(Math.random() * (CANVAS_SIZE / GRID_SIZE)),
+        y: Math.floor(Math.random() * (CANVAS_SIZE / GRID_SIZE)),
+      }
+    } while (snakeBody.some((segment) => segment.x === newFood.x && segment.y === newFood.y))
+    return newFood
+  }, [])
+
+  const createParticles = useCallback((x: number, y: number, count = 8) => {
+    const newParticles: Particle[] = []
+    for (let i = 0; i < count; i++) {
+      newParticles.push({
+        x: x * GRID_SIZE + GRID_SIZE / 2,
+        y: y * GRID_SIZE + GRID_SIZE / 2,
+        vx: (Math.random() - 0.5) * 4,
+        vy: (Math.random() - 0.5) * 4,
+        life: 30,
+        maxLife: 30,
+      })
+    }
+    setParticles((prev) => [...prev, ...newParticles])
+  }, [])
+
+  const checkCollision = useCallback((head: Position, snakeBody: Position[]): boolean => {
+    if (head.x < 0 || head.x >= CANVAS_SIZE / GRID_SIZE || head.y < 0 || head.y >= CANVAS_SIZE / GRID_SIZE) {
+      return true
+    }
+    return snakeBody.some((segment) => segment.x === head.x && segment.y === head.y)
+  }, [])
+
+  const moveSnake = useCallback(() => {
+    if (!gameRunning || gameOver) return
+
+    setSnake((currentSnake) => {
+      const newSnake = [...currentSnake]
+      const head = { ...newSnake[0] }
+
+      head.x += direction.x
+      head.y += direction.y
+
+      if (checkCollision(head, newSnake)) {
+        setGameOver(true)
+        setGameRunning(false)
+        createParticles(head.x, head.y, 15)
+        return currentSnake
+      }
+
+      newSnake.unshift(head)
+
+      if (head.x === food.x && head.y === food.y) {
+        setScore((prev) => prev + 10)
+        setFood(generateFood(newSnake))
+        createParticles(food.x, food.y, 12)
+      } else {
+        newSnake.pop()
+      }
+
+      return newSnake
+    })
+  }, [direction, food, gameRunning, gameOver, checkCollision, generateFood, createParticles])
+
+  const handleKeyPress = useCallback((e: KeyboardEvent) => {
+    if (!gameRunning) return
+
+    switch (e.key) {
+      case "ArrowUp":
+        if (direction.y === 0) setDirection({ x: 0, y: -1 })
+        break
+      case "ArrowDown":
+        if (direction.y === 0) setDirection({ x: 0, y: 1 })
+        break
+      case "ArrowLeft":
+        if (direction.x === 0) setDirection({ x: -1, y: 0 })
+        break
+      case "ArrowRight":
+        if (direction.x === 0) setDirection({ x: 1, y: 0 })
+        break
+      case " ":
+        e.preventDefault()
+        setGameRunning(false)
+        break
+    }
+  }, [direction, gameRunning])
+
+  const startGame = () => {
+    setSnake(INITIAL_SNAKE)
+    setFood(INITIAL_FOOD)
+    setDirection({ x: 1, y: 0 })
+    setGameRunning(true)
+    setGameOver(false)
+    setScore(0)
+    setParticles([])
+  }
+
+  const resetGame = () => {
+    setSnake(INITIAL_SNAKE)
+    setFood(INITIAL_FOOD)
+    setDirection(INITIAL_DIRECTION)
+    setGameRunning(false)
+    setGameOver(false)
+    setScore(0)
+    setParticles([])
+  }
+
+  const togglePause = () => {
+    if (!gameOver) {
+      setGameRunning(!gameRunning)
+    }
+  }
+
+  useEffect(() => {
+    const updateParticles = () => {
+      setParticles((prev) =>
+        prev
+          .map((particle) => ({
+            ...particle,
+            x: particle.x + particle.vx,
+            y: particle.y + particle.vy,
+            life: particle.life - 1,
+            vx: particle.vx * 0.98,
+            vy: particle.vy * 0.98,
+          }))
+          .filter((particle) => particle.life > 0),
+      )
+    }
+
+    const particleInterval = setInterval(updateParticles, 16)
+    return () => clearInterval(particleInterval)
+  }, [])
+
+  useEffect(() => {
+    const gameInterval = setInterval(moveSnake, 150)
+    return () => clearInterval(gameInterval)
+  }, [moveSnake])
+
+  useEffect(() => {
+    window.addEventListener("keydown", handleKeyPress)
+    return () => window.removeEventListener("keydown", handleKeyPress)
+  }, [handleKeyPress])
+
+  useEffect(() => {
+    if (score > highScore) {
+      setHighScore(score)
+    }
+  }, [score, highScore])
+
+  useEffect(() => {
+    const canvas = canvasRef.current
+    if (!canvas) return
+
+    const ctx = canvas.getContext("2d")
+    if (!ctx) return
+
+    ctx.fillStyle = "rgba(0, 0, 0, 0.9)"
+    ctx.fillRect(0, 0, CANVAS_SIZE, CANVAS_SIZE)
+
+    ctx.strokeStyle = "rgba(0, 255, 255, 0.2)"
+    ctx.lineWidth = 1
+    ctx.shadowColor = "rgba(0, 255, 255, 0.5)"
+    ctx.shadowBlur = 2
+    for (let i = 0; i <= CANVAS_SIZE; i += GRID_SIZE) {
+      ctx.beginPath()
+      ctx.moveTo(i, 0)
+      ctx.lineTo(i, CANVAS_SIZE)
+      ctx.stroke()
+      ctx.beginPath()
+      ctx.moveTo(0, i)
+      ctx.lineTo(CANVAS_SIZE, i)
+      ctx.stroke()
+    }
+
+    snake.forEach((segment, index) => {
+      const isHead = index === 0
+      ctx.shadowColor = isHead ? "rgba(0, 255, 0, 0.8)" : "rgba(0, 255, 0, 0.4)"
+      ctx.shadowBlur = isHead ? 15 : 8
+
+      const gradient = ctx.createLinearGradient(
+        segment.x * GRID_SIZE,
+        segment.y * GRID_SIZE,
+        segment.x * GRID_SIZE + GRID_SIZE,
+        segment.y * GRID_SIZE + GRID_SIZE,
+      )
+
+      if (isHead) {
+        gradient.addColorStop(0, "#00ff00")
+        gradient.addColorStop(1, "#00cc00")
+      } else {
+        gradient.addColorStop(0, "#00cc00")
+        gradient.addColorStop(1, "#008800")
+      }
+
+      ctx.fillStyle = gradient
+      ctx.fillRect(segment.x * GRID_SIZE + 2, segment.y * GRID_SIZE + 2, GRID_SIZE - 4, GRID_SIZE - 4)
+    })
+
+    const time = Date.now() * 0.005
+    const pulseIntensity = Math.sin(time) * 0.3 + 0.7
+    ctx.shadowColor = `rgba(255, 0, 0, ${pulseIntensity})`
+    ctx.shadowBlur = 20
+
+    const foodGradient = ctx.createRadialGradient(
+      food.x * GRID_SIZE + GRID_SIZE / 2,
+      food.y * GRID_SIZE + GRID_SIZE / 2,
+      0,
+      food.x * GRID_SIZE + GRID_SIZE / 2,
+      food.y * GRID_SIZE + GRID_SIZE / 2,
+      GRID_SIZE / 2,
+    )
+    foodGradient.addColorStop(0, "#ff0000")
+    foodGradient.addColorStop(1, "#cc0000")
+
+    ctx.fillStyle = foodGradient
+    ctx.fillRect(food.x * GRID_SIZE + 2, food.y * GRID_SIZE + 2, GRID_SIZE - 4, GRID_SIZE - 4)
+
+    particles.forEach((particle) => {
+      const alpha = particle.life / particle.maxLife
+      ctx.shadowColor = `rgba(0, 255, 255, ${alpha})`
+      ctx.shadowBlur = 5
+      ctx.fillStyle = `rgba(0, 255, 255, ${alpha})`
+      ctx.fillRect(particle.x - 1, particle.y - 1, 2, 2)
+    })
+
+    ctx.shadowBlur = 0
+  }, [snake, food, particles])
+
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-purple-900 to-black flex items-center justify-center p-4 relative overflow-hidden">
+      <canvas
+        ref={backgroundRef}
+        className="absolute inset-0 opacity-30"
+        style={{ width: "100vw", height: "100vh" }}
+      />
+
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        <div className="absolute top-1/4 left-1/4 w-32 h-32 bg-cyan-500/10 rounded-full blur-xl animate-pulse"></div>
+        <div className="absolute top-3/4 right-1/4 w-48 h-48 bg-purple-500/10 rounded-full blur-xl animate-pulse delay-1000"></div>
+        <div className="absolute bottom-1/4 left-1/3 w-24 h-24 bg-pink-500/10 rounded-full blur-xl animate-pulse delay-500"></div>
+      </div>
+
+      <div className="w-full max-w-md bg-black/80 border-cyan-500/30 backdrop-blur-sm shadow-2xl shadow-cyan-500/20 relative z-10 rounded-lg border">
+        <div className="text-center border-b border-cyan-500/20 p-6">
+          <h3 className="text-3xl font-bold bg-gradient-to-r from-cyan-400 to-purple-400 bg-clip-text text-transparent animate-pulse">
+            CYBER SNAKE
+          </h3>
+          <div className="flex justify-between text-sm font-mono">
+            <span className="text-cyan-400" style={{ textShadow: '0 0 10px currentColor' }}>SCORE: {score.toString().padStart(6, "0")}</span>
+            <span className="text-purple-400" style={{ textShadow: '0 0 10px currentColor' }}>HIGH: {highScore.toString().padStart(6, "0")}</span>
+          </div>
+        </div>
+        <div className="flex flex-col items-center space-y-6 p-6">
+          <div className="relative">
+            <canvas
+              ref={canvasRef}
+              width={CANVAS_SIZE}
+              height={CANVAS_SIZE}
+              className="border-2 border-cyan-500/50 rounded-lg shadow-lg shadow-cyan-500/30 bg-black/50"
+            />
+            {!gameRunning && !gameOver && score === 0 && (
+              <div className="absolute inset-0 flex items-center justify-center bg-black/70 rounded-lg">
+                <div className="text-center">
+                  <div className="text-cyan-400 text-xl font-bold mb-2 animate-pulse">READY?</div>
+                  <div className="text-gray-400 text-sm">Press START to begin</div>
+                </div>
+              </div>
+            )}
+            {!gameRunning && !gameOver && score > 0 && (
+              <div className="absolute inset-0 flex items-center justify-center bg-black/70 rounded-lg">
+                <div className="text-center">
+                  <div className="text-yellow-400 text-xl font-bold mb-2 animate-pulse">PAUSED</div>
+                  <div className="text-gray-400 text-sm">Press RESUME to continue</div>
+                </div>
+              </div>
+            )}
+          </div>
+
+          <div className="flex flex-wrap gap-3 justify-center">
+            {!gameRunning && !gameOver && (
+              <button
+                onClick={startGame}
+                className="bg-gradient-to-r from-green-500 to-cyan-500 hover:from-green-600 hover:to-cyan-600 text-black font-bold px-6 py-2 rounded-lg shadow-lg shadow-green-500/30 transition-all duration-300 hover:scale-105 hover:shadow-green-500/50"
+              >
+                {score === 0 ? "START GAME" : "RESUME"}
+              </button>
+            )}
+
+            {gameRunning && (
+              <button
+                onClick={togglePause}
+                className="bg-gradient-to-r from-yellow-500 to-orange-500 hover:from-yellow-600 hover:to-orange-600 text-black font-bold px-6 py-2 rounded-lg shadow-lg shadow-yellow-500/30 transition-all duration-300 hover:scale-105"
+              >
+                PAUSE
+              </button>
+            )}
+
+            {gameOver && (
+              <button
+                onClick={startGame}
+                className="bg-gradient-to-r from-red-500 to-pink-500 hover:from-red-600 hover:to-pink-600 text-white font-bold px-6 py-2 rounded-lg shadow-lg shadow-red-500/30 transition-all duration-300 hover:scale-105 animate-pulse"
+              >
+                PLAY AGAIN
+              </button>
+            )}
+
+            <button
+              onClick={resetGame}
+              className="bg-gradient-to-r from-gray-600 to-gray-700 hover:from-gray-700 hover:to-gray-800 text-white font-bold px-6 py-2 rounded-lg shadow-lg shadow-gray-500/30 transition-all duration-300 hover:scale-105"
+            >
+              RESET
+            </button>
+          </div>
+
+          {gameOver && (
+            <div className="text-center animate-bounce">
+              <p className="text-red-400 font-bold text-xl mb-2" style={{ textShadow: '0 0 10px currentColor' }}>GAME OVER</p>
+              <p className="text-cyan-400 font-mono">FINAL SCORE: {score.toString().padStart(6, "0")}</p>
+              {score === highScore && score > 0 && (
+                <p className="text-yellow-400 font-bold text-sm mt-1 animate-pulse">NEW HIGH SCORE!</p>
+              )}
+            </div>
+          )}
+
+          <div className="text-center text-xs text-gray-400 space-y-1 font-mono border-t border-cyan-500/20 pt-4">
+            <p className="text-cyan-300">↑↓←→ NAVIGATE • SPACE PAUSE</p>
+            <p>CONSUME RED ENERGY CORES TO GROW</p>
+            <p>AVOID WALLS AND SELF-COLLISION</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  )
+}
 
 
 
-
-
-
-                
+      
