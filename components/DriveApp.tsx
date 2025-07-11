@@ -45,15 +45,15 @@ export default function GoogleDrive() {
 
   return (
     <div className="flex flex-col items-center p-6">
-      <h2 className="text-xl font-semibold mb-4">Google Drive Upload</h2>
+      <h2 className="text-xl text-gray-200 font-semibold mb-4">Google Drive Upload</h2>
       {session ? (
         <>
-          <p className="mb-2">Signed in as {session.user?.email}</p>
+          <p className="mb-2 text-yellow-500">Signed in as {session.user?.email}</p>
           <input type="file" ref={fileInputRef} className="mb-4" />
           <button
             onClick={uploadToDrive}
             className={`px-4 py-2 rounded mb-4 text-white ${
-              uploading ? "bg-gray-400 cursor-not-allowed" : "bg-blue-600 hover:bg-blue-700"
+              uploading ? "bg-gray-400 cursor-not-allowed" : "bg-cyan-500 hover:bg-cyan-500"
             }`}
             disabled={uploading}
           >
@@ -69,7 +69,7 @@ export default function GoogleDrive() {
       ) : (
         <button
           onClick={() => signIn("google")}
-          className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700"
+          className="bg-green-500 text-white px-4 py-2 rounded hover:bg-pink-500"
         >
           Sign in with Google
         </button>
