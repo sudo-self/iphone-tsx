@@ -621,7 +621,7 @@ function SettingsApp({
             </div>
 
             <div>
-              <h3 className="text-lg font-medium mb-3">Status Bar</h3>
+              <h3 className="text-lg font-medium mb-3 overflow-y-auto">Status Bar</h3>
               <div className="space-y-3">
                 <label className="flex items-center justify-between">
                   <span>Show Battery Percentage</span>
@@ -684,7 +684,7 @@ function SettingsApp({
             </div>
 
             <div>
-              <h3 className="text-lg font-medium mb-3">Reset Settings</h3>
+              <h3 className="text-lg font-medium mb-3">Reset Device</h3>
               <button
                 onClick={() => {
                   const defaultSettings = {
@@ -703,7 +703,7 @@ function SettingsApp({
                 }}
                 className="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700"
               >
-                Reset
+                Reset iPhone
               </button>
             </div>
           </div>
@@ -722,7 +722,6 @@ function SettingsApp({
           >
             ← Back
           </button>
-          <h2 className="text-xl font-bold">About</h2>
         </div>
 
         <div className="flex-1 overflow-y-auto px-4 pb-4">
@@ -755,7 +754,7 @@ function SettingsApp({
             </div>
 
             <div className="mt-8 text-center text-gray-400 text-sm">
-              <p>Framework - Next.js 15</p>
+              <p>build framework - Next.js 15</p>
             </div>
           </div>
         </div>
@@ -787,7 +786,7 @@ function SettingsApp({
         </div>
 
         <div className="mt-8 text-center text-cyan-500 text-sm">
-         ..<p>¯\_(ツ)_/¯</p>..
+         <p>【ツ】</p>
         </div>
       </div>
     </div>
