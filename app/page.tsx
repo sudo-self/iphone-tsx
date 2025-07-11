@@ -31,7 +31,7 @@ import {
   saveSettings,
 } from "@/lib/settings";
 
-// Import or define your app components
+
 import PhoneApp from "./PhoneApp";
 import ContactsApp from "./ContactsApp";
 import CalendarApp from "./CalendarApp";
@@ -2390,20 +2390,23 @@ function CalendarApp() {
     );
   }
 
-  return (
-    <div className="flex flex-col h-full bg-gray-900 text-white p-4">
-      <div className="flex justify-between items-center mb-4">
-        <h1 className="text-xl font-semibold">
-          {currentDate.getFullYear()}
-        </h1>
-        <button
-          onClick={() => setViewMode(viewMode === 'month' ? 'year' : 'month')}
-          className="text-sm bg-gray-700 hover:bg-gray-600 px-3 py-1 rounded"
-        >
-          {viewMode === 'month' ? 'Show Year View' : 'Show Month View'}
-        </button>
-      </div>
+return (
+  <div className="flex flex-col h-full bg-gray-900 text-white p-4">
+    {/* Header with year and view toggle */}
+    <div className="flex justify-between items-center mb-4">
+      <h1 className="text-xl font-semibold">
+        {currentDate.getFullYear()}
+      </h1>
+      <button
+        onClick={() => setViewMode(viewMode === 'month' ? 'year' : 'month')}
+        className="text-sm bg-gray-700 hover:bg-gray-600 px-3 py-1 rounded"
+      >
+        {viewMode === 'month' ? 'Show Year View' : 'Show Month View'}
+      </button>
+    </div>
 
+    {/* Calendar View */}
+    <div className="flex-1 overflow-y-auto">
       {viewMode === 'month' ? (
         generateMonth(currentMonth)
       ) : (
@@ -2411,11 +2414,36 @@ function CalendarApp() {
           {Array.from({ length: 12 }).map((_, i) => generateMonth(i))}
         </div>
       )}
-
-      <EventModal />
     </div>
-  );
-}
+
+    {/* Events List Below Calendar */}
+    <div className="mt-4 border-t border-gray-700 pt-4">
+      <h2 className="text-lg font-medium mb-2">Upcoming Events</h2>
+      {Object.entries(events).length > 0 ? (
+        <div className="space-y-2">
+          {Object.entries(events)
+            .sort(([dateA], [dateB]) => new Date(dateA).getTime() - new Date(dateB).getTime())
+            .map(([date, event]) => (
+              <div key={date} className="bg-gray-800 p-3 rounded-lg">
+                <div className="text-blue-400 text-sm">
+                  {new Date(date).toLocaleDateString('en-US', {
+                    weekday: 'short',
+                    month: 'short',
+                    day: 'numeric'
+                  })}
+                </div>
+                <div className="mt-1">{event}</div>
+              </div>
+            ))}
+        </div>
+      ) : (
+        <p className="text-gray-400">No events scheduled</p>
+      )}
+    </div>
+
+    <EventModal />
+  </div>
+);
 
     
 function Game() {
