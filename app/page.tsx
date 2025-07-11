@@ -400,12 +400,20 @@ function SettingsApp({
       url: "https://firebasestorage.googleapis.com/v0/b/jessejessexyz.appspot.com/o/apple-ios-wallpapers.jpg?alt=media&token=d9e65040-0131-4fa7-8224-5293b1e126e0",
     },
     {
-      name: "iOS Gradient",
+      name: "iphone 14",
       url: "https://firebasestorage.googleapis.com/v0/b/jessejessexyz.appspot.com/o/lockscreen.jpg?alt=media&token=406ef44d-c8f3-4796-99ad-8feee27352da",
     },
     {
-      name: "iPad Blue",
+      name: "iPad mini",
       url: "https://firebasestorage.googleapis.com/v0/b/jessejessexyz.appspot.com/o/ipad_wallpaper.png?alt=media&token=cb015e53-1df5-4474-96bf-789e39c6cffa",
+    },
+     {
+      name: "Glitter Pro",
+      url: "https://firebasestorage.googleapis.com/v0/b/jessejessexyz.appspot.com/o/iphoneglow.png?alt=media&token=a530a871-13fe-4e00-b8d6-7ebedc6cee1e",
+    },
+     {
+      name: "iphone 15",
+      url: "https://firebasestorage.googleapis.com/v0/b/jessejessexyz.appspot.com/o/wp14611835-apple-iphone-15-pro-wallpapers.jpg?alt=media&token=75445df9-7e4a-4eb2-8d87-dc41889b56b3",
     },
   ];
 
