@@ -1,39 +1,70 @@
-// pages/api/upload.ts
+// app/api/upload.ts
+
 import type { NextApiRequest, NextApiResponse } from "next";
+import { Readable } from "stream";
+import { Buffer } from "buffer";
+
+export const config = {
+  api: {
+    bodyParser: false, 
+  },
+};
+
+function bufferStream(req: NextApiRequest): Promise<Buffer> {
+  return new Promise((resolve, reject) => {
+    const chunks: Uint8Array[] = [];
+    req.on("data", (chunk) => chunks.push(chunk));
+    req.on("end", () => resolve(Buffer.concat(chunks)));
+    req.on("error", reject);
+  });
+}
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
-  const { accessToken, fileName, fileContent } = req.body;
+  const accessToken = req.headers["x-access-token"] as string;
+  const fileName = req.headers["x-file-name"] as string;
+  const mimeType = req.headers["x-mime-type"] as string || "application/octet-stream";
 
-  if (!accessToken || !fileName || !fileContent) {
-    return res.status(400).json({ error: "Missing required parameters" });
+  if (!accessToken || !fileName) {
+    return res.status(400).json({ error: "Missing required headers" });
   }
 
   try {
-    const metadata = {
-      name: fileName,
-      mimeType: "text/plain",
-    };
+    const fileBuffer = await bufferStream(req);
 
     const boundary = "foo_bar_baz";
-    const delimiter = `\r\n--${boundary}\r\n`;
-    const closeDelimiter = `\r\n--${boundary}--`;
+    const metadata = {
+      name: fileName,
+      mimeType,
+    };
 
-    const body =
+    const delimiter = `--${boundary}\r\n`;
+    const closeDelimiter = `--${boundary}--`;
+
+    const metaPart = Buffer.from(
       delimiter +
-      "Content-Type: application/json; charset=UTF-8\r\n\r\n" +
-      JSON.stringify(metadata) +
-      delimiter +
-      "Content-Type: text/plain\r\n\r\n" +
-      fileContent +
-      closeDelimiter;
+        'Content-Type: application/json; charset=UTF-8\r\n\r\n' +
+        JSON.stringify(metadata) +
+        '\r\n',
+      "utf-8"
+    );
+
+    const filePartHeader = Buffer.from(
+      `--${boundary}\r\nContent-Type: ${mimeType}\r\n\r\n`,
+      "utf-8"
+    );
+
+    const closing = Buffer.from(`\r\n${closeDelimiter}`, "utf-8");
+
+    const multipartBody = Buffer.concat([metaPart, filePartHeader, fileBuffer, closing]);
 
     const response = await fetch("https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart", {
       method: "POST",
       headers: {
         Authorization: `Bearer ${accessToken}`,
-        "Content-Type": `multipart/related; boundary="foo_bar_baz"`,
+        "Content-Type": `multipart/related; boundary=${boundary}`,
+        "Content-Length": multipartBody.length.toString(),
       },
-      body,
+      body: multipartBody,
     });
 
     const data = await response.json();
@@ -42,9 +73,11 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     }
 
     return res.status(200).json({ fileId: data.id });
-  } catch (err: any) {
-    return res.status(500).json({ error: err.message });
+  } catch (error: any) {
+    console.error(error);
+    return res.status(500).json({ error: error.message || "Unexpected error" });
   }
 }
+
 
 
