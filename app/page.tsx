@@ -32,6 +32,23 @@ import {
   loadSettings,
   saveSettings,
 } from "@/lib/settings";
+
+import { Redis } from "@upstash/redis";
+
+
+
+import PhoneApp from "./PhoneApp";
+import ContactsApp from "./ContactsApp";
+import CalendarApp from "./CalendarApp";
+import CalculatorApp from "./CalculatorApp";
+import CameraApp from "./CameraApp";
+import BrowserApp from "./BrowserApp";
+import MusicApp from "./MusicApp";
+import MapsApp from "./MapsApp";
+import SettingsApp from "./SettingsApp";
+import NotesApp from "./NotesApp";
+import SnakeApp from "./SnakeApp";
+
 import { Redis } from "@upstash/redis";
 
 export default function SmartphoneUI() {
