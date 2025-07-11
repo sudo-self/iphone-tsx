@@ -38,8 +38,8 @@ import { Redis } from "@upstash/redis";
 import { SessionProvider } from "next-auth/react";
 import DriveApp from "@/components/DriveApp";
 import GooglePicker from "@/components/GooglePicker"
-
-
+import { useSession } from "next-auth/react";
+import GooglePicker from "./GooglePicker"; 
 
 import PhoneApp from "./PhoneApp";
 import ContactsApp from "./ContactsApp";
@@ -804,22 +804,30 @@ function SettingsApp({
   );
 }
 
-
 function DriveApp() {
+  const { data: session, status } = useSession();
+
   const handlePick = (file: any) => {
     alert(`Picked: ${file.name}`);
     console.log(file);
   };
 
+  if (status === "loading") {
+    return <p className="text-center p-4">Loading session...</p>;
+  }
+
+  if (!session) {
+    return <p className="text-center p-4">Please sign in to access Google Drive.</p>;
+  }
+
   return (
-    <SessionProvider>
-      <div className="flex flex-col items-center p-6">
-        <h2 className="text-xl font-semibold mb-4">Google Drive</h2>
-        <GooglePicker onPick={handlePick} />
-      </div>
-    </SessionProvider>
+    <div className="flex flex-col items-center p-6">
+      <h2 className="text-xl font-semibold mb-4">Google Drive</h2>
+      <GooglePicker onPick={handlePick} />
+    </div>
   );
 }
+
 
 
 
