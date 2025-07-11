@@ -17,27 +17,26 @@ export default function GoogleDrive() {
 
     try {
       setUploading(true);
-      const text = await file.text();
 
       const res = await fetch("/api/upload", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          accessToken,
-          fileName: file.name,
-          fileContent: text,
-        }),
+        headers: {
+          "x-access-token": accessToken,
+          "x-file-name": file.name,
+          "x-mime-type": file.type || "application/octet-stream",
+        },
+        body: file,
       });
 
       const data = await res.json();
 
       if (res.ok) {
-        alert(`✅ Uploaded to Drive with ID: ${data.fileId}`);
+        alert(`iphone tsx Uploaded to Drive with ID: ${data.fileId}`);
       } else {
-        alert(`❌ Upload failed: ${data.error || "Unknown error"}`);
+        alert(`Upload failed: ${data.error || "Unknown error"}`);
       }
     } catch (error: any) {
-      alert(`❌ Upload failed: ${error.message || error}`);
+      alert(`Upload failed: ${error.message || error}`);
     } finally {
       setUploading(false);
     }
@@ -77,4 +76,5 @@ export default function GoogleDrive() {
     </div>
   );
 }
+
 
