@@ -2192,44 +2192,36 @@ function CalcButton({
   );
 }
 
-const redis = new Redis({
-  url: "https://crack-hen-56730.upstash.io",
-  token: "Ad2aAAIjcDFmMzYzNWIzYmNjMjM0Yjg4OGJhM2M4Yjc4N2FlZmFmOHAxMA",
-});
-
 function CalendarApp() {
-  const [currentDate, setCurrentDate] = useState(new Date());
+  const [currentDate] = useState(new Date());
   const [events, setEvents] = useState<Record<string, string>>({});
   const [selectedDate, setSelectedDate] = useState<string | null>(null);
-  const [newEvent, setNewEvent] = useState("");
+  const [newEvent, setNewEvent] = useState('');
+  const [isLoading, setIsLoading] = useState(true);
 
 
   useEffect(() => {
     const loadEvents = async () => {
-      const loadedEvents = await getEvents();
-      setEvents(loadedEvents);
+      try {
+        const loadedEvents = (await redis.hgetall('calendar:events')) || {};
+        setEvents(loadedEvents);
+      } catch (error) {
+        console.error('Error loading events:', error);
+      } finally {
+        setIsLoading(false);
+      }
     };
     loadEvents();
   }, []);
 
 
-  const getEvents = async (): Promise<Record<string, string>> => {
-    try {
-      return (await redis.hgetall("calendar:events")) || {};
-    } catch (error) {
-      console.error("Error fetching events:", error);
-      return {};
-    }
-  };
-
-
   const saveEvent = async (date: string, event: string) => {
     try {
-      await redis.hset("calendar:events", { [date]: event });
+      await redis.hset('calendar:events', { [date]: event });
       setEvents(prev => ({ ...prev, [date]: event }));
       return true;
     } catch (error) {
-      console.error("Error saving event:", error);
+      console.error('Error saving event:', error);
       return false;
     }
   };
@@ -2237,19 +2229,26 @@ function CalendarApp() {
 
   const deleteEvent = async (date: string) => {
     try {
-      await redis.hdel("calendar:events", date);
+      await redis.hdel('calendar:events', date);
       const newEvents = { ...events };
       delete newEvents[date];
       setEvents(newEvents);
       return true;
     } catch (error) {
-      console.error("Error deleting event:", error);
+      console.error('Error deleting event:', error);
       return false;
     }
   };
 
-
   const generateMonths = () => {
+    if (isLoading) {
+      return (
+        <div className="col-span-3 flex items-center justify-center">
+          <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-blue-500"></div>
+        </div>
+      );
+    }
+
     const months = [];
     const year = currentDate.getFullYear();
     
@@ -2260,12 +2259,12 @@ function CalendarApp() {
       const startingDay = firstDay.getDay();
       
       const days = [];
-  
+ 
       for (let i = 0; i < startingDay; i++) {
         days.push(<div key={`empty-${i}`} className="h-8"></div>);
       }
       
-  
+ 
       for (let day = 1; day <= daysInMonth; day++) {
         const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
         const hasEvent = events[dateStr];
@@ -2301,12 +2300,11 @@ function CalendarApp() {
     return months;
   };
 
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (selectedDate && newEvent.trim()) {
       await saveEvent(selectedDate, newEvent.trim());
-      setNewEvent("");
+      setNewEvent('');
       setSelectedDate(null);
     }
   };
@@ -2324,7 +2322,7 @@ function CalendarApp() {
         {generateMonths()}
       </div>
       
-
+      {/* Event modal */}
       {selectedDate && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4">
           <div className="bg-gray-800 rounded-lg p-6 max-w-md w-full">
