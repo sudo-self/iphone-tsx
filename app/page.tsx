@@ -34,8 +34,6 @@ import {
   saveSettings,
 } from "@/lib/settings";
 
-import { Redis } from "@upstash/redis";
-
 import PhoneApp from "./PhoneApp";
 import ContactsApp from "./ContactsApp";
 import CalendarApp from "./CalendarApp";
