@@ -1848,8 +1848,10 @@ function BrowserApp() {
   const quickLinks = [
     { name: "Google", url: "https://www.google.com/search?igu=1" },
     { name: "Meta Mirror", url: "https://meta-mirror.vercel.app" },
-    { name: "Sudo-Self", url: "https://sudo-self.com" },
-    { name: "Punch-OUT!", url: "https://tyson.jessejesse.com" },
+    { name: "Repo to txt", url: "https://repo-to-txt.pages.dev" },
+    { name: "Punch OUT", url: "https://tyson.jessejesse.com" },
+    { name: "Deep Site", url: "https://huggingface.co/spaces/victor/deepsite-gallery" },
+    { name: "Background Removal", url: "https://bg.jessejesse.com" },
   ];
 
   const formatUrl = (inputUrl: string) => {
@@ -2034,7 +2036,7 @@ function BrowserApp() {
             </div>
 
             <div className="text-center text-sm text-emerald-700">
-              <p>random</p>
+              <p>iphone-TSX</p>
             </div>
           </div>
         )}
