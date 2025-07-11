@@ -15,6 +15,7 @@ export default function GooglePicker({ onPick }: GooglePickerProps) {
     const loadPicker = () => {
       const script = document.createElement("script");
       script.src = "https://apis.google.com/js/api.js";
+      script.async = true;
       script.onload = () => {
         (window as any).gapi.load("client:auth2", {
           callback: () => {
@@ -42,7 +43,7 @@ export default function GooglePicker({ onPick }: GooglePickerProps) {
     const token = (session as any)?.accessToken;
 
     if (!token) {
-      alert("Missing access token");
+      alert("Missing access token. Please sign in again.");
       return;
     }
 
@@ -57,6 +58,8 @@ export default function GooglePicker({ onPick }: GooglePickerProps) {
       .setCallback((data: any) => {
         if (data.action === "picked" && data.docs.length > 0) {
           onPick(data.docs[0]);
+        } else if (data.action === "cancel") {
+          console.log("Picker was canceled.");
         }
       })
       .build();
@@ -68,10 +71,11 @@ export default function GooglePicker({ onPick }: GooglePickerProps) {
     <button
       onClick={openPicker}
       disabled={!pickerReady}
-      className="bg-blue-600 text-white px-4 py-2 rounded"
+      className="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-4 py-2 rounded transition"
     >
       {pickerReady ? "Open Google Picker" : "Loading..."}
     </button>
   );
 }
+
 
