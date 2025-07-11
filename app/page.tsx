@@ -2558,11 +2558,11 @@ function SnakeApp() {
       <div className="w-full max-w-md bg-black/80 border-cyan-500/30 backdrop-blur-sm shadow-2xl shadow-cyan-500/20 relative z-10 rounded-lg border">
         <div className="text-center border-b border-cyan-500/20 p-6">
           <h3 className="text-3xl font-bold bg-gradient-to-r from-cyan-400 to-purple-400 bg-clip-text text-transparent animate-pulse">
-            CYBER SNAKE
+            Cyber Snake
           </h3>
           <div className="flex justify-between text-sm font-mono">
-            <span className="text-cyan-400" style={{ textShadow: '0 0 10px currentColor' }}>SCORE: {score.toString().padStart(6, "0")}</span>
-            <span className="text-purple-400" style={{ textShadow: '0 0 10px currentColor' }}>HIGH: {highScore.toString().padStart(6, "0")}</span>
+            <span className="text-cyan-400" style={{ textShadow: '0 0 10px currentColor' }}>Score: {score.toString().padStart(6, "0")}</span>
+            <span className="text-purple-400" style={{ textShadow: '0 0 10px currentColor' }}>High: {highScore.toString().padStart(6, "0")}</span>
           </div>
         </div>
         <div className="flex flex-col items-center space-y-6 p-6">
@@ -2576,16 +2576,16 @@ function SnakeApp() {
             {!gameRunning && !gameOver && score === 0 && (
               <div className="absolute inset-0 flex items-center justify-center bg-black/70 rounded-lg">
                 <div className="text-center">
-                  <div className="text-cyan-400 text-xl font-bold mb-2 animate-pulse">READY?</div>
-                  <div className="text-gray-400 text-sm">Press START to begin</div>
+                  <div className="text-cyan-400 text-xl font-bold mb-2 animate-pulse">Ready?</div>
+                  <div className="text-gray-400 text-sm">Press Start</div>
                 </div>
               </div>
             )}
             {!gameRunning && !gameOver && score > 0 && (
               <div className="absolute inset-0 flex items-center justify-center bg-black/70 rounded-lg">
                 <div className="text-center">
-                  <div className="text-yellow-400 text-xl font-bold mb-2 animate-pulse">PAUSED</div>
-                  <div className="text-gray-400 text-sm">Press RESUME to continue</div>
+                  <div className="text-yellow-400 text-xl font-bold mb-2 animate-pulse">Paused</div>
+                  <div className="text-gray-400 text-sm">Resume</div>
                 </div>
               </div>
             )}
@@ -2606,7 +2606,7 @@ function SnakeApp() {
                 onClick={togglePause}
                 className="bg-gradient-to-r from-yellow-500 to-orange-500 hover:from-yellow-600 hover:to-orange-600 text-black font-bold px-6 py-2 rounded-lg shadow-lg shadow-yellow-500/30 transition-all duration-300 hover:scale-105"
               >
-                PAUSE
+                Pause
               </button>
             )}
 
@@ -2615,7 +2615,7 @@ function SnakeApp() {
                 onClick={startGame}
                 className="bg-gradient-to-r from-red-500 to-pink-500 hover:from-red-600 hover:to-pink-600 text-white font-bold px-6 py-2 rounded-lg shadow-lg shadow-red-500/30 transition-all duration-300 hover:scale-105 animate-pulse"
               >
-                PLAY AGAIN
+                Try Again
               </button>
             )}
 
@@ -2623,24 +2623,22 @@ function SnakeApp() {
               onClick={resetGame}
               className="bg-gradient-to-r from-gray-600 to-gray-700 hover:from-gray-700 hover:to-gray-800 text-white font-bold px-6 py-2 rounded-lg shadow-lg shadow-gray-500/30 transition-all duration-300 hover:scale-105"
             >
-              RESET
+              Start Over
             </button>
           </div>
 
           {gameOver && (
             <div className="text-center animate-bounce">
-              <p className="text-red-400 font-bold text-xl mb-2" style={{ textShadow: '0 0 10px currentColor' }}>GAME OVER</p>
-              <p className="text-cyan-400 font-mono">FINAL SCORE: {score.toString().padStart(6, "0")}</p>
+              <p className="text-red-400 font-bold text-xl mb-2" style={{ textShadow: '0 0 10px currentColor' }}>Fatal!</p>
+              <p className="text-cyan-400 font-mono">Score: {score.toString().padStart(6, "0")}</p>
               {score === highScore && score > 0 && (
-                <p className="text-yellow-400 font-bold text-sm mt-1 animate-pulse">NEW HIGH SCORE!</p>
+                <p className="text-yellow-400 font-bold text-sm mt-1 animate-pulse">High Score!</p>
               )}
             </div>
           )}
 
           <div className="text-center text-xs text-gray-400 space-y-1 font-mono border-t border-cyan-500/20 pt-4">
-            <p className="text-cyan-300">↑↓←→ NAVIGATE • SPACE PAUSE</p>
-            <p>CONSUME RED ENERGY CORES TO GROW</p>
-            <p>AVOID WALLS AND SELF-COLLISION</p>
+            <p className="text-cyan-300">Spacebar • Pause</p>
           </div>
         </div>
       </div>
