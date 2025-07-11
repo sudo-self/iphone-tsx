@@ -1,4 +1,5 @@
-// app/layout.tsx
+
+import { SessionProvider } from "next-auth/react";
 import type { Metadata } from "next";
 import "./globals.css";
 import "leaflet/dist/leaflet.css";
@@ -42,10 +43,17 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en">
+     <html lang="en">
       <body>
-  {children}
+        <SessionProvider>{children}</SessionProvider>
       </body>
     </html>
   );
 }
+
+
+
+
+
+
+
