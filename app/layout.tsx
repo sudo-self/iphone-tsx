@@ -1,8 +1,7 @@
-
-import { SessionProvider } from "next-auth/react";
 import type { Metadata } from "next";
 import "./globals.css";
 import "leaflet/dist/leaflet.css";
+import ClientSessionProvider from "@/components/ClientSessionProvider";
 
 export const metadata: Metadata = {
   title: "iPhone TSX — Supabase & Redis DBs, Maps and Youtube APIs",
@@ -43,15 +42,13 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-     <html lang="en">
+    <html lang="en">
       <body>
-        <SessionProvider>{children}</SessionProvider>
+        <ClientSessionProvider>{children}</ClientSessionProvider>
       </body>
     </html>
   );
 }
-
-
 
 
 
