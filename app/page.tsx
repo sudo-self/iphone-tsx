@@ -1884,7 +1884,7 @@ function BrowserApp() {
     { name: "Repo to txt", url: "https://repo-to-txt.pages.dev" },
     { name: "Meta Mirror", url: "https://meta-mirror.vercel.app" },
     { name: "Retro Games", url: "https://retro.jessejesse.com" },
-    { name: "3D Sesame St", url: "https://3d-sesame.vercel.app" },
+    { name: "Club Darkside", url: "https://force-darkside.vercel.app" },
   ];
 
   const formatUrl = (inputUrl: string) => {
@@ -1960,7 +1960,7 @@ function BrowserApp() {
             className="p-2 rounded-full bg-gray-100 hover:bg-gray-200"
             title="Home"
           >
-            🏛️
+          ★ Home 
           </button>
           <button
             onClick={goBack}
