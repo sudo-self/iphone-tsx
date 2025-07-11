@@ -23,7 +23,6 @@ import {
   MapIcon,
   FileText,
   Loader2,
-  Game,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { getContacts } from "@/lib/redis";
@@ -34,7 +33,7 @@ import {
   saveSettings,
 } from "@/lib/settings";
 import { Redis } from "@upstash/redis";
-import SnakeGame from './SnakeGame';
+import { Game } from 'lucide-react';
 
 
 export default function SmartphoneUI() {
@@ -1847,8 +1846,8 @@ function BrowserApp() {
   const quickLinks = [
     { name: "Google", url: "https://www.google.com/search?igu=1" },
     { name: "Meta Mirror", url: "https://meta-mirror.vercel.app" },
-    { name: "NeoMoji", url: "https://neomoji-beta.netlify.app" },
-    { name: "NES", url: "https://tyson.jessejesse.com" },
+    { name: "Sudo-Self", url: "https://sudo-self.com" },
+    { name: "Punch-OUT!", url: "https://tyson.jessejesse.com" },
   ];
 
   const formatUrl = (inputUrl: string) => {
@@ -2033,7 +2032,7 @@ function BrowserApp() {
             </div>
 
             <div className="text-center text-sm text-emerald-700">
-              <p>Tip: enter search terms website URLs</p>
+              <p>random</p>
             </div>
           </div>
         )}
