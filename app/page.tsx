@@ -32,7 +32,23 @@ import {
   loadSettings,
   saveSettings,
 } from "@/lib/settings";
+
+
+
+import PhoneApp from "./PhoneApp";
+import ContactsApp from "./ContactsApp";
+import CalendarApp from "./CalendarApp";
+import CalculatorApp from "./CalculatorApp";
+import CameraApp from "./CameraApp";
+import BrowserApp from "./BrowserApp";
+import MusicApp from "./MusicApp";
+import MapsApp from "./MapsApp";
+import SettingsApp from "./SettingsApp";
+import NotesApp from "./NotesApp";
+import SnakeApp from "./SnakeApp";
+=======
 import { Redis } from "@upstash/redis";
+
 
 export default function SmartphoneUI() {
   const [isLocked, setIsLocked] = useState(true);
@@ -2171,7 +2187,6 @@ function CalcButton({
   );
 }
 
-
 function CalendarApp() {
   const [currentDate] = useState(new Date());
   const [events, setEvents] = useState<Record<string, string>>({});
@@ -2181,7 +2196,7 @@ function CalendarApp() {
   const [viewMode, setViewMode] = useState<'month' | 'year'>('month');
   const [currentMonth, setCurrentMonth] = useState(new Date().getMonth());
 
-
+  // Load events from Redis
   useEffect(() => {
     const loadEvents = async () => {
       try {
@@ -2196,7 +2211,7 @@ function CalendarApp() {
     loadEvents();
   }, []);
 
-
+  // Calendar operations
   const saveEvent = async (date: string, event: string) => {
     try {
       await redis.hset('calendar:events', { [date]: event });
@@ -2221,16 +2236,7 @@ function CalendarApp() {
     }
   };
 
-
-  const nextMonth = () => {
-    setCurrentMonth(prev => (prev === 11 ? 0 : prev + 1));
-  };
-
-  const prevMonth = () => {
-    setCurrentMonth(prev => (prev === 0 ? 11 : prev - 1));
-  };
-
-
+  // Generate single month view
   const generateMonth = (month: number) => {
     const year = currentDate.getFullYear();
     const firstDay = new Date(year, month, 1);
@@ -2239,12 +2245,12 @@ function CalendarApp() {
     const startingDay = firstDay.getDay();
 
     const days = [];
-
+    // Empty cells for days before the first of the month
     for (let i = 0; i < startingDay; i++) {
       days.push(<div key={`empty-${i}`} className="h-8"></div>);
     }
 
-
+    // Days of the month
     for (let day = 1; day <= daysInMonth; day++) {
       const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
       const hasEvent = events[dateStr];
@@ -2266,21 +2272,9 @@ function CalendarApp() {
     return (
       <div key={month} className="p-4 bg-gray-800 rounded-lg shadow-lg">
         <div className="flex justify-between items-center mb-4">
-          <button 
-            onClick={prevMonth}
-            className="p-1 rounded hover:bg-gray-700"
-          >
-            &lt;
-          </button>
           <h3 className="text-lg font-semibold">
-            {firstDay.toLocaleString('default', { month: 'long', year: 'numeric' })}
+            {firstDay.toLocaleString('default', { month: 'long' })}
           </h3>
-          <button 
-            onClick={nextMonth}
-            className="p-1 rounded hover:bg-gray-700"
-          >
-            &gt;
-          </button>
         </div>
         <div className="grid grid-cols-7 gap-1 text-center">
           {['S', 'M', 'T', 'W', 'T', 'F', 'S'].map(day => (
@@ -2292,7 +2286,7 @@ function CalendarApp() {
     );
   };
 
- 
+  // Event modal
   const EventModal = () => {
     if (!selectedDate) return null;
 
@@ -2383,13 +2377,40 @@ function CalendarApp() {
         </button>
       </div>
 
-      {viewMode === 'month' ? (
-        generateMonth(currentMonth)
-      ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-          {Array.from({ length: 12 }).map((_, i) => generateMonth(i))}
-        </div>
-      )}
+      <div className="flex-1 overflow-y-auto">
+        {viewMode === 'month' ? (
+          generateMonth(currentMonth)
+        ) : (
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+            {Array.from({ length: 12 }).map((_, i) => generateMonth(i))}
+          </div>
+        )}
+      </div>
+
+      {/* Events List Section */}
+      <div className="mt-4 border-t border-gray-700 pt-4">
+        <h2 className="text-lg font-medium mb-2">Upcoming Events</h2>
+        {Object.entries(events).length > 0 ? (
+          <div className="space-y-2">
+            {Object.entries(events)
+              .sort(([dateA], [dateB]) => new Date(dateA).getTime() - new Date(dateB).getTime())
+              .map(([date, event]) => (
+                <div key={date} className="bg-gray-800 p-3 rounded-lg">
+                  <div className="text-blue-400 text-sm">
+                    {new Date(date).toLocaleDateString('en-US', {
+                      weekday: 'short',
+                      month: 'short',
+                      day: 'numeric'
+                    })}
+                  </div>
+                  <div className="mt-1">{event}</div>
+                </div>
+              ))}
+          </div>
+        ) : (
+          <p className="text-gray-400">No events scheduled</p>
+        )}
+      </div>
 
       <EventModal />
     </div>
