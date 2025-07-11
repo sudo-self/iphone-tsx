@@ -12,23 +12,22 @@ export default function GooglePicker({ onPick }: GooglePickerProps) {
   const [pickerReady, setPickerReady] = useState(false);
 
   useEffect(() => {
-    const loadPicker = () => {
-      const script = document.createElement("script");
-      script.src = "https://apis.google.com/js/api.js";
-      script.async = true;
-      script.onload = () => {
-        (window as any).gapi.load("client:auth2", {
-          callback: () => {
-            (window as any).gapi.load("picker", {
-              callback: () => {
-                setPickerReady(true);
-              },
-            });
-          },
+   const loadPicker = () => {
+  const script = document.createElement("script");
+  script.src = "https://apis.google.com/js/api.js";
+  script.async = true;
+  script.onload = () => {
+    (window as any).gapi.load("client:auth2", {
+      callback: () => {
+        (window as any).gapi.load("picker", {
+          callback: () => setPickerReady(true),
         });
-      };
-      document.body.appendChild(script);
-    };
+      },
+    });
+  };
+  document.body.appendChild(script);
+};
+
 
     if (!(window as any).gapi) {
       loadPicker();
