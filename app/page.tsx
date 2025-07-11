@@ -23,6 +23,7 @@ import {
   MapIcon,
   FileText,
   Loader2,
+  Folder,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { getContacts } from "@/lib/redis";
@@ -34,6 +35,9 @@ import {
 } from "@/lib/settings";
 
 import { Redis } from "@upstash/redis";
+import { SessionProvider } from "next-auth/react";
+import DriveApp from "@/components/DriveApp";
+import GooglePicker from "@/components/GooglePicker"
 
 
 
@@ -48,7 +52,6 @@ import MapsApp from "./MapsApp";
 import SettingsApp from "./SettingsApp";
 import NotesApp from "./NotesApp";
 import SnakeApp from "./SnakeApp";
-
 import { Redis } from "@upstash/redis";
 
 export default function SmartphoneUI() {
@@ -275,6 +278,7 @@ export default function SmartphoneUI() {
                     />
                   )}
                   {activeApp === "Notes" && <NotesApp />}
+                  {activeApp === "Drive" && <DriveApp />}
                 </div>
               ) : (
                 <div
@@ -282,7 +286,13 @@ export default function SmartphoneUI() {
                   style={{ backgroundImage: `url('${settings.wallpaper}')` }}
                 >
                   <div className="flex-1 grid grid-cols-4 gap-4 p-6 mt-8">
-                    <AppIcon
+                   <AppIcon
+                     name="Google"
+                     icon={<Folder />}
+                     onClick={() => openApp("Drive")}
+                     iconStyle={getAppIconStyle()}
+                   />
+                   <AppIcon
                       name="Phone"
                       icon={<Phone />}
                       onClick={() => openApp("Phone")}
@@ -793,6 +803,25 @@ function SettingsApp({
     </div>
   );
 }
+
+
+function DriveApp() {
+  const handlePick = (file: any) => {
+    alert(`Picked: ${file.name}`);
+    console.log(file);
+  };
+
+  return (
+    <SessionProvider>
+      <div className="flex flex-col items-center p-6">
+        <h2 className="text-xl font-semibold mb-4">Google Drive</h2>
+        <GooglePicker onPick={handlePick} />
+      </div>
+    </SessionProvider>
+  );
+}
+
+
 
 function PhoneApp({
   contacts,
