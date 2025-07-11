@@ -945,7 +945,16 @@ const sampleTracks: Track[] = [
     artist: "Quantic",
     videoId: "nvUeo5sagkA",
   },
+  {
+    id: 10,
+    title: "Chill Drive",
+    artist: "Lo-Fi",
+    videoId: "iicfmXFALM8",
+
+  },
 ];
+
+
 
 function MusicApp() {
   const playerRef = useRef<HTMLDivElement>(null);
