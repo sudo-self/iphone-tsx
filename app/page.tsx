@@ -1642,12 +1642,12 @@ function NotesApp() {
   const [viewMode, setViewMode] = useState("notes");
   const [loading, setLoading] = useState(true);
 
-  // Load notes on mount and when viewMode changes
+
   useEffect(() => {
     loadNotes();
   }, [viewMode]);
 
-  // Simplified and robust loadNotes function
+
   const loadNotes = async () => {
     console.log("Loading notes..."); // Debug log
     setLoading(true);
@@ -1883,7 +1883,7 @@ function BrowserApp() {
     { name: "Meta Mirror", url: "https://meta-mirror.vercel.app" },
     { name: "Repo to txt", url: "https://repo-to-txt.pages.dev" },
     { name: "Punch OUT", url: "https://tyson.jessejesse.com" },
-    { name: "Deep Site", url: "https://huggingface.co/spaces/victor/deepsite-gallery" },
+    { name: "Retro Games", url: "https://retro.jessejesse.com" },
     { name: "Background Removal", url: "https://bg.jessejesse.com" },
   ];
 
@@ -2031,8 +2031,8 @@ function BrowserApp() {
         ) : (
           <div className="h-full bg-white p-6">
             <div className="text-center mb-6">
-              <Globe className="w-16 h-16 mx-auto mb-4 text-gray-400" />
-              <h2 className="text-2xl font-bold text-gray-800 mb-2">
+              <Globe className="w-16 h-16 mx-auto mb-4 text-blue-500" />
+              <h2 className="text-2xl font-bold text-gray-700 mb-2">
                 Random Web Browser
               </h2>
               <p className="text-center text-emerald-700 text-sm">¯\_(ツ)_/¯</p>
@@ -2068,9 +2068,10 @@ function BrowserApp() {
               </div>
             </div>
 
-            <div className="text-center text-sm text-emerald-700">
-              <p>iphone-TSX</p>
-            </div>
+          <div className="text-center text-xs text-emerald-600">
+  <p>React + Next.js + Tailwind + Redis DB</p>
+</div>
+
           </div>
         )}
       </div>
