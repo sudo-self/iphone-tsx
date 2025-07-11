@@ -684,7 +684,7 @@ function SettingsApp({
             </div>
 
             <div>
-              <h3 className="text-lg font-medium mb-3">Reset Device</h3>
+              <h3 className="text-lg font-medium mb-3">Factory Mode</h3>
               <button
                 onClick={() => {
                   const defaultSettings = {
@@ -753,9 +753,10 @@ function SettingsApp({
               </div>
             </div>
 
-            <div className="mt-8 text-center text-gray-400 text-sm">
-              <p>build framework - Next.js 15</p>
-            </div>
+          <div className="mt-4 text-center text-pink-400 text-xs">
+  <p>npx create-next-app@latest --app --typescript</p>
+</div>
+
           </div>
         </div>
       </div>
