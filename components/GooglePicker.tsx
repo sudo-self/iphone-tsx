@@ -43,7 +43,7 @@ export default function GooglePicker({ onPick }: GooglePickerProps) {
     const token = (session as any)?.accessToken;
 
     if (!token) {
-      alert("Missing access token. Please sign in again.");
+      alert("Missing access token. Please sign in.");
       return;
     }
 
@@ -59,7 +59,7 @@ export default function GooglePicker({ onPick }: GooglePickerProps) {
         if (data.action === "picked" && data.docs.length > 0) {
           onPick(data.docs[0]);
         } else if (data.action === "cancel") {
-          console.log("Picker was canceled.");
+          console.log("❌ Picker cancelled");
         }
       })
       .build();
