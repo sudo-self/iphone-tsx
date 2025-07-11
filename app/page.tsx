@@ -754,7 +754,7 @@ function SettingsApp({
             </div>
 
           <div className="mt-4 text-center text-pink-400 text-xs">
-  <p>npx create-next-app@latest --app --typescript</p>
+  <p>npx create-next-app@latest iphone-tsx</p>
 </div>
 
           </div>
@@ -1880,11 +1880,11 @@ function BrowserApp() {
 
   const quickLinks = [
     { name: "Google", url: "https://www.google.com/search?igu=1" },
-    { name: "Meta Mirror", url: "https://meta-mirror.vercel.app" },
+    { name: "Red Rose", url: "https://rose.jessejesse.xyz/" },
     { name: "Repo to txt", url: "https://repo-to-txt.pages.dev" },
-    { name: "Punch OUT", url: "https://tyson.jessejesse.com" },
+    { name: "Meta Mirror", url: "https://meta-mirror.vercel.app" },
     { name: "Retro Games", url: "https://retro.jessejesse.com" },
-    { name: "Background Removal", url: "https://bg.jessejesse.com" },
+    { name: "3D Sesame St", url: "https://3d-sesame.vercel.app" },
   ];
 
   const formatUrl = (inputUrl: string) => {
