@@ -732,21 +732,21 @@ function SettingsApp({
                 <Phone className="w-10 h-10 text-white" />
               </div>
               <h3 className="text-xl font-bold">{settings.deviceName}</h3>
-              <p className="text-gray-400">iphone.JesseJesse.com</p>
+              <p className="text-gray-400">JesseJesse.com</p>
             </div>
 
             <div className="space-y-3">
               <div className="flex justify-between py-2 border-b border-gray-700">
                 <span className="text-gray-400">Version</span>
-                <span className="text-orange-400">719</span>
+                <span className="text-orange-400">2.23</span>
               </div>
               <div className="flex justify-between py-2 border-b border-gray-700">
                 <span className="text-gray-400">Model</span>
-                <span className="text-blue-500">TSX</span>
+                <span className="text-blue-500">US</span>
               </div>
               <div className="flex justify-between py-2 border-b border-gray-700">
                 <span className="text-gray-400">Storage</span>
-                <span className="text-yellow-400">2TB</span>
+                <span className="text-yellow-400">20TB</span>
               </div>
               <div className="flex justify-between py-2 border-b border-gray-700">
                 <span className="text-gray-400">Battery Health</span>
@@ -755,7 +755,7 @@ function SettingsApp({
             </div>
 
             <div className="mt-8 text-center text-gray-400 text-sm">
-              <p>Next.js 15.4</p>
+              <p>Framework - Next.js 15</p>
             </div>
           </div>
         </div>
@@ -787,7 +787,7 @@ function SettingsApp({
         </div>
 
         <div className="mt-8 text-center text-cyan-500 text-sm">
-          <p>¯\_(ツ)_/¯</p>
+         ..<p>¯\_(ツ)_/¯</p>..
         </div>
       </div>
     </div>
@@ -1659,7 +1659,7 @@ function NotesApp() {
       const notesList = [];
       for (const [id, data] of Object.entries(notesData)) {
         try {
-          // Handle both string and object data
+        
           const parsedData = typeof data === "string" ? JSON.parse(data) : data;
           notesList.push({
             id,
@@ -1674,7 +1674,7 @@ function NotesApp() {
         }
       }
 
-      // Sort by date (newest first)
+
       notesList.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
       setNotes(notesList);
       console.log("Processed notes:", notesList); // Debug log
@@ -1685,7 +1685,7 @@ function NotesApp() {
     }
   };
 
-  // Add note handler with forced refresh
+
   const handleAddNote = async (e) => {
     e.preventDefault();
     if (!newTitle.trim()) return;
@@ -1705,11 +1705,11 @@ function NotesApp() {
       await redis.hset("notes", { [id]: JSON.stringify(noteData) });
       console.log("Note added:", noteData); // Debug log
 
-      // Reset form and force reload
+
       setNewTitle("");
       setNewContent("");
       setShowAddForm(false);
-      await loadNotes(); // Force reload
+      await loadNotes();
     } catch (error) {
       console.error("Failed to add note:", error);
     } finally {
@@ -1717,7 +1717,7 @@ function NotesApp() {
     }
   };
 
-  // Delete note handler
+
   const handleDeleteNote = async (id) => {
     try {
       const { redis } = await import("@/lib/redis");
@@ -1728,7 +1728,7 @@ function NotesApp() {
     }
   };
 
-  // Filter notes based on search and view mode
+
   const filteredNotes = notes.filter((note) => {
     const matchesSearch =
       note.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -2232,7 +2232,7 @@ function CalendarApp() {
   const [viewMode, setViewMode] = useState<'month' | 'year'>('month');
   const [currentMonth, setCurrentMonth] = useState(new Date().getMonth());
 
-  // Load events from Redis
+
   useEffect(() => {
     const loadEvents = async () => {
       try {
@@ -2247,7 +2247,7 @@ function CalendarApp() {
     loadEvents();
   }, []);
 
-  // Calendar operations
+
   const saveEvent = async (date: string, event: string) => {
     try {
       await redis.hset('calendar:events', { [date]: event });
@@ -2272,7 +2272,7 @@ function CalendarApp() {
     }
   };
 
-  // Generate single month view
+  
   const generateMonth = (month: number) => {
     const year = currentDate.getFullYear();
     const firstDay = new Date(year, month, 1);
@@ -2281,12 +2281,12 @@ function CalendarApp() {
     const startingDay = firstDay.getDay();
 
     const days = [];
-    // Empty cells for days before the first of the month
+ 
     for (let i = 0; i < startingDay; i++) {
       days.push(<div key={`empty-${i}`} className="h-8"></div>);
     }
 
-    // Days of the month
+  
     for (let day = 1; day <= daysInMonth; day++) {
       const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
       const hasEvent = events[dateStr];
