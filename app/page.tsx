@@ -2033,14 +2033,14 @@ function BrowserApp() {
             <div className="text-center mb-6">
               <Globe className="w-16 h-16 mx-auto mb-4 text-blue-500" />
               <h2 className="text-2xl font-bold text-gray-700 mb-2">
-                Random A$$ Browser
+                Random Web Browser
               </h2>
               <p className="text-center text-emerald-700 text-sm">¯\_(ツ)_/¯</p>
             </div>
 
             <div className="mb-6">
               <h3 className="text-lg font-semibold text-gray-800 mb-3">
-                JS Frameworks
+                Java Frameworks
               </h3>
               <div className="grid grid-cols-2 gap-2">
                 {quickLinks.map((link, index) => (
