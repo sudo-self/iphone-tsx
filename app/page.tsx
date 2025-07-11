@@ -2192,12 +2192,15 @@ function CalcButton({
   );
 }
 
+
 function CalendarApp() {
   const [currentDate] = useState(new Date());
   const [events, setEvents] = useState<Record<string, string>>({});
   const [selectedDate, setSelectedDate] = useState<string | null>(null);
   const [newEvent, setNewEvent] = useState('');
   const [isLoading, setIsLoading] = useState(true);
+  const [viewMode, setViewMode] = useState<'month' | 'year'>('month');
+  const [currentMonth, setCurrentMonth] = useState(new Date().getMonth());
 
 
   useEffect(() => {
@@ -2226,7 +2229,6 @@ function CalendarApp() {
     }
   };
 
-
   const deleteEvent = async (date: string) => {
     try {
       await redis.hdel('calendar:events', date);
@@ -2240,146 +2242,181 @@ function CalendarApp() {
     }
   };
 
-  const generateMonths = () => {
-    if (isLoading) {
-      return (
-        <div className="col-span-3 flex items-center justify-center">
-          <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-blue-500"></div>
-        </div>
-      );
-    }
 
-    const months = [];
+  const nextMonth = () => {
+    setCurrentMonth(prev => (prev === 11 ? 0 : prev + 1));
+  };
+
+  const prevMonth = () => {
+    setCurrentMonth(prev => (prev === 0 ? 11 : prev - 1));
+  };
+
+
+  const generateMonth = (month: number) => {
     const year = currentDate.getFullYear();
-    
-    for (let month = 0; month < 12; month++) {
-      const firstDay = new Date(year, month, 1);
-      const lastDay = new Date(year, month + 1, 0);
-      const daysInMonth = lastDay.getDate();
-      const startingDay = firstDay.getDay();
+    const firstDay = new Date(year, month, 1);
+    const lastDay = new Date(year, month + 1, 0);
+    const daysInMonth = lastDay.getDate();
+    const startingDay = firstDay.getDay();
+
+    const days = [];
+
+    for (let i = 0; i < startingDay; i++) {
+      days.push(<div key={`empty-${i}`} className="h-8"></div>);
+    }
+
+
+    for (let day = 1; day <= daysInMonth; day++) {
+      const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+      const hasEvent = events[dateStr];
       
-      const days = [];
- 
-      for (let i = 0; i < startingDay; i++) {
-        days.push(<div key={`empty-${i}`} className="h-8"></div>);
-      }
-      
- 
-      for (let day = 1; day <= daysInMonth; day++) {
-        const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
-        const hasEvent = events[dateStr];
-        
-        days.push(
-          <div
-            key={day}
-            onClick={() => setSelectedDate(dateStr)}
-            className={`h-8 w-8 flex items-center justify-center rounded-full cursor-pointer 
-              ${hasEvent ? 'bg-blue-600 text-white' : 'hover:bg-gray-700'}
-              ${selectedDate === dateStr ? 'ring-2 ring-blue-400' : ''}`}
-          >
-            {day}
-          </div>
-        );
-      }
-      
-      months.push(
-        <div key={month} className="p-4 border border-gray-700 rounded-lg">
-          <h3 className="text-lg font-semibold mb-2">
-            {firstDay.toLocaleString('default', { month: 'long' })}
-          </h3>
-          <div className="grid grid-cols-7 gap-1 text-center">
-            {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map(day => (
-              <div key={day} className="text-xs text-gray-400 pb-1">{day}</div>
-            ))}
-            {days}
-          </div>
+      days.push(
+        <div
+          key={day}
+          onClick={() => setSelectedDate(dateStr)}
+          className={`h-8 w-8 flex items-center justify-center rounded-full cursor-pointer text-sm
+            ${hasEvent ? 'bg-blue-600 text-white' : 'hover:bg-gray-700'}
+            ${selectedDate === dateStr ? 'ring-2 ring-blue-400' : ''}
+            ${day === new Date().getDate() && month === new Date().getMonth() ? 'font-bold' : ''}`}
+        >
+          {day}
         </div>
       );
     }
-    
-    return months;
+
+    return (
+      <div key={month} className="p-4 bg-gray-800 rounded-lg shadow-lg">
+        <div className="flex justify-between items-center mb-4">
+          <button 
+            onClick={prevMonth}
+            className="p-1 rounded hover:bg-gray-700"
+          >
+            &lt;
+          </button>
+          <h3 className="text-lg font-semibold">
+            {firstDay.toLocaleString('default', { month: 'long', year: 'numeric' })}
+          </h3>
+          <button 
+            onClick={nextMonth}
+            className="p-1 rounded hover:bg-gray-700"
+          >
+            &gt;
+          </button>
+        </div>
+        <div className="grid grid-cols-7 gap-1 text-center">
+          {['S', 'M', 'T', 'W', 'T', 'F', 'S'].map(day => (
+            <div key={day} className="text-xs text-gray-400 pb-1">{day}</div>
+          ))}
+          {days}
+        </div>
+      </div>
+    );
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (selectedDate && newEvent.trim()) {
-      await saveEvent(selectedDate, newEvent.trim());
-      setNewEvent('');
-      setSelectedDate(null);
-    }
+ 
+  const EventModal = () => {
+    if (!selectedDate) return null;
+
+    const handleSubmit = async (e: React.FormEvent) => {
+      e.preventDefault();
+      if (selectedDate && newEvent.trim()) {
+        await saveEvent(selectedDate, newEvent.trim());
+        setNewEvent('');
+        setSelectedDate(null);
+      }
+    };
+
+    return (
+      <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+        <div className="bg-gray-800 rounded-lg p-6 max-w-md w-full">
+          <h3 className="text-xl mb-4">
+            {new Date(selectedDate).toLocaleDateString('en-US', {
+              weekday: 'long',
+              month: 'long',
+              day: 'numeric',
+              year: 'numeric'
+            })}
+          </h3>
+          
+          {events[selectedDate] ? (
+            <div className="mb-4">
+              <p className="text-gray-300 mb-2">Event:</p>
+              <p className="bg-gray-700 p-3 rounded">{events[selectedDate]}</p>
+              <button
+                onClick={() => deleteEvent(selectedDate)}
+                className="mt-3 w-full bg-red-600 hover:bg-red-700 text-white py-2 px-4 rounded"
+              >
+                Delete Event
+              </button>
+            </div>
+          ) : (
+            <form onSubmit={handleSubmit}>
+              <input
+                type="text"
+                value={newEvent}
+                onChange={(e) => setNewEvent(e.target.value)}
+                placeholder="Enter event description"
+                className="w-full bg-gray-700 text-white p-3 rounded mb-3"
+                autoFocus
+              />
+              <div className="flex gap-2">
+                <button
+                  type="button"
+                  onClick={() => setSelectedDate(null)}
+                  className="flex-1 bg-gray-600 hover:bg-gray-500 text-white py-2 px-4 rounded"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  className="flex-1 bg-blue-600 hover:bg-blue-500 text-white py-2 px-4 rounded"
+                  disabled={!newEvent.trim()}
+                >
+                  Save
+                </button>
+              </div>
+            </form>
+          )}
+        </div>
+      </div>
+    );
   };
+
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center h-full">
+        <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-blue-500"></div>
+      </div>
+    );
+  }
 
   return (
     <div className="flex flex-col h-full bg-gray-900 text-white p-4">
-      <div className="h-16 flex items-center justify-between">
-        <h1 className="text-2xl font-light">Calendar</h1>
-        <div className="text-xl">
+      <div className="flex justify-between items-center mb-4">
+        <h1 className="text-xl font-semibold">
           {currentDate.getFullYear()}
-        </div>
+        </h1>
+        <button
+          onClick={() => setViewMode(viewMode === 'month' ? 'year' : 'month')}
+          className="text-sm bg-gray-700 hover:bg-gray-600 px-3 py-1 rounded"
+        >
+          {viewMode === 'month' ? 'Show Year View' : 'Show Month View'}
+        </button>
       </div>
-      
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 overflow-y-auto flex-1">
-        {generateMonths()}
-      </div>
-      
-      {/* Event modal */}
-      {selectedDate && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4">
-          <div className="bg-gray-800 rounded-lg p-6 max-w-md w-full">
-            <h3 className="text-xl mb-4">
-              {new Date(selectedDate).toLocaleDateString('en-US', {
-                weekday: 'long',
-                year: 'numeric',
-                month: 'long',
-                day: 'numeric'
-              })}
-            </h3>
-            
-            {events[selectedDate] ? (
-              <div className="mb-4">
-                <p className="text-gray-300 mb-2">Current event:</p>
-                <p className="bg-gray-700 p-3 rounded">{events[selectedDate]}</p>
-                <button
-                  onClick={() => deleteEvent(selectedDate)}
-                  className="mt-3 bg-red-600 hover:bg-red-700 text-white py-2 px-4 rounded"
-                >
-                  Delete Event
-                </button>
-              </div>
-            ) : (
-              <form onSubmit={handleSubmit}>
-                <input
-                  type="text"
-                  value={newEvent}
-                  onChange={(e) => setNewEvent(e.target.value)}
-                  placeholder="Enter event description"
-                  className="w-full bg-gray-700 text-white p-3 rounded mb-3"
-                  autoFocus
-                />
-                <div className="flex justify-end space-x-2">
-                  <button
-                    type="button"
-                    onClick={() => setSelectedDate(null)}
-                    className="bg-gray-600 hover:bg-gray-500 text-white py-2 px-4 rounded"
-                  >
-                    Cancel
-                  </button>
-                  <button
-                    type="submit"
-                    className="bg-blue-600 hover:bg-blue-500 text-white py-2 px-4 rounded"
-                    disabled={!newEvent.trim()}
-                  >
-                    Save
-                  </button>
-                </div>
-              </form>
-            )}
-          </div>
+
+      {viewMode === 'month' ? (
+        generateMonth(currentMonth)
+      ) : (
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+          {Array.from({ length: 12 }).map((_, i) => generateMonth(i))}
         </div>
       )}
+
+      <EventModal />
     </div>
   );
 }
+
     
 function Game() {
   const GRID_SIZE = 20
