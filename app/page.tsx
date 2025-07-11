@@ -786,7 +786,7 @@ function SettingsApp({
         </div>
 
         <div className="mt-8 text-center text-cyan-500 text-sm">
-         <p>【ツ】</p>
+         <p>ⓛⓞⓥⓔ</p>
         </div>
       </div>
     </div>
