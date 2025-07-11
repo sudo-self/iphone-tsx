@@ -18,31 +18,33 @@ export const authOptions: NextAuthOptions = {
   ],
   callbacks: {
     async jwt({ token, account }) {
-      // Store access token and other OAuth details on first sign in
       if (account) {
         token.accessToken = account.access_token
         token.refreshToken = account.refresh_token
         token.expiresAt = account.expires_at
-      }
 
-      // Optional: handle token expiration here (not implemented in this version)
+        console.log("🔑 access_token:", account.access_token)
+        console.log("🔄 refresh_token:", account.refresh_token)
+      }
       return token
     },
     async session({ session, token }) {
       session.accessToken = token.accessToken as string
+      session.refreshToken = token.refreshToken as string
+      session.expiresAt = token.expiresAt as number
       return session
     },
   },
-  secret: process.env.NEXTAUTH_SECRET,
   session: {
     strategy: 'jwt',
   },
+  secret: process.env.NEXTAUTH_SECRET,
   pages: {
-    signIn: '/auth/signin', // optional custom sign-in page
+    signIn: '/auth/signin',
   },
 }
 
 const handler = NextAuth(authOptions)
-
 export { handler as GET, handler as POST }
+
 
