@@ -1,7 +1,7 @@
 "use client";
 
 import type React from "react";
-import { useState, useEffect, useCallback, useRef } from "react"
+import { useState, useEffect, useCallback, useRef } from "react";
 import {
   Battery,
   Signal,
@@ -13,8 +13,6 @@ import {
   Calendar,
   Calculator,
   User,
-  Search,
-  Mic,
   Camera,
   Globe,
   Settings,
@@ -22,6 +20,7 @@ import {
   MapIcon,
   FileText,
   Loader2,
+  Game,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { getContacts } from "@/lib/redis";
@@ -31,9 +30,19 @@ import {
   loadSettings,
   saveSettings,
 } from "@/lib/settings";
-import { Redis } from "@upstash/redis";
-import { Game } from 'lucide-react';
 
+// Import or define your app components
+import PhoneApp from "./PhoneApp";
+import ContactsApp from "./ContactsApp";
+import CalendarApp from "./CalendarApp";
+import CalculatorApp from "./CalculatorApp";
+import CameraApp from "./CameraApp";
+import BrowserApp from "./BrowserApp";
+import MusicApp from "./MusicApp";
+import MapsApp from "./MapsApp";
+import SettingsApp from "./SettingsApp";
+import NotesApp from "./NotesApp";
+import SnakeApp from "./SnakeApp";
 
 export default function SmartphoneUI() {
   const [isLocked, setIsLocked] = useState(true);
@@ -41,14 +50,9 @@ export default function SmartphoneUI() {
   const [currentDate, setCurrentDate] = useState("");
   const [activeApp, setActiveApp] = useState<string | null>(null);
   const [batteryLevel, setBatteryLevel] = useState(85);
-  const [contacts, setContacts] = useState<
-    Array<{ name: string; phone: string }>
-  >([]);
+  const [contacts, setContacts] = useState<Array<{ name: string; phone: string }>>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [settings, setSettings] = useState<PhoneSettings>(defaultSettings);
-
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     const updateTime = () => {
@@ -230,174 +234,116 @@ export default function SmartphoneUI() {
                         className="text-blue-400 text-sm"
                         disabled={isLoading}
                       >
-                        {isLoading ? "Loading..." : "Refresh"}
+                        {isLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : "Refresh"}
                       </button>
                     )}
-
-                     {activeApp === 'Snake' ? (
-                     <div className="app-window">
-                     <button onClick={closeApp}>Close</button>
-                        <SnakeApp />
-                       </div>
-      ) : (
-        <div className="app-grid">
-          <AppIcon
-            name="Snake"
-            icon={<Game />}
-            onClick={() => openApp("Snake")}
-            iconStyle={getAppIconStyle()}
-          />
-                    )}
+                    <button 
+                      onClick={goHome} 
+                      className="text-white text-sm"
+                    >
+                      Close
+                    </button>
                   </div>
 
-                  {activeApp === "Phone" && <PhoneApp contacts={contacts} />}
-                  {activeApp === "Contacts" && (
-                    <ContactsApp
-                      contacts={contacts}
-                      onContactsChange={refreshContacts}
-                    />
-                  )}
-                  {activeApp === "Calendar" && <CalendarApp />}
-                  {activeApp === "Calculator" && <CalculatorApp />}
-                  {activeApp === "Camera" && <CameraApp />}
-                  {activeApp === "Browser" && <BrowserApp />}
-                  {activeApp === "Music" && <MusicApp />}
-                  {activeApp === "Maps" && (
-                    <MapsApp setActiveApp={setActiveApp} />
-                  )}
-                  {activeApp === "Settings" && (
-                    <SettingsApp
-                      settings={settings}
-                      onSettingsChange={updateSettings}
-                    />
-                  )}
-                  {activeApp === "Notes" && <NotesApp />}
+                  <div className="h-[calc(100%-3rem)] overflow-auto">
+                    {activeApp === "Phone" && <PhoneApp contacts={contacts} />}
+                    {activeApp === "Contacts" && (
+                      <ContactsApp
+                        contacts={contacts}
+                        onContactsChange={refreshContacts}
+                      />
+                    )}
+                    {activeApp === "Calendar" && <CalendarApp />}
+                    {activeApp === "Calculator" && <CalculatorApp />}
+                    {activeApp === "Camera" && <CameraApp />}
+                    {activeApp === "Browser" && <BrowserApp />}
+                    {activeApp === "Music" && <MusicApp />}
+                    {activeApp === "Maps" && (
+                      <MapsApp setActiveApp={setActiveApp} />
+                    )}
+                    {activeApp === "Settings" && (
+                      <SettingsApp
+                        settings={settings}
+                        onSettingsChange={updateSettings}
+                      />
+                    )}
+                    {activeApp === "Notes" && <NotesApp />}
+                    {activeApp === "Snake" && <SnakeApp />}
+                  </div>
                 </div>
               ) : (
-  <div className="absolute inset-0 pt-12">
-    {activeApp ? (
-      <div className="h-full">
-        <div className="h-12 flex items-center justify-between px-4 bg-gray-800">
-          <h2 className="text-white text-lg font-medium">
-            {activeApp}
-          </h2>
-          {(activeApp === "Contacts" || activeApp === "Phone") && (
-            <button
-              onClick={refreshContacts}
-              className="text-blue-400 text-sm"
-              disabled={isLoading}
-            >
-              {isLoading ? "Loading..." : "Refresh"}
-            </button>
-          )}
-          <button 
-            onClick={() => setActiveApp(null)} 
-            className="text-white text-sm"
-          >
-            Close
-          </button>
-        </div>
-
-        {/* App content area */}
-        <div className="h-[calc(100%-3rem)] overflow-auto">
-          {activeApp === "Phone" && <PhoneApp contacts={contacts} />}
-          {activeApp === "Contacts" && (
-            <ContactsApp
-              contacts={contacts}
-              onContactsChange={refreshContacts}
-            />
-          )}
-          {activeApp === "Calendar" && <CalendarApp />}
-          {activeApp === "Calculator" && <CalculatorApp />}
-          {activeApp === "Camera" && <CameraApp />}
-          {activeApp === "Browser" && <BrowserApp />}
-          {activeApp === "Music" && <MusicApp />}
-          {activeApp === "Maps" && (
-            <MapsApp setActiveApp={setActiveApp} />
-          )}
-          {activeApp === "Settings" && (
-            <SettingsApp
-              settings={settings}
-              onSettingsChange={updateSettings}
-            />
-          )}
-          {activeApp === "Notes" && <NotesApp />}
-          {activeApp === "Snake" && <SnakeApp />}
-        </div>
-      </div>
-    ) : (
-      <div
-        className="h-full flex flex-col bg-cover bg-center"
-        style={{ backgroundImage: `url('${settings.wallpaper}')` }}
-      >
-        <div className="flex-1 grid grid-cols-4 gap-4 p-6 mt-8">
-          <AppIcon
-            name="Phone"
-            icon={<Phone />}
-            onClick={() => openApp("Phone")}
-            iconStyle={getAppIconStyle()}
-          />
-          <AppIcon
-            name="Contacts"
-            icon={<User />}
-            onClick={() => openApp("Contacts")}
-            iconStyle={getAppIconStyle()}
-          />
-          <AppIcon
-            name="Calendar"
-            icon={<Calendar />}
-            onClick={() => openApp("Calendar")}
-            iconStyle={getAppIconStyle()}
-          />
-          <AppIcon
-            name="Calculator"
-            icon={<Calculator />}
-            onClick={() => openApp("Calculator")}
-            iconStyle={getAppIconStyle()}
-          />
-          <AppIcon
-            name="Camera"
-            icon={<Camera />}
-            onClick={() => openApp("Camera")}
-            iconStyle={getAppIconStyle()}
-          />
-          <AppIcon
-            name="Browser"
-            icon={<Globe />}
-            onClick={() => openApp("Browser")}
-            iconStyle={getAppIconStyle()}
-          />
-          <AppIcon
-            name="Settings"
-            icon={<Settings />}
-            onClick={() => openApp("Settings")}
-            iconStyle={getAppIconStyle()}
-          />
-          <AppIcon
-            name="Music"
-            icon={<Music />}
-            onClick={() => openApp("Music")}
-            iconStyle={getAppIconStyle()}
-          />
-          <AppIcon
-            name="Maps"
-            icon={<MapIcon />}
-            onClick={() => openApp("Maps")}
-            iconStyle={getAppIconStyle()}
-          />
-          <AppIcon
-            name="Notes"
-            icon={<FileText />}
-            onClick={() => openApp("Notes")}
-            iconStyle={getAppIconStyle()}
-          />
-          <AppIcon
-            name="Snake"
-            icon={<Game />}
-            onClick={() => openApp("Snake")}
-            iconStyle={getAppIconStyle()}
-          />
-        </div>
+                <div
+                  className="h-full flex flex-col bg-cover bg-center"
+                  style={{ backgroundImage: `url('${settings.wallpaper}')` }}
+                >
+                  <div className="flex-1 grid grid-cols-4 gap-4 p-6 mt-8">
+                    <AppIcon
+                      name="Phone"
+                      icon={<Phone />}
+                      onClick={() => openApp("Phone")}
+                      iconStyle={getAppIconStyle()}
+                    />
+                    <AppIcon
+                      name="Contacts"
+                      icon={<User />}
+                      onClick={() => openApp("Contacts")}
+                      iconStyle={getAppIconStyle()}
+                    />
+                    <AppIcon
+                      name="Calendar"
+                      icon={<Calendar />}
+                      onClick={() => openApp("Calendar")}
+                      iconStyle={getAppIconStyle()}
+                    />
+                    <AppIcon
+                      name="Calculator"
+                      icon={<Calculator />}
+                      onClick={() => openApp("Calculator")}
+                      iconStyle={getAppIconStyle()}
+                    />
+                    <AppIcon
+                      name="Camera"
+                      icon={<Camera />}
+                      onClick={() => openApp("Camera")}
+                      iconStyle={getAppIconStyle()}
+                    />
+                    <AppIcon
+                      name="Browser"
+                      icon={<Globe />}
+                      onClick={() => openApp("Browser")}
+                      iconStyle={getAppIconStyle()}
+                    />
+                    <AppIcon
+                      name="Settings"
+                      icon={<Settings />}
+                      onClick={() => openApp("Settings")}
+                      iconStyle={getAppIconStyle()}
+                    />
+                    <AppIcon
+                      name="Music"
+                      icon={<Music />}
+                      onClick={() => openApp("Music")}
+                      iconStyle={getAppIconStyle()}
+                    />
+                    <AppIcon
+                      name="Maps"
+                      icon={<MapIcon />}
+                      onClick={() => openApp("Maps")}
+                      iconStyle={getAppIconStyle()}
+                    />
+                    <AppIcon
+                      name="Notes"
+                      icon={<FileText />}
+                      onClick={() => openApp("Notes")}
+                      iconStyle={getAppIconStyle()}
+                    />
+                    <AppIcon
+                      name="Snake"
+                      icon={<Game />}
+                      onClick={() => openApp("Snake")}
+                      iconStyle={getAppIconStyle()}
+                    />
+                  </div>
                 </div>
               )}
 
