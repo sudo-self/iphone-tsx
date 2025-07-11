@@ -33,6 +33,8 @@ import {
   saveSettings,
 } from "@/lib/settings";
 
+import { Redis } from "@upstash/redis";
+
 
 
 import PhoneApp from "./PhoneApp";
@@ -46,9 +48,8 @@ import MapsApp from "./MapsApp";
 import SettingsApp from "./SettingsApp";
 import NotesApp from "./NotesApp";
 import SnakeApp from "./SnakeApp";
-=======
-import { Redis } from "@upstash/redis";
 
+import { Redis } from "@upstash/redis";
 
 export default function SmartphoneUI() {
   const [isLocked, setIsLocked] = useState(true);
