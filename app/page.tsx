@@ -34,8 +34,8 @@ import {
   saveSettings,
 } from "@/lib/settings";
 import { Redis } from "@upstash/redis";
+import SnakeGame from './SnakeGame';
 
-import SnakeGame from "/SnakeGame";
 
 export default function SmartphoneUI() {
   const [isLocked, setIsLocked] = useState(true);
@@ -529,7 +529,7 @@ function SettingsApp({
           >
             ← Back
           </button>
-          <h2 className="text-xl font-bold">Display & Brightness</h2>
+          <h2 className="text-xl font-bold">Display</h2>
         </div>
 
         <div className="flex-1 overflow-y-auto px-4 pb-4">
@@ -618,7 +618,7 @@ function SettingsApp({
             </div>
 
             <div>
-              <h3 className="text-lg font-medium mb-3">Status Bar</h3>
+              <h3 className="text-lg font-medium mb-3 overflow-y-auto">Status Bar</h3>
               <div className="space-y-3">
                 <label className="flex items-center justify-between">
                   <span>Show Battery Percentage</span>
