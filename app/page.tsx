@@ -39,7 +39,6 @@ import { SessionProvider } from "next-auth/react";
 import DriveApp from "@/components/DriveApp";
 import GooglePicker from "@/components/GooglePicker"
 import { useSession } from "next-auth/react";
-import GooglePicker from "./GooglePicker"; 
 
 import PhoneApp from "./PhoneApp";
 import ContactsApp from "./ContactsApp";
