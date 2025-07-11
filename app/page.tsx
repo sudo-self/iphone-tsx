@@ -2734,7 +2734,6 @@ function SnakeApp() {
   );
 }
 
-export default SnakeApp;
 
 
 
