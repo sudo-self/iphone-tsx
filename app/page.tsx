@@ -35,7 +35,6 @@ import {
 } from "@/lib/settings";
 
 import { Redis } from "@upstash/redis";
-import DriveApp from "@/components/DriveApp";
 
 import PhoneApp from "./PhoneApp";
 import ContactsApp from "./ContactsApp";
