@@ -2192,15 +2192,193 @@ function CalcButton({
   );
 }
 
+const redis = new Redis({
+  url: "https://crack-hen-56730.upstash.io",
+  token: "Ad2aAAIjcDFmMzYzNWIzYmNjMjM0Yjg4OGJhM2M4Yjc4N2FlZmFmOHAxMA",
+});
+
 function CalendarApp() {
+  const [currentDate, setCurrentDate] = useState(new Date());
+  const [events, setEvents] = useState<Record<string, string>>({});
+  const [selectedDate, setSelectedDate] = useState<string | null>(null);
+  const [newEvent, setNewEvent] = useState("");
+
+
+  useEffect(() => {
+    const loadEvents = async () => {
+      const loadedEvents = await getEvents();
+      setEvents(loadedEvents);
+    };
+    loadEvents();
+  }, []);
+
+
+  const getEvents = async (): Promise<Record<string, string>> => {
+    try {
+      return (await redis.hgetall("calendar:events")) || {};
+    } catch (error) {
+      console.error("Error fetching events:", error);
+      return {};
+    }
+  };
+
+
+  const saveEvent = async (date: string, event: string) => {
+    try {
+      await redis.hset("calendar:events", { [date]: event });
+      setEvents(prev => ({ ...prev, [date]: event }));
+      return true;
+    } catch (error) {
+      console.error("Error saving event:", error);
+      return false;
+    }
+  };
+
+
+  const deleteEvent = async (date: string) => {
+    try {
+      await redis.hdel("calendar:events", date);
+      const newEvents = { ...events };
+      delete newEvents[date];
+      setEvents(newEvents);
+      return true;
+    } catch (error) {
+      console.error("Error deleting event:", error);
+      return false;
+    }
+  };
+
+
+  const generateMonths = () => {
+    const months = [];
+    const year = currentDate.getFullYear();
+    
+    for (let month = 0; month < 12; month++) {
+      const firstDay = new Date(year, month, 1);
+      const lastDay = new Date(year, month + 1, 0);
+      const daysInMonth = lastDay.getDate();
+      const startingDay = firstDay.getDay();
+      
+      const days = [];
+  
+      for (let i = 0; i < startingDay; i++) {
+        days.push(<div key={`empty-${i}`} className="h-8"></div>);
+      }
+      
+  
+      for (let day = 1; day <= daysInMonth; day++) {
+        const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+        const hasEvent = events[dateStr];
+        
+        days.push(
+          <div
+            key={day}
+            onClick={() => setSelectedDate(dateStr)}
+            className={`h-8 w-8 flex items-center justify-center rounded-full cursor-pointer 
+              ${hasEvent ? 'bg-blue-600 text-white' : 'hover:bg-gray-700'}
+              ${selectedDate === dateStr ? 'ring-2 ring-blue-400' : ''}`}
+          >
+            {day}
+          </div>
+        );
+      }
+      
+      months.push(
+        <div key={month} className="p-4 border border-gray-700 rounded-lg">
+          <h3 className="text-lg font-semibold mb-2">
+            {firstDay.toLocaleString('default', { month: 'long' })}
+          </h3>
+          <div className="grid grid-cols-7 gap-1 text-center">
+            {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map(day => (
+              <div key={day} className="text-xs text-gray-400 pb-1">{day}</div>
+            ))}
+            {days}
+          </div>
+        </div>
+      );
+    }
+    
+    return months;
+  };
+
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (selectedDate && newEvent.trim()) {
+      await saveEvent(selectedDate, newEvent.trim());
+      setNewEvent("");
+      setSelectedDate(null);
+    }
+  };
+
   return (
-    <div className="flex flex-col h-full bg-gray-900 text-white">
-      <div className="h-16 flex items-center justify-center text-2xl font-light">
-        Calendar
+    <div className="flex flex-col h-full bg-gray-900 text-white p-4">
+      <div className="h-16 flex items-center justify-between">
+        <h1 className="text-2xl font-light">Calendar</h1>
+        <div className="text-xl">
+          {currentDate.getFullYear()}
+        </div>
       </div>
-      <div className="flex-1 flex items-center justify-center">
-        <p className="text-gray-400">Coming soon...</p>
+      
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 overflow-y-auto flex-1">
+        {generateMonths()}
       </div>
+      
+
+      {selectedDate && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4">
+          <div className="bg-gray-800 rounded-lg p-6 max-w-md w-full">
+            <h3 className="text-xl mb-4">
+              {new Date(selectedDate).toLocaleDateString('en-US', {
+                weekday: 'long',
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric'
+              })}
+            </h3>
+            
+            {events[selectedDate] ? (
+              <div className="mb-4">
+                <p className="text-gray-300 mb-2">Current event:</p>
+                <p className="bg-gray-700 p-3 rounded">{events[selectedDate]}</p>
+                <button
+                  onClick={() => deleteEvent(selectedDate)}
+                  className="mt-3 bg-red-600 hover:bg-red-700 text-white py-2 px-4 rounded"
+                >
+                  Delete Event
+                </button>
+              </div>
+            ) : (
+              <form onSubmit={handleSubmit}>
+                <input
+                  type="text"
+                  value={newEvent}
+                  onChange={(e) => setNewEvent(e.target.value)}
+                  placeholder="Enter event description"
+                  className="w-full bg-gray-700 text-white p-3 rounded mb-3"
+                  autoFocus
+                />
+                <div className="flex justify-end space-x-2">
+                  <button
+                    type="button"
+                    onClick={() => setSelectedDate(null)}
+                    className="bg-gray-600 hover:bg-gray-500 text-white py-2 px-4 rounded"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="submit"
+                    className="bg-blue-600 hover:bg-blue-500 text-white py-2 px-4 rounded"
+                    disabled={!newEvent.trim()}
+                  >
+                    Save
+                  </button>
+                </div>
+              </form>
+            )}
+          </div>
+        </div>
+      )}
     </div>
   );
 }
@@ -2645,7 +2823,7 @@ function SnakeApp() {
       <div className="w-full max-w-md bg-black/80 border-cyan-500/30 backdrop-blur-sm shadow-2xl shadow-cyan-500/20 relative z-10 rounded-lg border">
         <div className="text-center border-b border-cyan-500/20 p-6">
           <h3 className="text-3xl font-bold bg-gradient-to-r from-cyan-400 to-purple-400 bg-clip-text text-transparent animate-pulse">
-            Cyber Snake
+            Quantum Snake
           </h3>
           <div className="flex justify-between text-sm font-mono">
             <span className="text-cyan-400" style={{ textShadow: '0 0 10px currentColor' }}>Score: {score.toString().padStart(6, "0")}</span>
@@ -2664,7 +2842,6 @@ function SnakeApp() {
               <div className="absolute inset-0 flex items-center justify-center bg-black/70 rounded-lg">
                 <div className="text-center">
                   <div className="text-cyan-400 text-xl font-bold mb-2 animate-pulse">Ready?</div>
-                  <div className="text-gray-400 text-sm">Press Start</div>
                 </div>
               </div>
             )}
@@ -2672,7 +2849,6 @@ function SnakeApp() {
               <div className="absolute inset-0 flex items-center justify-center bg-black/70 rounded-lg">
                 <div className="text-center">
                   <div className="text-yellow-400 text-xl font-bold mb-2 animate-pulse">Paused</div>
-                  <div className="text-gray-400 text-sm">Resume</div>
                 </div>
               </div>
             )}
@@ -2725,7 +2901,7 @@ function SnakeApp() {
           )}
 
           <div className="text-center text-xs text-gray-400 space-y-1 font-mono border-t border-cyan-500/20 pt-4">
-            <p className="text-cyan-300">Arrow Keys / Swipe • Move</p>
+            <p className="text-cyan-300">Arrows • Swipe </p>
             <p className="text-cyan-300">Spacebar • Pause</p>
           </div>
         </div>
