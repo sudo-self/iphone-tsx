@@ -28,7 +28,7 @@ export default function DriveApp() {
         method: "POST",
         headers: {
           "x-access-token": accessToken,
-          "x-file-name": file.name,
+          "x-file-name": encodeURIComponent(file.name),
           "x-mime-type": file.type || "application/octet-stream",
         },
         body: file,
