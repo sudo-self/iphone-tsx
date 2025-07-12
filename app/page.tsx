@@ -720,57 +720,56 @@ function SettingsApp({
     );
   }
 
-  if (activeSection === "about") {
-    return (
-      <div className="h-full bg-gray-900 text-white flex flex-col">
-        <div className="flex items-center mb-6 px-4 pt-4 flex-shrink-0">
-          <button
-            onClick={() => setActiveSection(null)}
-            className="text-blue-400 mr-4"
-          >
-            ← Back
-          </button>
-        </div>
+if (activeSection === "about") {
+  return (
+    <div className="h-full bg-gray-900 text-white flex flex-col">
+      <div className="flex items-center mb-6 px-4 pt-4 flex-shrink-0">
+        <button
+          onClick={() => setActiveSection(null)}
+          className="text-blue-400 mr-4"
+        >
+          ← Back
+        </button>
+      </div>
 
-        <div className="flex-1 overflow-y-auto px-4 pb-4">
-          <div className="space-y-4">
-            <div className="text-center mb-8">
-              <div className="w-20 h-20 bg-gradient-to-br from-blue-500 to-purple-600 rounded-2xl mx-auto mb-4 flex items-center justify-center">
-                <Phone className="w-10 h-10 text-white" />
-              </div>
-              <h3 className="text-xl font-bold">{settings.deviceName}</h3>
-              <p className="text-gray-400">JesseJesse.com</p>
+      <div className="flex-1 overflow-y-auto px-4 pb-4">
+        <div className="space-y-4">
+          <div className="text-center mb-8">
+            <div className="w-20 h-20 bg-gradient-to-br from-blue-500 to-purple-600 rounded-2xl mx-auto mb-4 flex items-center justify-center">
+              <Phone className="w-10 h-10 text-white" />
             </div>
+            <h3 className="text-xl font-bold">{settings.deviceName}</h3>
+            <p className="text-gray-400">JesseJesse.com</p>
+          </div>
 
-            <div className="space-y-3">
-              <div className="flex justify-between py-2 border-b border-gray-700">
-                <span className="text-gray-400">Version</span>
-                <span className="text-orange-400">2.23</span>
-              </div>
-              <div className="flex justify-between py-2 border-b border-gray-700">
-                <span className="text-gray-400">Model</span>
-                <span className="text-blue-500">US</span>
-              </div>
-              <div className="flex justify-between py-2 border-b border-gray-700">
-                <span className="text-gray-400">Storage</span>
-                <span className="text-yellow-400">20TB</span>
-              </div>
-              <div className="flex justify-between py-2 border-b border-gray-700">
-                <span className="text-gray-400">Battery Health</span>
-                <span className="text-green-500">Excellent</span>
-              </div>
+          <div className="space-y-3">
+            <div className="flex justify-between py-2 border-b border-gray-700">
+              <span className="text-gray-400">Version</span>
+              <span className="text-orange-400">2.23</span>
             </div>
+            <div className="flex justify-between py-2 border-b border-gray-700">
+              <span className="text-gray-400">Model</span>
+              <span className="text-blue-500">US</span>
+            </div>
+            <div className="flex justify-between py-2 border-b border-gray-700">
+              <span className="text-gray-400">Storage</span>
+              <span className="text-yellow-400">20TB</span>
+            </div>
+            <div className="flex justify-between py-2 border-b border-gray-700">
+              <span className="text-gray-400">Battery Health</span>
+              <span className="text-green-500">Excellent</span>
+            </div>
+          </div>
 
-         <div className="text-center text-pink-400 text-xs select-text mt-4">
-  <p>Next.js&nbsp; {process.env.NEXT_PUBLIC_BUILD_HASH}</p>
-</div>
-
-
+          <div className="text-center text-pink-400 text-xs select-text mt-4">
+            <p>Next.js&nbsp;{buildHash}</p>
           </div>
         </div>
       </div>
-    );
-  }
+    </div>
+  );
+}
+
 
   return (
     <div className="h-full bg-gray-900 text-white flex flex-col">
