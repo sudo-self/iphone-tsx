@@ -265,10 +265,12 @@ export default function SmartphoneUI() {
           {activeApp === "Music" && <MusicApp />}
           {activeApp === "Maps" && <MapsApp setActiveApp={setActiveApp} />}
           {activeApp === "Settings" && (
-            <SettingsApp
-              settings={settings}
-              onSettingsChange={updateSettings}
-            />
+           <SettingsApp
+  settings={settings}
+  onSettingsChange={updateSettings}
+  buildHash={buildHash}
+/>
+
           )}
           {activeApp === "Notes" && <NotesApp />}
           {activeApp === "Drive" && <DriveApp />}
