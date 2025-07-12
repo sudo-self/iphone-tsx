@@ -764,7 +764,7 @@ if (activeSection === "about") {
           </div>
 
           <div className="text-center text-pink-400 text-xs select-text mt-4">
-            <p>Next.js&nbsp;{buildHash}</p>
+            <p>Next.js build:&nbsp;{buildHash}</p>
           </div>
         </div>
       </div>
@@ -797,7 +797,7 @@ if (activeSection === "about") {
         </div>
 
         <div className="mt-8 text-center text-cyan-500 text-sm">
-         <p>ⓛⓞⓥⓔ</p>
+         <p>made with ⓛⓞⓥⓔ</p>
         </div>
       </div>
     </div>
