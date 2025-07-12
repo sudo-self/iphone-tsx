@@ -205,164 +205,165 @@ export default function SmartphoneUI() {
             </div>
           </div>
 
-          {isLocked ? (
-            <div
-              className="absolute inset-0 flex flex-col items-center bg-cover bg-center"
-              style={{
-                backgroundImage: `url('${settings.lockScreenWallpaper}')`,
-              }}
-            >
-              <div className="mt-20 text-white text-center">
-                <div className="text-6xl font-light">{currentTime}</div>
-                <div className="mt-2 text-lg">{currentDate}</div>
-              </div>
+     {isLocked ? (
+  <div
+    className="absolute inset-0 flex flex-col items-center bg-cover bg-center"
+    style={{
+      backgroundImage: `url('${settings.lockScreenWallpaper}')`,
+    }}
+  >
+    <div className="mt-20 text-white text-center">
+      <div className="text-6xl font-light">{currentTime}</div>
+      <div className="mt-2 text-lg">{currentDate}</div>
+    </div>
 
-              <div className="mt-auto mb-10 flex flex-col items-center">
-                <div className="p-4 rounded-full mb-4">
-                  <Lock className="w-6 h-6 text-white" />
-                </div>
-                <button
-                  onClick={handleUnlock}
-                  className="text-white text-lg font-light flex items-center"
-                >
-                  <ChevronLeft className="w-5 h-5 mr-1 animate-pulse" />
-                  Tap to Unlock
-                  <ChevronRight className="w-5 h-5 ml-1 animate-pulse" />
-                </button>
-              </div>
-            </div>
-          ) : (
-           <div className="absolute inset-0 pt-12 overflow-y-auto">
-              {activeApp ? (
-                <div className="h-full">
-                  <div className="h-12 flex items-center justify-between px-4 bg-gray-800">
-                    <h2 className="text-white text-lg font-medium">
-                      {activeApp}
-                    </h2>
-                    {(activeApp === "Contacts" || activeApp === "Phone") && (
-                      <button
-                        onClick={refreshContacts}
-                        className="text-blue-400 text-sm"
-                        disabled={isLoading}
-                      >
-                        {isLoading ? "Loading..." : "Refresh"}
-                      </button>
-                    )}
-                  </div>
-
-                  {activeApp === "Phone" && <PhoneApp contacts={contacts} />}
-                  {activeApp === "Contacts" && (
-                    <ContactsApp
-                      contacts={contacts}
-                      onContactsChange={refreshContacts}
-                    />
-                  )}
-                  {activeApp === "Calendar" && <CalendarApp />}
-                  {activeApp === "Calculator" && <CalculatorApp />}
-                  {activeApp === "Camera" && <CameraApp />}
-                  {activeApp === "Browser" && <BrowserApp />}
-                  {activeApp === "Music" && <MusicApp />}
-                  {activeApp === "Maps" && (
-                    <MapsApp setActiveApp={setActiveApp} />
-                  )}
-                  {activeApp === "Settings" && (
-                    <SettingsApp
-                      settings={settings}
-                      onSettingsChange={updateSettings}
-                    />
-                  )}
-                  {activeApp === "Notes" && <NotesApp />}
-                  {activeApp === "Drive" && <DriveApp />}
-                </div>
-              ) : (
-                <div
-                  className="h-full flex flex-col bg-cover bg-center"
-                  style={{ backgroundImage: `url('${settings.wallpaper}')` }}
-                >
-                  <div className="flex-1 grid grid-cols-4 gap-4 p-6 mt-8">
-                   <AppIcon
-                     name="Google"
-                     icon={<Folder />}
-                     onClick={() => openApp("Drive")}
-                     iconStyle={getAppIconStyle()}
-                   />
-                   <AppIcon
-                      name="Phone"
-                      icon={<Phone />}
-                      onClick={() => openApp("Phone")}
-                      iconStyle={getAppIconStyle()}
-                    />
-                    <AppIcon
-                      name="Contacts"
-                      icon={<User />}
-                      onClick={() => openApp("Contacts")}
-                      iconStyle={getAppIconStyle()}
-                    />
-                    <AppIcon
-                      name="Calendar"
-                      icon={<Calendar />}
-                      onClick={() => openApp("Calendar")}
-                      iconStyle={getAppIconStyle()}
-                    />
-                    <AppIcon
-                      name="Calculator"
-                      icon={<Calculator />}
-                      onClick={() => openApp("Calculator")}
-                      iconStyle={getAppIconStyle()}
-                    />
-                    <AppIcon
-                      name="Camera"
-                      icon={<Camera />}
-                      onClick={() => openApp("Camera")}
-                      iconStyle={getAppIconStyle()}
-                    />
-                    <AppIcon
-                      name="Browser"
-                      icon={<Globe />}
-                      onClick={() => openApp("Browser")}
-                      iconStyle={getAppIconStyle()}
-                    />
-                    <AppIcon
-                      name="Settings"
-                      icon={<Settings />}
-                      onClick={() => openApp("Settings")}
-                      iconStyle={getAppIconStyle()}
-                    />
-                    <AppIcon
-                      name="Music"
-                      icon={<Music />}
-                      onClick={() => openApp("Music")}
-                      iconStyle={getAppIconStyle()}
-                    />
-                    <AppIcon
-                      name="Maps"
-                      icon={<MapIcon />}
-                      onClick={() => openApp("Maps")}
-                      iconStyle={getAppIconStyle()}
-                    />
-                    <AppIcon
-                      name="Notes"
-                      icon={<FileText />}
-                      onClick={() => openApp("Notes")}
-                      iconStyle={getAppIconStyle()}
-                    />
-                  </div>
-                </div>
-              )}
-
-              <div
-                className={cn(
-                  "absolute bottom-0 left-0 right-0 h-16 backdrop-blur-md flex justify-center items-center",
-                  `bg-${settings.taskbarColor}`
-                )}
+    <div className="mt-auto mb-10 flex flex-col items-center">
+      <div className="p-4 rounded-full mb-4">
+        <Lock className="w-6 h-6 text-white" />
+      </div>
+      <button
+        onClick={handleUnlock}
+        className="text-white text-lg font-light flex items-center"
+      >
+        <ChevronLeft className="w-5 h-5 mr-1 animate-pulse" />
+        Tap to Unlock
+        <ChevronRight className="w-5 h-5 ml-1 animate-pulse" />
+      </button>
+    </div>
+  </div>
+) : (
+  <div className="absolute inset-0 pt-12 flex flex-col">
+    {/* Scrollable content */}
+    <div className="flex-1 overflow-y-auto">
+      {activeApp ? (
+        <div>
+          <div className="h-12 flex items-center justify-between px-4 bg-gray-800">
+            <h2 className="text-white text-lg font-medium">{activeApp}</h2>
+            {(activeApp === "Contacts" || activeApp === "Phone") && (
+              <button
+                onClick={refreshContacts}
+                className="text-blue-400 text-sm"
+                disabled={isLoading}
               >
-                <button
-                  onClick={activeApp ? goHome : handleLock}
-                  className={getHomeButtonStyle()}
-                ></button>
-              </div>
-            </div>
+                {isLoading ? "Loading..." : "Refresh"}
+              </button>
+            )}
+          </div>
+
+          {activeApp === "Phone" && <PhoneApp contacts={contacts} />}
+          {activeApp === "Contacts" && (
+            <ContactsApp
+              contacts={contacts}
+              onContactsChange={refreshContacts}
+            />
           )}
+          {activeApp === "Calendar" && <CalendarApp />}
+          {activeApp === "Calculator" && <CalculatorApp />}
+          {activeApp === "Camera" && <CameraApp />}
+          {activeApp === "Browser" && <BrowserApp />}
+          {activeApp === "Music" && <MusicApp />}
+          {activeApp === "Maps" && <MapsApp setActiveApp={setActiveApp} />}
+          {activeApp === "Settings" && (
+            <SettingsApp
+              settings={settings}
+              onSettingsChange={updateSettings}
+            />
+          )}
+          {activeApp === "Notes" && <NotesApp />}
+          {activeApp === "Drive" && <DriveApp />}
+        </div>
+      ) : (
+        <div
+          className="flex flex-col bg-cover bg-center min-h-full"
+          style={{ backgroundImage: `url('${settings.wallpaper}')` }}
+        >
+          <div className="grid grid-cols-4 gap-4 p-6 mt-8">
+            <AppIcon
+              name="Google"
+              icon={<Folder />}
+              onClick={() => openApp("Drive")}
+              iconStyle={getAppIconStyle()}
+            />
+            <AppIcon
+              name="Phone"
+              icon={<Phone />}
+              onClick={() => openApp("Phone")}
+              iconStyle={getAppIconStyle()}
+            />
+            <AppIcon
+              name="Contacts"
+              icon={<User />}
+              onClick={() => openApp("Contacts")}
+              iconStyle={getAppIconStyle()}
+            />
+            <AppIcon
+              name="Calendar"
+              icon={<Calendar />}
+              onClick={() => openApp("Calendar")}
+              iconStyle={getAppIconStyle()}
+            />
+            <AppIcon
+              name="Calculator"
+              icon={<Calculator />}
+              onClick={() => openApp("Calculator")}
+              iconStyle={getAppIconStyle()}
+            />
+            <AppIcon
+              name="Camera"
+              icon={<Camera />}
+              onClick={() => openApp("Camera")}
+              iconStyle={getAppIconStyle()}
+            />
+            <AppIcon
+              name="Browser"
+              icon={<Globe />}
+              onClick={() => openApp("Browser")}
+              iconStyle={getAppIconStyle()}
+            />
+            <AppIcon
+              name="Settings"
+              icon={<Settings />}
+              onClick={() => openApp("Settings")}
+              iconStyle={getAppIconStyle()}
+            />
+            <AppIcon
+              name="Music"
+              icon={<Music />}
+              onClick={() => openApp("Music")}
+              iconStyle={getAppIconStyle()}
+            />
+            <AppIcon
+              name="Maps"
+              icon={<MapIcon />}
+              onClick={() => openApp("Maps")}
+              iconStyle={getAppIconStyle()}
+            />
+            <AppIcon
+              name="Notes"
+              icon={<FileText />}
+              onClick={() => openApp("Notes")}
+              iconStyle={getAppIconStyle()}
+            />
+          </div>
+        </div>
+      )}
+    </div>
+
+    {/* Fixed bottom bar */}
+    <div
+      className={cn(
+        "h-16 flex-shrink-0 backdrop-blur-md flex justify-center items-center",
+        `bg-${settings.taskbarColor}`
+      )}
+    >
+      <button
+        onClick={activeApp ? goHome : handleLock}
+        className={getHomeButtonStyle()}
+      ></button>
+    </div>
+  </div>
+)}
+
         </div>
       </div>
     </div>
