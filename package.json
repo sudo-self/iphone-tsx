@@ -3,13 +3,12 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-  "prebuild": "node scripts/generate-build-hash.js",
-  "build": "npx next build",
-  "dev": "npx next dev",
-  "lint": "next lint",
-  "start": "npx next start"
-}
-
+    "prebuild": "node scripts/generate-build-hash.js",
+    "build": "npx next build",
+    "dev": "npx next dev",
+    "lint": "next lint",
+    "start": "npx next start"
+  },
   "dependencies": {
     "@hookform/resolvers": "^3.9.1",
     "@radix-ui/react-accordion": "latest",
@@ -74,3 +73,4 @@
     "typescript": "^5"
   }
 }
+
