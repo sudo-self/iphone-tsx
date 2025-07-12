@@ -3,7 +3,6 @@ import "./globals.css";
 import "leaflet/dist/leaflet.css";
 import ClientSessionProvider from "@/components/ClientSessionProvider";
 
-
 export const metadata: Metadata = {
   title: "iPhone TSX — Supabase & Redis DBs, Maps and Youtube APIs",
   description:
@@ -13,12 +12,12 @@ export const metadata: Metadata = {
   openGraph: {
     title: "iPhone TSX — Supabase & Redis DBs, Maps and Youtube APIs",
     description:
-      "iPhone TSX APIs featuring Supabase and Redis integration for a modern app experience.",
+      "An iPhone GUI featuring Supabase, Redis, Youtube, and Google Drive initigrations.",
     url: "https://iphone.jessejesse.com",
     siteName: "iphone.jessejesse.com",
     images: [
       {
-        url: "https://firebasestorage.googleapis.com/v0/b/jessejessexyz.appspot.com/o/og.png?alt=media&token=24e476f0-8b2b-4fbb-ac33-4960b51197e5",
+        url: "https://firebasestorage.googleapis.com/v0/b/jessejessexyz.appspot.com/o/Screenshot%202025-07-11%20at%207.42.32%E2%80%AFPM.png?alt=media&token=354e2561-ffae-45b5-b54a-b678ec6a04af",
         width: 1200,
         height: 630,
         alt: "iPhone Mock Phone GUI preview image",
@@ -28,11 +27,11 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "iPhone TSX — Supabase & Redis integrations",
+    title: "iPhone TSX — Supabase, Redis, Youtube, and Google Drive",
     description:
-      "A mock iPhone phone GUI featuring Supabase and Redis integration for a modern app experience.",
+      "An iPhone GUI featuring Supabase, Redis, Youtube, and Google Drive initigrations.",
     images: [
-      "https://firebasestorage.googleapis.com/v0/b/jessejessexyz.appspot.com/o/og.png?alt=media&token=24e476f0-8b2b-4fbb-ac33-4960b51197e5",
+      "https://firebasestorage.googleapis.com/v0/b/jessejessexyz.appspot.com/o/Screenshot%202025-07-11%20at%207.42.32%E2%80%AFPM.png?alt=media&token=354e2561-ffae-45b5-b54a-b678ec6a04af",
     ],
   },
 };
@@ -44,12 +43,16 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body>
+      <head>
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+      </head>
+      <body className="bg-black text-white">
         <ClientSessionProvider>{children}</ClientSessionProvider>
       </body>
     </html>
   );
 }
+
 
 
 
