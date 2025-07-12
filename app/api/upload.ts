@@ -5,7 +5,7 @@ import { Buffer } from "buffer";
 
 export const config = {
   api: {
-    bodyParser: false,
+    bodyParser: false, // disable body parsing to handle raw binary
   },
 };
 
@@ -25,12 +25,14 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   }
 
   const accessToken = req.headers["x-access-token"] as string;
-  const fileName = req.headers["x-file-name"] as string;
+  const encodedFileName = req.headers["x-file-name"] as string;
   const mimeType = (req.headers["x-mime-type"] as string) || "application/octet-stream";
 
-  if (!accessToken || !fileName) {
+  if (!accessToken || !encodedFileName) {
     return res.status(400).json({ error: "Missing required headers" });
   }
+
+  const fileName = decodeURIComponent(encodedFileName);
 
   try {
     const fileBuffer = await readRequestBody(req);
@@ -83,6 +85,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     return res.status(500).json({ error: error.message || "Unexpected error" });
   }
 }
+
 
 
 
