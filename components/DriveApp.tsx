@@ -91,7 +91,7 @@ export default function DriveApp() {
   };
 
   return (
-    <div className="flex flex-col items-center p-6 w-full max-w-md mx-auto">
+    <div className="bg-gray-200 flex flex-col items-center p-6 w-full max-w-md mx-auto">
       <h2 className="text-xl text-gray-200 font-semibold mb-4">Google Drive Upload</h2>
       {session ? (
         <>
