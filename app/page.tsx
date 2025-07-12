@@ -2,7 +2,7 @@
 
 import type React from "react";
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import {
   Battery,
   Signal,
@@ -47,7 +47,6 @@ import NotesApp from "./NotesApp";
 import SnakeApp from "./SnakeApp";
 import { Redis } from "@upstash/redis";
 import DriveApp from "@/components/DriveApp";
-import SnakeApp from "./SnakeApp";
 
 
 export default function SmartphoneUI() {
