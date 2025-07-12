@@ -41,6 +41,7 @@
     "@supabase/supabase-js": "latest",
     "@upstash/redis": "latest",
     "autoprefixer": "^10.4.20",
+    "canvas-confetti": "^1.9.3",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "cmdk": "latest",
@@ -52,6 +53,7 @@
     "next": "15.2.4",
     "next-auth": "^4.24.11",
     "next-themes": "latest",
+    "postgres": "^3.4.7",
     "react": "^19",
     "react-day-picker": "latest",
     "react-dom": "^19",
@@ -73,4 +75,3 @@
     "typescript": "^5"
   }
 }
-
