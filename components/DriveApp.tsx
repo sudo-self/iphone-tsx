@@ -12,8 +12,14 @@ export default function DriveApp() {
     const file = fileInputRef.current?.files?.[0];
     const accessToken = (session as any)?.accessToken || (session as any)?.access_token;
 
-    if (!file) return alert("📂 select a file.");
-    if (!accessToken) return alert("🔒 Missing access token");
+    if (!file) {
+      alert("📂 Please select a file.");
+      return;
+    }
+    if (!accessToken) {
+      alert("🔒 Missing access token. Please sign in again.");
+      return;
+    }
 
     try {
       setUploading(true);
@@ -56,28 +62,29 @@ export default function DriveApp() {
           />
           <button
             onClick={uploadToDrive}
+            disabled={uploading}
             className={`px-4 py-2 rounded mb-4 text-white ${
               uploading ? "bg-gray-400 cursor-not-allowed" : "bg-cyan-500 hover:bg-cyan-600"
             }`}
-            disabled={uploading}
           >
             {uploading ? "Uploading..." : "Upload to Google Drive"}
           </button>
-          <button onClick={() => signOut()} className="text-red-400 underline">
+          <button onClick={() => signOut()} className="text-red-400 hover:underline">
             Sign out
           </button>
         </>
       ) : (
         <button
           onClick={() => signIn("google")}
-          className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600"
+          className="bg-green-600 text-white px-4 py-2 rounded hover:bg-pink-600"
         >
-          Sign in with Google
+          Google Sign in
         </button>
       )}
     </div>
   );
 }
+
 
 
 
