@@ -102,7 +102,6 @@ export default function DriveApp() {
             Signed in as <span className="font-semibold">{session.user?.email}</span>
           </div>
 
-          {/* Upload Input */}
           <div className="flex flex-col items-center gap-3 mb-6">
             <input
               type="file"
@@ -123,7 +122,7 @@ export default function DriveApp() {
             </button>
           </div>
 
-          {/* Actions */}
+
           <div className="flex flex-col gap-3 mb-6">
             <button
               onClick={fetchFiles}
@@ -136,7 +135,7 @@ export default function DriveApp() {
             <GooglePicker onPick={(file) => setPickedFile(file)} />
           </div>
 
-          {/* Picked File */}
+   
           {pickedFile && (
             <div className="bg-white border border-gray-300 rounded p-4 text-sm mb-6">
               <h3 className="font-semibold text-gray-800 mb-2">📄 Picked File</h3>
@@ -146,13 +145,13 @@ export default function DriveApp() {
             </div>
           )}
 
-          {/* Error */}
+     
           {listError && <p className="text-red-600 mb-4">{listError}</p>}
 
-          {/* File List */}
+  
           {files.length > 0 && (
             <div className="bg-white border border-gray-300 rounded p-4">
-              <h3 className="text-md font-semibold text-gray-800 mb-2">📦 Files</h3>
+              <h3 className="text-md font-semibold text-gray-800 mb-2">Drive Files</h3>
               <ul className="space-y-2 max-h-60 overflow-y-auto">
                 {files.map(({ id, name, iconLink }) => (
                   <li
@@ -173,7 +172,7 @@ export default function DriveApp() {
             </div>
           )}
 
-          {/* Sign out */}
+  
           <div className="text-center mt-6">
             <button
               onClick={() => signOut()}
