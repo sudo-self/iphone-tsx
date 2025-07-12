@@ -1,11 +1,9 @@
-// app/api/upload.ts
-
 import type { NextApiRequest, NextApiResponse } from "next";
 import { Buffer } from "buffer";
 
 export const config = {
   api: {
-    bodyParser: false, // binary
+    bodyParser: false,
   },
 };
 
@@ -19,6 +17,12 @@ function readRequestBody(req: NextApiRequest): Promise<Buffer> {
 }
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
+  // Only accept POST
+  if (req.method !== "POST") {
+    res.setHeader("Allow", "POST");
+    return res.status(405).json({ error: "Method Not Allowed" });
+  }
+
   const accessToken = req.headers["x-access-token"] as string;
   const fileName = req.headers["x-file-name"] as string;
   const mimeType = req.headers["x-mime-type"] as string || "application/octet-stream";
@@ -83,6 +87,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     return res.status(500).json({ error: error.message || "Unexpected error" });
   }
 }
+
 
 
 
