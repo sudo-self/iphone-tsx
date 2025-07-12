@@ -62,9 +62,7 @@ export default function SmartphoneUI() {
 
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-
   const buildHash = process.env.NEXT_PUBLIC_BUILD_HASH ?? "dev";
-
 
   useEffect(() => {
     const updateTime = () => {
@@ -402,11 +400,14 @@ function AppIcon({
 function SettingsApp({
   settings,
   onSettingsChange,
+  buildHash,
 }: {
   settings: PhoneSettings;
   onSettingsChange: (settings: PhoneSettings) => void;
+  buildHash: string;
 }) {
   const [activeSection, setActiveSection] = useState<string | null>(null);
+
 
   const settingSections = [
     { id: "display", name: "Display", icon: "🤩" },
