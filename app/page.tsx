@@ -1967,134 +1967,126 @@ function BrowserApp() {
     setIsLoading(false);
   };
 
-  return (
-      <div className="flex flex-col flex-1 min-h-0 bg-gray-200">
-          <div className="bg-white border-b border-gray-200 p-3">
-        <div className="flex items-center gap-2 mb-3">
-          <button
-            onClick={goHome}
-            className="p-2 rounded-full bg-gray-100 hover:bg-gray-200"
-            title="Home"
-          >
+return (
+  <div className="h-full flex flex-col bg-gray-200">
+    <div className="bg-white border-b border-gray-200 p-3">
+      <div className="flex items-center gap-2 mb-3">
+        <button
+          onClick={goHome}
+          className="p-2 rounded-full bg-gray-100 hover:bg-gray-200"
+          title="Home"
+        >
           🌐
-          </button>
-          <button
-            onClick={goBack}
-            disabled={!canGoBack}
-            className={cn(
-              "p-2 rounded-full",
-              canGoBack
-                ? "bg-gray-100 hover:bg-gray-200"
-                : "bg-gray-50 text-gray-400",
-            )}
-          >
-            ←
-          </button>
-          <button
-            onClick={goForward}
-            disabled={!canGoForward}
-            className={cn(
-              "p-2 rounded-full",
-              canGoForward
-                ? "bg-gray-100 hover:bg-gray-200"
-                : "bg-gray-50 text-gray-400",
-            )}
-          >
-            →
-          </button>
-          <button
-            onClick={refresh}
-            className="p-2 rounded-full bg-gray-100 hover:bg-gray-200"
-          >
+        </button>
+        <button
+          onClick={goBack}
+          disabled={!canGoBack}
+          className={cn(
+            "p-2 rounded-full",
+            canGoBack ? "bg-gray-100 hover:bg-gray-200" : "bg-gray-50 text-gray-400"
+          )}
+        >
+          ←
+        </button>
+        <button
+          onClick={goForward}
+          disabled={!canGoForward}
+          className={cn(
+            "p-2 rounded-full",
+            canGoForward ? "bg-gray-100 hover:bg-gray-200" : "bg-gray-50 text-gray-400"
+          )}
+        >
+          →
+        </button>
+        <button
+          onClick={refresh}
+          className="p-2 rounded-full bg-gray-100 hover:bg-gray-200"
+        >
           🔄
-          </button>
-        </div>
-
-        <form onSubmit={handleSubmit} className="flex items-center gap-2">
-          <div className="flex-1 relative">
-            <input
-              type="text"
-              value={url}
-              onChange={(e) => setUrl(e.target.value)}
-              placeholder="search or enter website URL"
-              className="w-full px-4 py-2 bg-gray-100 rounded-full border-none outline-none text-sm"
-            />
-            {isLoading && (
-              <div className="absolute right-3 top-1/2 transform -translate-y-1/2">
-                <div className="w-4 h-4 border-2 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
-              </div>
-            )}
-          </div>
-          <button
-            type="submit"
-            className="px-4 py-2 bg-blue-500 text-white rounded-full text-sm hover:bg-blue-600"
-          >
-            Go
-          </button>
-        </form>
+        </button>
       </div>
 
-          <div className="flex-1 relative min-h-0">
-        {currentUrl ? (
-          <iframe
-            ref={iframeRef}
-            src={currentUrl}
-            className="w-full h-full border-none"
-            onLoad={() => setIsLoading(false)}
-            sandbox="allow-scripts allow-same-origin allow-forms allow-popups allow-popups-to-escape-sandbox"
-            title="Browser content"
+      <form onSubmit={handleSubmit} className="flex items-center gap-2">
+        <div className="flex-1 relative">
+          <input
+            type="text"
+            value={url}
+            onChange={(e) => setUrl(e.target.value)}
+            placeholder="search or enter website URL"
+            className="w-full px-4 py-2 bg-gray-100 rounded-full border-none outline-none text-sm"
           />
-        ) : (
-          <div className="h-full bg-white p-6">
-            <div className="text-center mb-6">
-              <Globe className="w-16 h-16 mx-auto mb-4 text-blue-500" />
-              <h2 className="text-2xl font-bold text-gray-700 mb-2">
-                Random Web Browser
-              </h2>
-              <p className="text-center text-emerald-700 text-sm">¯\_(ツ)_/¯</p>
+          {isLoading && (
+            <div className="absolute right-3 top-1/2 transform -translate-y-1/2">
+              <div className="w-4 h-4 border-2 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
             </div>
-
-            <div className="mb-6">
-              <h3 className="text-lg font-semibold text-gray-800 mb-3">
-                Java Frameworks
-              </h3>
-              <div className="grid grid-cols-2 gap-2">
-                {quickLinks.map((link, index) => (
-                  <button
-                    key={index}
-                    onClick={() => {
-                      setUrl(link.url);
-                      loadUrl(link.url);
-                    }}
-                    className={cn(
-                      "p-3 rounded-lg text-white text-sm font-semibold flex items-center justify-center transition-all hover:scale-[1.02]",
-                      [
-                        "bg-blue-600",
-                        "bg-red-500",
-                        "bg-gray-800",
-                        "bg-purple-600",
-                        "bg-green-600",
-                        "bg-pink-600",
-                      ][index % 6],
-                    )}
-                  >
-                    {link.name}
-                  </button>
-                ))}
-              </div>
-            </div>
-
-         <div className="text-center text-xs text-emerald-400 bg-gradient-to-r from-gray-900 via-gray-800 to-gray-900 py-2 shadow-sm">
-  <p className="tracking-wide">React + Next.js + Tailwind + Redis + Vercel</p>
-</div>
-
-
-          </div>
-        )}
-      </div>
+          )}
+        </div>
+        <button
+          type="submit"
+          className="px-4 py-2 bg-blue-500 text-white rounded-full text-sm hover:bg-blue-600"
+        >
+          Go
+        </button>
+      </form>
     </div>
-  );
-}
+
+    <div className="flex-1 min-h-0">
+      {currentUrl ? (
+        <iframe
+          ref={iframeRef}
+          src={currentUrl}
+          className="w-full h-full border-none"
+          onLoad={() => setIsLoading(false)}
+          sandbox="allow-scripts allow-same-origin allow-forms allow-popups allow-popups-to-escape-sandbox"
+          title="Browser content"
+        />
+      ) : (
+        <div className="h-full bg-white flex flex-col p-6">
+          <div className="text-center mb-6">
+            <Globe className="w-16 h-16 mx-auto mb-4 text-blue-500" />
+            <h2 className="text-2xl font-bold text-gray-700 mb-2">Random Web Browser</h2>
+            <p className="text-center text-emerald-700 text-sm">¯\_(ツ)_/¯</p>
+          </div>
+
+          <div className="mb-6">
+            <h3 className="text-lg font-semibold text-gray-800 mb-3">
+              Java Frameworks
+            </h3>
+            <div className="grid grid-cols-2 gap-2">
+              {quickLinks.map((link, index) => (
+                <button
+                  key={index}
+                  onClick={() => {
+                    loadUrl(link.url); // put loadUrl first
+                    setUrl(link.url);
+                  }}
+                  className={cn(
+                    "p-3 rounded-lg text-white text-sm font-semibold flex items-center justify-center transition-all hover:scale-[1.02]",
+                    [
+                      "bg-blue-600",
+                      "bg-red-500",
+                      "bg-gray-800",
+                      "bg-purple-600",
+                      "bg-green-600",
+                      "bg-pink-600",
+                    ][index % 6]
+                  )}
+                >
+                  {link.name}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          <div className="text-center text-xs text-emerald-400 bg-gradient-to-r from-gray-900 via-gray-800 to-gray-900 py-2 shadow-sm mt-auto">
+            <p className="tracking-wide">React + Next.js + Tailwind + Redis + Vercel</p>
+          </div>
+        </div>
+      )}
+    </div>
+  </div>
+);
+
 
 function CalculatorApp() {
   const [display, setDisplay] = useState("0");
