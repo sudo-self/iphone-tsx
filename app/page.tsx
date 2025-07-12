@@ -351,11 +351,12 @@ export default function SmartphoneUI() {
               iconStyle={getAppIconStyle()}
             />
             <AppIcon
-             name="Snake"
-             icon={<Loader2 />}
-             onClick={() => openApp("Snake")}
-             iconStyle={getAppIconStyle()}
-            />
+  name="Snake"
+  icon={<Loader2 />}
+  onClick={() => openApp("Snake")}
+  iconStyle={getAppIconStyle()}
+/>
+
           </div>
         </div>
       )}
