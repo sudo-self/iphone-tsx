@@ -47,6 +47,8 @@ import NotesApp from "./NotesApp";
 import SnakeApp from "./SnakeApp";
 import { Redis } from "@upstash/redis";
 import DriveApp from "@/components/DriveApp";
+import SnakeApp from "./SnakeApp";
+
 
 export default function SmartphoneUI() {
   const [isLocked, setIsLocked] = useState(true);
@@ -262,6 +264,7 @@ export default function SmartphoneUI() {
           {activeApp === "Calculator" && <CalculatorApp />}
           {activeApp === "Camera" && <CameraApp />}
           {activeApp === "Browser" && <BrowserApp />}
+          {activeApp === "Snake" && <SnakeApp />}
           {activeApp === "Music" && <MusicApp />}
           {activeApp === "Maps" && <MapsApp setActiveApp={setActiveApp} />}
           {activeApp === "Settings" && (
@@ -346,6 +349,12 @@ export default function SmartphoneUI() {
               icon={<FileText />}
               onClick={() => openApp("Notes")}
               iconStyle={getAppIconStyle()}
+            />
+            <AppIcon
+             name="Snake"
+             icon={<Loader2 />}
+             onClick={() => openApp("Snake")}
+             iconStyle={getAppIconStyle()}
             />
           </div>
         </div>
