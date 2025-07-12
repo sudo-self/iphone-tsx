@@ -1376,16 +1376,14 @@ function CameraApp() {
   const [isUploading, setIsUploading] = useState(false);
   const [showGallery, setShowGallery] = useState(false);
   const [facingMode, setFacingMode] = useState<"user" | "environment">("user");
+  const [permissionDenied, setPermissionDenied] = useState(false);
   const videoRef = useRef<HTMLVideoElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  const [permissionDenied, setPermissionDenied] = useState(false);
 
   useEffect(() => {
-    if (!showGallery) {
-      startCamera();
-    } else {
-      stopCamera();
-    }
+    if (!showGallery) startCamera();
+    else stopCamera();
+
     return stopCamera;
   }, [showGallery, facingMode]);
 
@@ -1403,49 +1401,44 @@ function CameraApp() {
       setStream(mediaStream);
       if (videoRef.current) videoRef.current.srcObject = mediaStream;
     } catch (err: any) {
-      console.error("Camera access error:", err);
       if (err.name === "NotAllowedError") setPermissionDenied(true);
     }
   }
 
   function stopCamera() {
-    if (stream) {
-      stream.getTracks().forEach((track) => track.stop());
-    }
+    stream?.getTracks().forEach((track) => track.stop());
     setStream(null);
   }
 
   async function loadPhotos() {
     try {
       const { supabase } = await import("@/lib/supabase");
-      const { data, error } = await supabase.storage
+      const { data: files, error } = await supabase.storage
         .from("photos-bucket")
         .list("", {
           limit: 100,
-          sortBy: { column: "created_at", order: "desc" },
+          sortBy: { column: "name", order: "desc" },
         });
 
-      if (error) {
-        console.error("Supabase list error:", error);
-        return;
-      }
+      if (error || !files) return;
 
-      if (!data) return;
+      const photoList = await Promise.all(
+        files.map(async (file) => {
+          const { data: urlData } = supabase.storage
+            .from("photos-bucket")
+            .getPublicUrl(file.name);
 
-      const photosList = data.map((file) => {
-        const { data: urlData } = supabase.storage
-          .from("photos-bucket")
-          .getPublicUrl(file.name);
-        return {
-          filename: file.name,
-          url: urlData.publicUrl || "",
-          created_at: file.created_at || "",
-        };
-      });
+          return {
+            filename: file.name,
+            url: urlData?.publicUrl ?? "",
+            created_at: file?.created_at ?? new Date().toISOString(),
+          };
+        })
+      );
 
-      setPhotos(photosList);
-    } catch (error) {
-      console.error("Failed to load photos:", error);
+      setPhotos(photoList);
+    } catch (err) {
+      console.error("Failed to load photos:", err);
     }
   }
 
@@ -1454,8 +1447,8 @@ function CameraApp() {
     setIsCapturing(true);
     setIsUploading(true);
 
-    const video = videoRef.current;
     const canvas = canvasRef.current;
+    const video = videoRef.current;
     const ctx = canvas.getContext("2d");
     if (!ctx) return;
 
@@ -1463,64 +1456,57 @@ function CameraApp() {
     canvas.height = video.videoHeight;
     ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
 
-    canvas.toBlob(
-      async (blob) => {
-        if (!blob) {
-          setIsCapturing(false);
-          setIsUploading(false);
-          return;
-        }
+    canvas.toBlob(async (blob) => {
+      if (!blob) return resetCapture();
 
-        const fileName = `photo_${Date.now()}.jpg`;
-        const file = new File([blob], fileName, { type: "image/jpeg" });
+      const fileName = `photo_${Date.now()}.jpg`;
+      const file = new File([blob], fileName, { type: "image/jpeg" });
 
-        try {
-          const { supabase } = await import("@/lib/supabase");
-          const { data, error } = await supabase.storage
-            .from("photos-bucket")
-            .upload(fileName, file, {
-              cacheControl: "3600",
-              upsert: false,
-            });
+      try {
+        const { supabase } = await import("@/lib/supabase");
 
-          if (error) {
-            console.error("Supabase upload error:", error);
-          } else {
-            const { data: urlData } = supabase.storage
-              .from("photos-bucket")
-              .getPublicUrl(fileName);
-            const url = urlData.publicUrl;
-            if (url) {
-              setPhotos((prev) => [
-                {
-                  filename: fileName,
-                  url,
-                  created_at: new Date().toISOString(),
-                },
-                ...prev,
-              ]);
-            }
-          }
-        } catch (err) {
-          console.error("Upload failed:", err);
-        } finally {
-          setIsCapturing(false);
-          setIsUploading(false);
-        }
-      },
-      "image/jpeg",
-      0.8,
-    );
+        const { error } = await supabase.storage
+          .from("photos-bucket")
+          .upload(fileName, file, {
+            cacheControl: "3600",
+            upsert: false,
+          });
+
+        if (error) throw error;
+
+        const {
+          data: { publicUrl },
+        } = supabase.storage.from("photos-bucket").getPublicUrl(fileName);
+
+        setPhotos((prev) => [
+          {
+            filename: fileName,
+            url: publicUrl,
+            created_at: new Date().toISOString(),
+          },
+          ...prev,
+        ]);
+      } catch (err) {
+        console.error("Upload failed:", err);
+      } finally {
+        resetCapture();
+      }
+    }, "image/jpeg", 0.9);
   }
 
-  async function switchCamera() {
-    setFacingMode((current) => (current === "user" ? "environment" : "user"));
+  function resetCapture() {
+    setIsCapturing(false);
+    setIsUploading(false);
+  }
+
+  function switchCamera() {
+    setFacingMode((prev) => (prev === "user" ? "environment" : "user"));
   }
 
   if (showGallery) {
     return (
       <div className="h-full w-full bg-black text-white flex flex-col">
-        <div className="flex items-center justify-between p-4 bg-gray-900 flex-shrink-0">
+        <div className="flex items-center justify-between p-4 bg-gray-900">
           <button
             onClick={() => setShowGallery(false)}
             className="text-blue-400"
@@ -1539,10 +1525,10 @@ function CameraApp() {
             </div>
           ) : (
             <div className="grid grid-cols-3 gap-1">
-              {photos.map((photo, index) => (
-                <div key={index} className="aspect-square">
+              {photos.map((photo) => (
+                <div key={photo.filename} className="aspect-square">
                   <img
-                    src={photo.url || "/placeholder.svg?height=150&width=150"}
+                    src={photo.url}
                     alt={photo.filename}
                     className="w-full h-full object-cover rounded"
                     loading="lazy"
@@ -1589,7 +1575,7 @@ function CameraApp() {
             className="flex flex-col items-center text-white"
           >
             <div className="w-12 h-12 bg-white/20 rounded-lg flex items-center justify-center mb-1">
-              <div className="w-6 h-6 bg-white/60 rounded"></div>
+              <div className="w-6 h-6 bg-white/60 rounded" />
             </div>
             <span className="text-xs">Gallery</span>
           </button>
@@ -1603,13 +1589,13 @@ function CameraApp() {
               "w-20 h-20 rounded-full border-4 border-white flex items-center justify-center",
               isCapturing || isUploading
                 ? "bg-red-500"
-                : "bg-white/30 hover:bg-white/40",
+                : "bg-white/30 hover:bg-white/40"
             )}
           >
             {isUploading ? (
               <div className="w-8 h-8 border-2 border-white border-t-transparent rounded-full animate-spin" />
             ) : (
-              <div className="w-16 h-16 bg-white rounded-full"></div>
+              <div className="w-16 h-16 bg-white rounded-full" />
             )}
           </button>
 
@@ -1620,7 +1606,7 @@ function CameraApp() {
           >
             <div className="w-12 h-12 bg-white/20 rounded-lg flex items-center justify-center mb-1">
               <div className="w-6 h-6 border-2 border-white/60 rounded-full flex items-center justify-center">
-                <div className="w-2 h-2 bg-white/60 rounded-full"></div>
+                <div className="w-2 h-2 bg-white/60 rounded-full" />
               </div>
             </div>
             <span className="text-xs">Flip</span>
