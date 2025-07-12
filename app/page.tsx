@@ -232,7 +232,7 @@ export default function SmartphoneUI() {
               </div>
             </div>
           ) : (
-            <div className="absolute inset-0 pt-12">
+           <div className="absolute inset-0 pt-12 overflow-y-auto">
               {activeApp ? (
                 <div className="h-full">
                   <div className="h-12 flex items-center justify-between px-4 bg-gray-800">
