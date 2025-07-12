@@ -526,138 +526,137 @@ function SettingsApp({
     );
   }
 
-  if (activeSection === "display") {
-    return (
-      <div className="h-full bg-gray-900 text-white flex flex-col overflow-y-auto">
-        <div className="flex items-center mb-6 px-4 pt-4 flex-shrink-0">
-          <button
-            onClick={() => setActiveSection(null)}
-            className="text-blue-400 mr-4"
-          >
-            ← Back
-          </button>
-          <h2 className="text-xl font-bold">Display & Brightness</h2>
+ if (activeSection === "display") {
+  return (
+    <div className="h-full bg-gray-900 text-white flex flex-col overflow-y-auto">
+      <div className="flex items-center mb-6 px-4 pt-4 flex-shrink-0">
+        <button
+          onClick={() => setActiveSection(null)}
+          className="text-blue-400 mr-4"
+        >
+          ← Back
+        </button>
+        <h2 className="text-xl font-bold">Display & Brightness</h2>
+      </div>
+
+      <div className="px-4 pb-4 space-y-6">
+        <div>
+          <h3 className="text-lg font-medium mb-3">Taskbar Color</h3>
+          <div className="grid grid-cols-2 gap-2">
+            {taskbarColorOptions.map((option, index) => (
+              <button
+                key={index}
+                onClick={() =>
+                  onSettingsChange({
+                    ...settings,
+                    taskbarColor: option.value,
+                  })
+                }
+                className={cn(
+                  "p-3 rounded-lg border-2 text-left",
+                  settings.taskbarColor === option.value
+                    ? "border-blue-500 bg-blue-900/20"
+                    : "border-gray-600 bg-gray-800"
+                )}
+              >
+                {option.name}
+              </button>
+            ))}
+          </div>
         </div>
 
-        <div className="flex-1 overflow-y-auto px-4 pb-4">
-          <div className="space-y-6">
-            <div>
-              <h3 className="text-lg font-medium mb-3">Taskbar Color</h3>
-              <div className="grid grid-cols-2 gap-2">
-                {taskbarColorOptions.map((option, index) => (
-                  <button
-                    key={index}
-                    onClick={() =>
-                      onSettingsChange({
-                        ...settings,
-                        taskbarColor: option.value,
-                      })
-                    }
-                    className={cn(
-                      "p-3 rounded-lg border-2 text-left",
-                      settings.taskbarColor === option.value
-                        ? "border-blue-500 bg-blue-900/20"
-                        : "border-gray-600 bg-gray-800"
-                    )}
-                  >
-                    {option.name}
-                  </button>
-                ))}
-              </div>
-            </div>
+        <div>
+          <h3 className="text-lg font-medium mb-3">Home Button Style</h3>
+          <div className="grid grid-cols-3 gap-2">
+            {[
+              { name: "Circle", value: "circle" as const },
+              { name: "Square", value: "square" as const },
+              { name: "Pill", value: "pill" as const },
+            ].map((option, index) => (
+              <button
+                key={index}
+                onClick={() =>
+                  onSettingsChange({
+                    ...settings,
+                    homeButtonStyle: option.value,
+                  })
+                }
+                className={cn(
+                  "p-3 rounded-lg border-2 text-center",
+                  settings.homeButtonStyle === option.value
+                    ? "border-blue-500 bg-blue-900/20"
+                    : "border-gray-600 bg-gray-800"
+                )}
+              >
+                {option.name}
+              </button>
+            ))}
+          </div>
+        </div>
 
-            <div>
-              <h3 className="text-lg font-medium mb-3">Home Button Style</h3>
-              <div className="grid grid-cols-3 gap-2">
-                {[
-                  { name: "Circle", value: "circle" as const },
-                  { name: "Square", value: "square" as const },
-                  { name: "Pill", value: "pill" as const },
-                ].map((option, index) => (
-                  <button
-                    key={index}
-                    onClick={() =>
-                      onSettingsChange({
-                        ...settings,
-                        homeButtonStyle: option.value,
-                      })
-                    }
-                    className={cn(
-                      "p-3 rounded-lg border-2 text-center",
-                      settings.homeButtonStyle === option.value
-                        ? "border-blue-500 bg-blue-900/20"
-                        : "border-gray-600 bg-gray-800"
-                    )}
-                  >
-                    {option.name}
-                  </button>
-                ))}
-              </div>
-            </div>
+        <div>
+          <h3 className="text-lg font-medium mb-3">App Icon Style</h3>
+          <div className="grid grid-cols-3 gap-2">
+            {[
+              { name: "Rounded", value: "rounded" as const },
+              { name: "Square", value: "square" as const },
+              { name: "Circle", value: "circle" as const },
+            ].map((option, index) => (
+              <button
+                key={index}
+                onClick={() =>
+                  onSettingsChange({
+                    ...settings,
+                    appIconStyle: option.value,
+                  })
+                }
+                className={cn(
+                  "p-3 rounded-lg border-2 text-center",
+                  settings.appIconStyle === option.value
+                    ? "border-blue-500 bg-blue-900/20"
+                    : "border-gray-600 bg-gray-800"
+                )}
+              >
+                {option.name}
+              </button>
+            ))}
+          </div>
+        </div>
 
-            <div>
-              <h3 className="text-lg font-medium mb-3">App Icon Style</h3>
-              <div className="grid grid-cols-3 gap-2">
-                {[
-                  { name: "Rounded", value: "rounded" as const },
-                  { name: "Square", value: "square" as const },
-                  { name: "Circle", value: "circle" as const },
-                ].map((option, index) => (
-                  <button
-                    key={index}
-                    onClick={() =>
-                      onSettingsChange({
-                        ...settings,
-                        appIconStyle: option.value,
-                      })
-                    }
-                    className={cn(
-                      "p-3 rounded-lg border-2 text-center",
-                      settings.appIconStyle === option.value
-                        ? "border-blue-500 bg-blue-900/20"
-                        : "border-gray-600 bg-gray-800"
-                    )}
-                  >
-                    {option.name}
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            <div>
-              <h3 className="text-lg font-medium mb-3 overflow-y-auto">Status Bar</h3>
-              <div className="space-y-3">
-                <label className="flex items-center justify-between">
-                  <span>Show Battery Percentage</span>
-                  <button
-                    onClick={() =>
-                      onSettingsChange({
-                        ...settings,
-                        batteryPercentage: !settings.batteryPercentage,
-                      })
-                    }
-                    className={cn(
-                      "w-12 h-6 rounded-full relative transition-colors",
-                      settings.batteryPercentage ? "bg-blue-600" : "bg-gray-600"
-                    )}
-                  >
-                    <div
-                      className={cn(
-                        "w-5 h-5 bg-white rounded-full absolute top-0.5 transition-transform",
-                        settings.batteryPercentage
-                          ? "translate-x-6"
-                          : "translate-x-0.5"
-                      )}
-                    />
-                  </button>
-                </label>
-              </div>
-            </div>
+        <div>
+          <h3 className="text-lg font-medium mb-3">Status Bar</h3>
+          <div className="space-y-3">
+            <label className="flex items-center justify-between">
+              <span>Show Battery Percentage</span>
+              <button
+                onClick={() =>
+                  onSettingsChange({
+                    ...settings,
+                    batteryPercentage: !settings.batteryPercentage,
+                  })
+                }
+                className={cn(
+                  "w-12 h-6 rounded-full relative transition-colors",
+                  settings.batteryPercentage ? "bg-blue-600" : "bg-gray-600"
+                )}
+              >
+                <div
+                  className={cn(
+                    "w-5 h-5 bg-white rounded-full absolute top-0.5 transition-transform",
+                    settings.batteryPercentage
+                      ? "translate-x-6"
+                      : "translate-x-0.5"
+                  )}
+                />
+              </button>
+            </label>
           </div>
         </div>
       </div>
-    );
-  }
+    </div>
+  );
+}
+
 
   if (activeSection === "general") {
     return (
