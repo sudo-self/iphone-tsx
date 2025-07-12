@@ -5,11 +5,11 @@ import { Buffer } from "buffer";
 
 export const config = {
   api: {
-    bodyParser: false,
+    bodyParser: false, // binary
   },
 };
 
-function bufferStream(req: NextApiRequest): Promise<Buffer> {
+function readRequestBody(req: NextApiRequest): Promise<Buffer> {
   return new Promise((resolve, reject) => {
     const chunks: Uint8Array[] = [];
     req.on("data", (chunk) => chunks.push(chunk));
@@ -28,7 +28,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   }
 
   try {
-    const fileBuffer = await bufferStream(req);
+    const fileBuffer = await readRequestBody(req);
+
     const boundary = "foo_bar_baz";
 
     const metadata = {
@@ -36,47 +37,53 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       mimeType,
     };
 
-    const delimiter = `--${boundary}\r\n`;
-    const closeDelimiter = `--${boundary}--`;
-
     const metaPart = Buffer.from(
-      delimiter +
-        'Content-Type: application/json; charset=UTF-8\r\n\r\n' +
-        JSON.stringify(metadata) +
-        '\r\n',
+      `--${boundary}\r\n` +
+        `Content-Type: application/json; charset=UTF-8\r\n\r\n` +
+        `${JSON.stringify(metadata)}\r\n`,
       "utf-8"
     );
 
-    const filePart = Buffer.from(
-      `Content-Type: ${mimeType}\r\n\r\n`,
-      "utf-8"
+    const filePart = Buffer.concat([
+      Buffer.from(
+        `--${boundary}\r\nContent-Type: ${mimeType}\r\n\r\n`,
+        "utf-8"
+      ),
+      fileBuffer,
+      Buffer.from("\r\n", "utf-8"),
+    ]);
+
+    const closing = Buffer.from(`--${boundary}--`, "utf-8");
+
+    const body = Buffer.concat([metaPart, filePart, closing]);
+
+    const uploadRes = await fetch(
+      "https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart",
+      {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+          "Content-Type": `multipart/related; boundary=${boundary}`,
+          "Content-Length": body.length.toString(),
+        },
+        body,
+      }
     );
 
-    const closing = Buffer.from(`\r\n${closeDelimiter}`, "utf-8");
+    const data = await uploadRes.json();
 
-    const multipartBody = Buffer.concat([metaPart, filePart, fileBuffer, closing]);
-
-    const response = await fetch("https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart", {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${accessToken}`,
-        "Content-Type": `multipart/related; boundary=${boundary}`,
-        "Content-Length": multipartBody.length.toString(),
-      },
-      body: multipartBody,
-    });
-
-    const data = await response.json();
-    if (!response.ok) {
-      return res.status(response.status).json({ error: data.error?.message || "Upload failed" });
+    if (!uploadRes.ok) {
+      return res
+        .status(uploadRes.status)
+        .json({ error: data.error?.message || "Upload failed" });
     }
 
     return res.status(200).json({ fileId: data.id });
   } catch (error: any) {
-    console.error("Upload error:", error);
     return res.status(500).json({ error: error.message || "Unexpected error" });
   }
 }
+
 
 
 
