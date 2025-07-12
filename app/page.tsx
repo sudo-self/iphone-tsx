@@ -1968,8 +1968,8 @@ function BrowserApp() {
   };
 
   return (
-    <div className="h-full bg-gray-200 flex flex-col">
-      <div className="bg-white border-b border-gray-200 p-3">
+      <div className="flex flex-col flex-1 min-h-0 bg-gray-200">
+          <div className="bg-white border-b border-gray-200 p-3">
         <div className="flex items-center gap-2 mb-3">
           <button
             onClick={goHome}
@@ -2034,7 +2034,7 @@ function BrowserApp() {
         </form>
       </div>
 
-      <div className="flex-1 relative">
+          <div className="flex-1 relative min-h-0">
         {currentUrl ? (
           <iframe
             ref={iframeRef}
