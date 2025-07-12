@@ -2,6 +2,7 @@
 
 import { useSession, signIn, signOut } from "next-auth/react";
 import { useRef, useState } from "react";
+import GooglePicker from "./GooglePicker";
 
 async function listDriveFiles(accessToken: string) {
   const res = await fetch(
@@ -19,7 +20,12 @@ async function listDriveFiles(accessToken: string) {
   }
 
   const data = await res.json();
-  return data.files as Array<{ id: string; name: string; mimeType: string; iconLink?: string }>;
+  return data.files as Array<{
+    id: string;
+    name: string;
+    mimeType: string;
+    iconLink?: string;
+  }>;
 }
 
 export default function DriveApp() {
@@ -31,6 +37,7 @@ export default function DriveApp() {
   >([]);
   const [loadingFiles, setLoadingFiles] = useState(false);
   const [listError, setListError] = useState<string | null>(null);
+  const [pickedFile, setPickedFile] = useState<any | null>(null);
 
   const uploadToDrive = async () => {
     const file = fileInputRef.current?.files?.[0];
@@ -96,12 +103,14 @@ export default function DriveApp() {
       {session ? (
         <>
           <p className="mb-2 text-yellow-700">Signed in as {session.user?.email}</p>
+
           <input
             type="file"
             accept="image/*,.pdf,.zip,.doc,.docx,.txt"
             ref={fileInputRef}
             className="mb-4"
           />
+
           <button
             onClick={uploadToDrive}
             disabled={uploading}
@@ -112,7 +121,6 @@ export default function DriveApp() {
             {uploading ? "Uploading..." : "Upload to Google Drive"}
           </button>
 
-          {/* New List Files Button */}
           <button
             onClick={fetchFiles}
             disabled={loadingFiles}
@@ -121,11 +129,21 @@ export default function DriveApp() {
             {loadingFiles ? "Loading files..." : "List Drive Files"}
           </button>
 
-        
+          {/* Google Picker Integration */}
+          <GooglePicker onPick={(file) => setPickedFile(file)} />
+
+          {pickedFile && (
+            <div className="mt-4 w-full bg-white p-4 rounded shadow text-sm text-left">
+              <h3 className="font-semibold mb-2">📄 Picked File</h3>
+              <pre className="text-gray-800 whitespace-pre-wrap break-words">
+                {JSON.stringify(pickedFile, null, 2)}
+              </pre>
+            </div>
+          )}
+
           {listError && <p className="text-red-500 mb-2">{listError}</p>}
 
-      
-          <ul className="w-full text-left">
+          <ul className="w-full text-left mt-4">
             {files.map(({ id, name, iconLink }) => (
               <li key={id} className="flex items-center space-x-3 py-2 border-b border-gray-700">
                 {iconLink && (
@@ -157,6 +175,7 @@ export default function DriveApp() {
     </div>
   );
 }
+
 
 
 
