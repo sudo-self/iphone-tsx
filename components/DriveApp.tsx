@@ -93,12 +93,12 @@ export default function DriveApp() {
   };
 
   return (
-    <div className="bg-gray-200 min-h-screen w-full max-w-md mx-auto p-6 rounded-xl shadow-md">
-      <h1 className="text-2xl font-bold text-green-800 mb-6 text-center">Google Drive</h1>
+    <div className="bg-gray-800 min-h-screen w-full max-w-md mx-auto p-6 rounded-xl shadow-md">
+      <h1 className="text-2xl font-bold text-white mb-6 text-center">File Manager</h1>
 
       {session ? (
         <>
-          <div className="text-sm text-blue-600 mb-4 text-center">
+          <div className="text-sm text-cyan-400 mb-4 text-center">
             Signed in as <span className="font-semibold">{session.user?.email}</span>
           </div>
 
@@ -112,10 +112,10 @@ export default function DriveApp() {
             <button
               onClick={uploadToDrive}
               disabled={uploading}
-              className={`w-full px-4 py-2 rounded text-black font-medium transition ${
+              className={`w-full px-4 py-2 rounded text-white font-medium transition ${
                 uploading
                   ? "bg-gray-400 cursor-not-allowed"
-                  : "bg-green-500 hover:bg-green-600"
+                  : "bg-blue-500 hover:bg-green-600"
               }`}
             >
               {uploading ? "Uploading..." : "Upload to Google Drive"}
@@ -137,7 +137,7 @@ export default function DriveApp() {
 
    
           {pickedFile && (
-            <div className="bg-white border border-gray-300 rounded p-4 text-sm mb-6">
+            <div className="bg-gray-600 border border-gray-300 rounded p-4 text-sm mb-6">
               <h3 className="font-semibold text-gray-800 mb-2">Picked File</h3>
               <pre className="text-gray-600 whitespace-pre-wrap break-words text-xs">
                 {JSON.stringify(pickedFile, null, 2)}
