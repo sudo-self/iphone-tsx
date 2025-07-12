@@ -92,7 +92,7 @@ export default function DriveApp() {
 
   return (
     <div className="bg-gray-200 flex flex-col items-center p-6 w-full max-w-md mx-auto">
-      <h2 className="text-xl text-gray-200 font-semibold mb-4">Google Drive Upload</h2>
+      <h2 className="text-xl text-green-800 font-semibold mb-4">Google Drive</h2>
       {session ? (
         <>
           <p className="mb-2 text-yellow-500">Signed in as {session.user?.email}</p>
@@ -118,13 +118,13 @@ export default function DriveApp() {
             disabled={loadingFiles}
             className="mb-4 px-4 py-2 rounded bg-blue-600 text-white hover:bg-blue-700 disabled:opacity-50"
           >
-            {loadingFiles ? "Loading files..." : "List My Drive Files"}
+            {loadingFiles ? "Loading files..." : "List Drive Files"}
           </button>
 
-          {/* Error Message */}
+        
           {listError && <p className="text-red-500 mb-2">{listError}</p>}
 
-          {/* Files List */}
+      
           <ul className="w-full text-left">
             {files.map(({ id, name, iconLink }) => (
               <li key={id} className="flex items-center space-x-3 py-2 border-b border-gray-700">
@@ -149,7 +149,7 @@ export default function DriveApp() {
       ) : (
         <button
           onClick={() => signIn("google")}
-          className="bg-green-600 text-white px-4 py-2 rounded hover:bg-pink-600"
+          className="bg-green-700 text-white px-4 py-2 rounded hover:bg-pink-700"
         >
           Google Sign in
         </button>
