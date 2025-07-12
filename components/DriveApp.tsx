@@ -39,6 +39,9 @@ export default function DriveApp() {
   const [listError, setListError] = useState<string | null>(null);
   const [pickedFile, setPickedFile] = useState<any | null>(null);
 
+  const fallbackIcon =
+    "https://drive-thirdparty.googleusercontent.com/16/type/image/png";
+
   const uploadToDrive = async () => {
     const file = fileInputRef.current?.files?.[0];
     const accessToken = (session as any)?.accessToken || (session as any)?.access_token;
@@ -91,11 +94,11 @@ export default function DriveApp() {
 
   return (
     <div className="bg-gray-100 min-h-screen w-full max-w-md mx-auto p-6 rounded-xl shadow-md">
-      <h1 className="text-2xl font-bold text-gray-800 mb-6 text-center">📁 Google Drive Manager</h1>
+      <h1 className="text-2xl font-bold text-green-800 mb-6 text-center">Google Drive</h1>
 
       {session ? (
         <>
-          <div className="text-sm text-gray-700 mb-4 text-center">
+          <div className="text-sm text-blue-600 mb-4 text-center">
             Signed in as <span className="font-semibold">{session.user?.email}</span>
           </div>
 
@@ -127,7 +130,7 @@ export default function DriveApp() {
               disabled={loadingFiles}
               className="w-full px-4 py-2 rounded bg-blue-600 text-white font-medium hover:bg-blue-700 disabled:opacity-50"
             >
-              {loadingFiles ? "Loading files..." : "📂 List Drive Files"}
+              {loadingFiles ? "Loading files..." : "Drive Files"}
             </button>
 
             <GooglePicker onPick={(file) => setPickedFile(file)} />
@@ -149,22 +152,20 @@ export default function DriveApp() {
           {/* File List */}
           {files.length > 0 && (
             <div className="bg-white border border-gray-300 rounded p-4">
-              <h3 className="text-md font-semibold text-gray-800 mb-2">📦 Drive Files</h3>
+              <h3 className="text-md font-semibold text-gray-800 mb-2">📦 Files</h3>
               <ul className="space-y-2 max-h-60 overflow-y-auto">
                 {files.map(({ id, name, iconLink }) => (
                   <li
                     key={id}
                     className="flex items-center space-x-3 text-sm text-gray-700 border-b border-gray-200 pb-2"
                   >
-                    {iconLink && (
-                      <img
-                        src={iconLink}
-                        alt=""
-                        className="w-5 h-5"
-                        loading="lazy"
-                        referrerPolicy="no-referrer"
-                      />
-                    )}
+                    <img
+                      src={iconLink || fallbackIcon}
+                      alt="file icon"
+                      className="w-5 h-5"
+                      loading="lazy"
+                      referrerPolicy="no-referrer"
+                    />
                     <span>{name}</span>
                   </li>
                 ))}
@@ -195,6 +196,7 @@ export default function DriveApp() {
     </div>
   );
 }
+
 
 
 
