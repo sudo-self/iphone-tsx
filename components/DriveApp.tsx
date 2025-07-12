@@ -139,7 +139,7 @@ export default function DriveApp() {
           {pickedFile && (
             <div className="bg-gray-600 border border-gray-300 rounded p-4 text-sm mb-6">
               <h3 className="font-semibold text-gray-800 mb-2">Picked File</h3>
-              <pre className="text-gray-600 whitespace-pre-wrap break-words text-xs">
+              <pre className="text-white whitespace-pre-wrap break-words text-xs">
                 {JSON.stringify(pickedFile, null, 2)}
               </pre>
             </div>
