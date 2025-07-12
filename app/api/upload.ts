@@ -1,12 +1,11 @@
 // app/api/upload.ts
 
 import type { NextApiRequest, NextApiResponse } from "next";
-import { Readable } from "stream";
 import { Buffer } from "buffer";
 
 export const config = {
   api: {
-    bodyParser: false, 
+    bodyParser: false,
   },
 };
 
@@ -30,8 +29,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
   try {
     const fileBuffer = await bufferStream(req);
-
     const boundary = "foo_bar_baz";
+
     const metadata = {
       name: fileName,
       mimeType,
@@ -48,14 +47,14 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       "utf-8"
     );
 
-    const filePartHeader = Buffer.from(
-      `--${boundary}\r\nContent-Type: ${mimeType}\r\n\r\n`,
+    const filePart = Buffer.from(
+      `Content-Type: ${mimeType}\r\n\r\n`,
       "utf-8"
     );
 
     const closing = Buffer.from(`\r\n${closeDelimiter}`, "utf-8");
 
-    const multipartBody = Buffer.concat([metaPart, filePartHeader, fileBuffer, closing]);
+    const multipartBody = Buffer.concat([metaPart, filePart, fileBuffer, closing]);
 
     const response = await fetch("https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart", {
       method: "POST",
@@ -74,10 +73,11 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
     return res.status(200).json({ fileId: data.id });
   } catch (error: any) {
-    console.error(error);
+    console.error("Upload error:", error);
     return res.status(500).json({ error: error.message || "Unexpected error" });
   }
 }
+
 
 
 
