@@ -757,9 +757,10 @@ function SettingsApp({
               </div>
             </div>
 
-          <div className="mt-4 text-center text-pink-400 text-xs">
-  <p>npx create-next-app@latest iphone-tsx</p>
+         <div className="text-center text-pink-400 text-xs select-text mt-4">
+  <p>Next.js&nbsp; {process.env.NEXT_PUBLIC_BUILD_HASH}</p>
 </div>
+
 
           </div>
         </div>
