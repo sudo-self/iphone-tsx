@@ -100,17 +100,18 @@ export default function DriveApp() {
   return (
     <div className="bg-gray-200 flex flex-col items-center p-6 w-full max-w-md mx-auto">
       <h2 className="text-xl text-green-800 font-semibold mb-4">Google Drive</h2>
+
       {session ? (
         <>
           <p className="mb-2 text-yellow-700">Signed in as {session.user?.email}</p>
 
+          {/* File Upload */}
           <input
             type="file"
             accept="image/*,.pdf,.zip,.doc,.docx,.txt"
             ref={fileInputRef}
             className="mb-4"
           />
-
           <button
             onClick={uploadToDrive}
             disabled={uploading}
@@ -121,6 +122,7 @@ export default function DriveApp() {
             {uploading ? "Uploading..." : "Upload to Google Drive"}
           </button>
 
+          {/* List Drive Files */}
           <button
             onClick={fetchFiles}
             disabled={loadingFiles}
@@ -129,20 +131,23 @@ export default function DriveApp() {
             {loadingFiles ? "Loading files..." : "List Drive Files"}
           </button>
 
-          {/* Google Picker Integration */}
+          {/* Google Picker */}
           <GooglePicker onPick={(file) => setPickedFile(file)} />
 
+          {/* Picked File Preview */}
           {pickedFile && (
             <div className="mt-4 w-full bg-white p-4 rounded shadow text-sm text-left">
-              <h3 className="font-semibold mb-2">📄 Picked File</h3>
-              <pre className="text-gray-800 whitespace-pre-wrap break-words">
+              <h3 className="font-semibold mb-2 text-gray-800">📄 Picked File</h3>
+              <pre className="text-gray-700 whitespace-pre-wrap break-words text-xs">
                 {JSON.stringify(pickedFile, null, 2)}
               </pre>
             </div>
           )}
 
+          {/* Error */}
           {listError && <p className="text-red-500 mb-2">{listError}</p>}
 
+          {/* File List */}
           <ul className="w-full text-left mt-4">
             {files.map(({ id, name, iconLink }) => (
               <li key={id} className="flex items-center space-x-3 py-2 border-b border-gray-700">
@@ -155,12 +160,16 @@ export default function DriveApp() {
                     referrerPolicy="no-referrer"
                   />
                 )}
-                <span>{name}</span>
+                <span className="text-gray-800">{name}</span>
               </li>
             ))}
           </ul>
 
-          <button onClick={() => signOut()} className="text-red-500 hover:underline mt-6">
+          {/* Sign out */}
+          <button
+            onClick={() => signOut()}
+            className="text-red-500 hover:underline mt-6"
+          >
             Sign Out
           </button>
         </>
@@ -175,6 +184,7 @@ export default function DriveApp() {
     </div>
   );
 }
+
 
 
 
