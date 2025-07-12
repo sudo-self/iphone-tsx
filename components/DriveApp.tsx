@@ -43,14 +43,8 @@ export default function DriveApp() {
     const file = fileInputRef.current?.files?.[0];
     const accessToken = (session as any)?.accessToken || (session as any)?.access_token;
 
-    if (!file) {
-      alert("📂 Please select a file.");
-      return;
-    }
-    if (!accessToken) {
-      alert("🔒 Missing access token. Please sign in again.");
-      return;
-    }
+    if (!file) return alert("📂 Please select a file.");
+    if (!accessToken) return alert("🔒 Missing access token. Please sign in again.");
 
     try {
       setUploading(true);
@@ -81,10 +75,8 @@ export default function DriveApp() {
 
   const fetchFiles = async () => {
     const accessToken = (session as any)?.accessToken || (session as any)?.access_token;
-    if (!accessToken) {
-      alert("🔒 Missing access token. Please sign in again.");
-      return;
-    }
+    if (!accessToken) return alert("🔒 Missing access token. Please sign in again.");
+
     setLoadingFiles(true);
     setListError(null);
     try {
@@ -98,92 +90,112 @@ export default function DriveApp() {
   };
 
   return (
-    <div className="bg-gray-200 flex flex-col items-center p-6 w-full max-w-md mx-auto">
-      <h2 className="text-xl text-green-800 font-semibold mb-4">Google Drive</h2>
+    <div className="bg-gray-100 min-h-screen w-full max-w-md mx-auto p-6 rounded-xl shadow-md">
+      <h1 className="text-2xl font-bold text-gray-800 mb-6 text-center">📁 Google Drive Manager</h1>
 
       {session ? (
         <>
-          <p className="mb-2 text-yellow-700">Signed in as {session.user?.email}</p>
+          <div className="text-sm text-gray-700 mb-4 text-center">
+            Signed in as <span className="font-semibold">{session.user?.email}</span>
+          </div>
 
-          {/* File Upload */}
-          <input
-            type="file"
-            accept="image/*,.pdf,.zip,.doc,.docx,.txt"
-            ref={fileInputRef}
-            className="mb-4"
-          />
-          <button
-            onClick={uploadToDrive}
-            disabled={uploading}
-            className={`px-4 py-2 rounded mb-4 text-white ${
-              uploading ? "bg-gray-400 cursor-not-allowed" : "bg-cyan-600 hover:bg-cyan-800"
-            }`}
-          >
-            {uploading ? "Uploading..." : "Upload to Google Drive"}
-          </button>
+          {/* Upload Input */}
+          <div className="flex flex-col items-center gap-3 mb-6">
+            <input
+              type="file"
+              accept="image/*,.pdf,.zip,.doc,.docx,.txt"
+              ref={fileInputRef}
+              className="w-full text-sm"
+            />
+            <button
+              onClick={uploadToDrive}
+              disabled={uploading}
+              className={`w-full px-4 py-2 rounded text-white font-medium transition ${
+                uploading
+                  ? "bg-gray-400 cursor-not-allowed"
+                  : "bg-cyan-600 hover:bg-cyan-700"
+              }`}
+            >
+              {uploading ? "Uploading..." : "Upload to Google Drive"}
+            </button>
+          </div>
 
-          {/* List Drive Files */}
-          <button
-            onClick={fetchFiles}
-            disabled={loadingFiles}
-            className="mb-4 px-4 py-2 rounded bg-blue-600 text-white hover:bg-blue-700 disabled:opacity-50"
-          >
-            {loadingFiles ? "Loading files..." : "List Drive Files"}
-          </button>
+          {/* Actions */}
+          <div className="flex flex-col gap-3 mb-6">
+            <button
+              onClick={fetchFiles}
+              disabled={loadingFiles}
+              className="w-full px-4 py-2 rounded bg-blue-600 text-white font-medium hover:bg-blue-700 disabled:opacity-50"
+            >
+              {loadingFiles ? "Loading files..." : "📂 List Drive Files"}
+            </button>
 
-          {/* Google Picker */}
-          <GooglePicker onPick={(file) => setPickedFile(file)} />
+            <GooglePicker onPick={(file) => setPickedFile(file)} />
+          </div>
 
-          {/* Picked File Preview */}
+          {/* Picked File */}
           {pickedFile && (
-            <div className="mt-4 w-full bg-white p-4 rounded shadow text-sm text-left">
-              <h3 className="font-semibold mb-2 text-gray-800">📄 Picked File</h3>
-              <pre className="text-gray-700 whitespace-pre-wrap break-words text-xs">
+            <div className="bg-white border border-gray-300 rounded p-4 text-sm mb-6">
+              <h3 className="font-semibold text-gray-800 mb-2">📄 Picked File</h3>
+              <pre className="text-gray-600 whitespace-pre-wrap break-words text-xs">
                 {JSON.stringify(pickedFile, null, 2)}
               </pre>
             </div>
           )}
 
           {/* Error */}
-          {listError && <p className="text-red-500 mb-2">{listError}</p>}
+          {listError && <p className="text-red-600 mb-4">{listError}</p>}
 
           {/* File List */}
-          <ul className="w-full text-left mt-4">
-            {files.map(({ id, name, iconLink }) => (
-              <li key={id} className="flex items-center space-x-3 py-2 border-b border-gray-700">
-                {iconLink && (
-                  <img
-                    src={iconLink}
-                    alt=""
-                    className="w-6 h-6"
-                    loading="lazy"
-                    referrerPolicy="no-referrer"
-                  />
-                )}
-                <span className="text-gray-800">{name}</span>
-              </li>
-            ))}
-          </ul>
+          {files.length > 0 && (
+            <div className="bg-white border border-gray-300 rounded p-4">
+              <h3 className="text-md font-semibold text-gray-800 mb-2">📦 Drive Files</h3>
+              <ul className="space-y-2 max-h-60 overflow-y-auto">
+                {files.map(({ id, name, iconLink }) => (
+                  <li
+                    key={id}
+                    className="flex items-center space-x-3 text-sm text-gray-700 border-b border-gray-200 pb-2"
+                  >
+                    {iconLink && (
+                      <img
+                        src={iconLink}
+                        alt=""
+                        className="w-5 h-5"
+                        loading="lazy"
+                        referrerPolicy="no-referrer"
+                      />
+                    )}
+                    <span>{name}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
 
           {/* Sign out */}
-          <button
-            onClick={() => signOut()}
-            className="text-red-500 hover:underline mt-6"
-          >
-            Sign Out
-          </button>
+          <div className="text-center mt-6">
+            <button
+              onClick={() => signOut()}
+              className="text-red-600 hover:underline text-sm font-medium"
+            >
+              Sign Out
+            </button>
+          </div>
         </>
       ) : (
-        <button
-          onClick={() => signIn("google")}
-          className="bg-green-700 text-white px-4 py-2 rounded hover:bg-pink-700"
-        >
-          Google Sign On
-        </button>
+        <div className="flex justify-center">
+          <button
+            onClick={() => signIn("google")}
+            className="bg-green-700 text-white px-6 py-2 rounded font-semibold hover:bg-pink-700 transition"
+          >
+            Sign in with Google
+          </button>
+        </div>
       )}
     </div>
   );
 }
+
 
 
 
