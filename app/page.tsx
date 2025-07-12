@@ -49,9 +49,8 @@ import SnakeApp from "./SnakeApp";
 import { Redis } from "@upstash/redis";
 import DriveApp from "@/components/DriveApp";
 import ChatApp from "./ChatApp";
-import confetti from 'canvas-confetti';
 import { createClient } from '@supabase/supabase-js';
-import postgres from 'postgres'
+import confetti from 'canvas-confetti';
 
 
 export default function SmartphoneUI() {
@@ -69,6 +68,7 @@ export default function SmartphoneUI() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const buildHash = process.env.NEXT_PUBLIC_BUILD_HASH ?? "dev";
+
 
   useEffect(() => {
     const updateTime = () => {
@@ -3006,11 +3006,6 @@ function SnakeApp() {
 }
 
 
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-);
-
 interface Message {
   id: number;
   content: string;
@@ -3020,64 +3015,53 @@ interface Message {
 }
 
 function ChatApp() {
+  const supabase = createClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+  );
+
   const [messages, setMessages] = useState<Message[]>([]);
-  const [newMessage, setNewMessage] = useState('');
+  const [newMessage, setNewMessage] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   };
 
   const triggerConfetti = () => {
-    confetti({
-      particleCount: 100,
-      spread: 70,
-      origin: { y: 0.6 },
-    });
+    confetti({ particleCount: 100, spread: 70, origin: { y: 0.6 } });
   };
 
   useEffect(() => {
     const fetchMessages = async () => {
       const { data, error } = await supabase
-        .from('messages')
-        .select('*')
-        .order('created_at', { ascending: true });
-
-      if (error) {
-        console.error('Error fetching messages:', error);
-      } else {
-        setMessages(data || []);
+        .from("messages")
+        .select("*")
+        .order("created_at", { ascending: true });
+      if (!error && data) {
+        setMessages(data);
         setTimeout(scrollToBottom, 100);
       }
     };
-
     fetchMessages();
   }, []);
 
   useEffect(() => {
     const channel = supabase
-      .channel('public:messages')
-      .on(
-        'postgres_changes',
-        { event: 'INSERT', schema: 'public', table: 'messages' },
-        (payload) => {
-          setMessages((prev) => [...prev, payload.new as Message]);
-          triggerConfetti();
-          scrollToBottom();
-        }
-      )
-      .on(
-        'postgres_changes',
-        { event: 'UPDATE', schema: 'public', table: 'messages' },
-        (payload) => {
-          setMessages((prev) =>
-            prev.map((msg) =>
-              msg.id === payload.new.id ? (payload.new as Message) : msg
-            )
-          );
-        }
-      )
+      .channel("public:messages")
+      .on("postgres_changes", { event: "INSERT", schema: "public", table: "messages" }, (payload) => {
+        setMessages((prev) => [...prev, payload.new as Message]);
+        triggerConfetti();
+        scrollToBottom();
+      })
+      .on("postgres_changes", { event: "UPDATE", schema: "public", table: "messages" }, (payload) => {
+        setMessages((prev) =>
+          prev.map((msg) =>
+            msg.id === payload.new.id ? (payload.new as Message) : msg
+          )
+        );
+      })
       .subscribe();
 
     return () => {
@@ -3088,50 +3072,30 @@ function ChatApp() {
   const handleSendMessage = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!newMessage.trim() || isLoading) return;
-
     setIsLoading(true);
-    try {
-      const { error } = await supabase.from('messages').insert([
-        {
-          content: newMessage,
-          user_id: 'anonymous',
-          likes: 0,
-        },
-      ]);
-
-      if (error) {
-        console.error('Error sending message:', error);
-      } else {
-        setNewMessage('');
-      }
-    } catch (error) {
-      console.error('Error:', error);
-    } finally {
-      setIsLoading(false);
-    }
+    const { error } = await supabase.from("messages").insert([
+      {
+        content: newMessage,
+        user_id: "anonymous",
+        likes: 0,
+      },
+    ]);
+    if (!error) setNewMessage("");
+    setIsLoading(false);
   };
 
   const handleLike = async (messageId: number, currentLikes: number) => {
-    try {
-      const { error } = await supabase
-        .from('messages')
-        .update({ likes: currentLikes + 1 })
-        .eq('id', messageId);
-
-      if (error) {
-        console.error('Error liking message:', error);
-      } else {
-        triggerConfetti();
-      }
-    } catch (error) {
-      console.error('Error:', error);
-    }
+    const { error } = await supabase
+      .from("messages")
+      .update({ likes: currentLikes + 1 })
+      .eq("id", messageId);
+    if (!error) triggerConfetti();
   };
 
   return (
-    <div className="flex flex-col h-screen bg-gray-900 text-white">
-      {/* Scrollable messages container */}
-      <div className="flex-1 overflow-y-auto p-4 space-y-4">
+    <div className="flex flex-col h-full bg-gray-900 text-white">
+      {/* Scrollable message area */}
+      <div className="flex-1 overflow-y-auto px-4 pt-4 pb-2 space-y-4">
         {messages.map((message) => (
           <div
             key={message.id}
@@ -3139,10 +3103,10 @@ function ChatApp() {
           >
             <div className="flex-1">
               <p className="text-sm text-gray-400">
-                Anonymous •{' '}
+                Anonymous •{" "}
                 {message.created_at
                   ? new Date(message.created_at).toLocaleTimeString()
-                  : ''}
+                  : ""}
               </p>
               <p className="text-base">{message.content}</p>
               <div className="flex items-center mt-1">
@@ -3159,28 +3123,29 @@ function ChatApp() {
         <div ref={messagesEndRef} />
       </div>
 
-      {/* Fixed form at bottom */}
-      <form
-        onSubmit={handleSendMessage}
-        className="p-4 border-t border-gray-700 flex-shrink-0 bg-gray-900"
-      >
-        <div className="flex items-center gap-2">
-          <input
-            type="text"
-            value={newMessage}
-            onChange={(e) => setNewMessage(e.target.value)}
-            placeholder="Type a message..."
-            className="flex-1 p-2 rounded-lg bg-gray-800 text-white border border-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
-          />
-          <button
-            type="submit"
-            disabled={isLoading || !newMessage.trim()}
-            className="px-4 py-2 bg-blue-600 rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50"
+          <form
+            onSubmit={handleSendMessage}
+            className="absolute bottom-16 w-full px-4 pb-3 pt-2 bg-gray-800 border-t border-gray-700 z-10 max-w-[375px] mx-auto"
           >
-            {isLoading ? 'Sending...' : 'Send'}
-          </button>
-        </div>
-      </form>
+            <div className="flex items-center gap-2">
+              <input
+                type="text"
+                value={newMessage}
+                onChange={(e) => setNewMessage(e.target.value)}
+                placeholder="Type a message..."
+                className="flex-1 p-2 rounded-lg bg-gray-700 text-white border border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+              <button
+                type="submit"
+                disabled={isLoading || !newMessage.trim()}
+                className="px-4 py-2 bg-blue-600 rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50"
+              >
+                {isLoading ? "..." : "Send"}
+              </button>
+            </div>
+          </form>
+
+
     </div>
   );
 }
