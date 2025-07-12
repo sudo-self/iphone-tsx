@@ -63,6 +63,9 @@ export default function SmartphoneUI() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
+  const buildHash = process.env.NEXT_PUBLIC_BUILD_HASH ?? "dev";
+
+
   useEffect(() => {
     const updateTime = () => {
       const now = new Date();
