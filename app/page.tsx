@@ -747,7 +747,7 @@ if (activeSection === "about") {
           <div className="space-y-3">
             <div className="flex justify-between py-2 border-b border-gray-700">
               <span className="text-gray-400">Version</span>
-              <span className="text-orange-400">2.23</span>
+              <span className="text-orange-400">{buildHash}</span>
             </div>
             <div className="flex justify-between py-2 border-b border-gray-700">
               <span className="text-gray-400">Model</span>
@@ -764,7 +764,7 @@ if (activeSection === "about") {
           </div>
 
           <div className="text-center text-pink-400 text-xs select-text mt-4">
-            <p>Next.js build:&nbsp;{buildHash}</p>
+            <p>Framework - Next.js</p>
           </div>
         </div>
       </div>
