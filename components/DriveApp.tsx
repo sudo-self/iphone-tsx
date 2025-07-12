@@ -95,7 +95,7 @@ export default function DriveApp() {
       <h2 className="text-xl text-green-800 font-semibold mb-4">Google Drive</h2>
       {session ? (
         <>
-          <p className="mb-2 text-yellow-500">Signed in as {session.user?.email}</p>
+          <p className="mb-2 text-yellow-700">Signed in as {session.user?.email}</p>
           <input
             type="file"
             accept="image/*,.pdf,.zip,.doc,.docx,.txt"
@@ -106,7 +106,7 @@ export default function DriveApp() {
             onClick={uploadToDrive}
             disabled={uploading}
             className={`px-4 py-2 rounded mb-4 text-white ${
-              uploading ? "bg-gray-400 cursor-not-allowed" : "bg-cyan-500 hover:bg-cyan-600"
+              uploading ? "bg-gray-400 cursor-not-allowed" : "bg-cyan-600 hover:bg-cyan-800"
             }`}
           >
             {uploading ? "Uploading..." : "Upload to Google Drive"}
@@ -142,8 +142,8 @@ export default function DriveApp() {
             ))}
           </ul>
 
-          <button onClick={() => signOut()} className="text-red-400 hover:underline mt-6">
-            Sign out
+          <button onClick={() => signOut()} className="text-red-500 hover:underline mt-6">
+            Sign Out
           </button>
         </>
       ) : (
@@ -151,7 +151,7 @@ export default function DriveApp() {
           onClick={() => signIn("google")}
           className="bg-green-700 text-white px-4 py-2 rounded hover:bg-pink-700"
         >
-          Google Sign in
+          Google Sign On
         </button>
       )}
     </div>
