@@ -2155,7 +2155,6 @@ function BrowserApp() {
   );
 }
 
-
 function CalculatorApp() {
   const [display, setDisplay] = useState("0");
   const [operation, setOperation] = useState<string | null>(null);
@@ -2212,12 +2211,12 @@ function CalculatorApp() {
   };
 
   return (
-    <div className="flex flex-col h-full bg-black text-white">
-      <div className="h-16 flex items-end justify-end px-4 text-4xl font-light">
+    <div className="flex flex-col min-h-screen bg-black text-white">
+      <div className="flex-shrink-0 h-24 flex items-end justify-end px-4 text-4xl sm:text-5xl font-light">
         {display}
       </div>
 
-      <div className="grid grid-cols-4 gap-x-1 gap-y-1 p-2 pb-4">
+      <div className="flex-1 grid grid-cols-4 gap-2 p-4">
         <CalcButton onClick={handleClearClick} className="bg-gray-500">
           AC
         </CalcButton>
@@ -2292,7 +2291,7 @@ function CalcButton({
     <button
       onClick={onClick}
       className={cn(
-        "h-9 rounded-full flex items-center justify-center bg-gray-800 font-medium",
+        "h-12 sm:h-16 rounded-full flex items-center justify-center bg-gray-800 font-medium text-lg sm:text-xl",
         className,
       )}
     >
@@ -2300,7 +2299,6 @@ function CalcButton({
     </button>
   );
 }
-
 
 function CalendarApp() {
   const [events, setEvents] = useState<Record<string, string>>({});
