@@ -7,10 +7,10 @@ export const metadata: Metadata = {
   title: "iPhone TSX — Supabase & Redis DBs, Maps and Youtube APIs",
   description:
     "iPhone TSX featuring Supabase and Redis integration for a modern app experience.",
-  generator: "v0.dev",
+  generator: "Grok4",
   metadataBase: new URL("https://iphone.jessejesse.com"),
   openGraph: {
-    title: "iPhone TSX — Supabase & Redis DBs, Maps and Youtube APIs",
+    title: "iPhone TSX — Supabase, Redis, Youtube, Maps, and more.",
     description:
       "An iPhone GUI featuring Supabase, Redis, Youtube, and Google Drive initigrations.",
     url: "https://iphone.jessejesse.com",
