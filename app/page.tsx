@@ -42,6 +42,8 @@ import {
 
 import { createClient } from "@supabase/supabase-js";
 import confetti from "canvas-confetti";
+import * as maptilersdk from '@maptiler/sdk';
+import '@maptiler/sdk/dist/maptiler-sdk.css';
 
 
 import PhoneApp from "./PhoneApp";
@@ -1375,111 +1377,49 @@ function ContactsApp({
   );
 }
 
-function MapsApp({
-  setActiveApp,
-}: {
+type Props = {
   setActiveApp: (app: string | null) => void;
-}) {
-  const [selectedLocation, setSelectedLocation] = useState("Denver, CO");
-  const [searchQuery, setSearchQuery] = useState("");
+};
 
-  const locations = [
-    {
-      name: "Denver, CO",
-      coords: "39.7392°N, 104.9903°W",
-      description: "Mile High City",
-    },
-    {
-      name: "New York, NY",
-      coords: "40.7128°N, 74.0060°W",
-      description: "The Big Apple",
-    },
-    {
-      name: "Los Angeles, CA",
-      coords: "34.0522°N, 118.2437°W",
-      description: "City of Angels",
-    },
-    {
-      name: "Chicago, IL",
-      coords: "41.8781°N, 87.6298°W",
-      description: "Windy City",
-    },
-    {
-      name: "Miami, FL",
-      coords: "25.7617°N, 80.1918°W",
-      description: "Magic City",
-    },
-  ];
+function MapsApp({ setActiveApp }: Props) {
+  const mapContainer = useRef<HTMLDivElement | null>(null);
+  const map = useRef<maptilersdk.Map | null>(null);
 
-  const filteredLocations = locations.filter((location) =>
-    location.name.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+  const denver = { lat: 39.7392, lng: -104.9903 };
+  const zoom = 13;
 
-  return (
-    <div className="h-full flex flex-col bg-gray-900 text-white">
-      <div className="flex items-center p-4 bg-gray-800 flex-shrink-0">
-        <button
-          onClick={() => setActiveApp(null)}
-          className="text-blue-400 mr-4"
-        >
-          ← Back
-        </button>
-        <h2 className="text-xl font-bold">Maps</h2>
+  const apiKey = process.env.NEXT_PUBLIC_MAPTILER_API_KEY;
+
+  useEffect(() => {
+    if (!mapContainer.current || !apiKey) return;
+
+    maptilersdk.config.apiKey = apiKey;
+
+    map.current = new maptilersdk.Map({
+      container: mapContainer.current,
+      style: maptilersdk.MapStyle.SATELLITE,
+      center: [denver.lng, denver.lat],
+      zoom,
+    });
+
+    new maptilersdk.Marker()
+      .setLngLat([denver.lng, denver.lat])
+      .addTo(map.current);
+
+    return () => {
+      map.current?.remove();
+    };
+  }, [apiKey]);
+
+    return (
+      <div style={{ paddingTop: '1rem' }} className="w-full h-screen">
+        <div ref={mapContainer} className="w-full h-full" />
       </div>
-
-      <div className="p-4 flex-shrink-0">
-        <div className="flex items-center bg-gray-800 rounded-full px-4 py-2 mb-4">
-          <Search className="w-5 h-5 text-gray-400 mr-2" />
-          <input
-            type="text"
-            placeholder="Search locations"
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className="bg-transparent border-none outline-none flex-1 text-white"
-          />
-        </div>
-      </div>
-
-      <div className="flex-1 overflow-y-auto px-4 pb-4">
-        <div className="bg-gray-800 rounded-lg p-6 mb-4 text-center">
-          <MapIcon className="w-16 h-16 text-blue-400 mx-auto mb-4" />
-          <h3 className="text-xl font-bold mb-2">{selectedLocation}</h3>
-          <p className="text-gray-400 mb-4">
-            {locations.find((loc) => loc.name === selectedLocation)?.coords}
-          </p>
-          <div className="w-full h-32 bg-gray-700 rounded-lg flex items-center justify-center">
-            <div className="text-center">
-              <div className="w-8 h-8 bg-blue-500 rounded-full mx-auto mb-2"></div>
-              <p className="text-sm text-gray-400">Map View</p>
-            </div>
-          </div>
-        </div>
-
-        <div className="space-y-2">
-          <h4 className="text-lg font-medium mb-3">Locations</h4>
-          {filteredLocations.map((location, index) => (
-            <button
-              key={index}
-              onClick={() => setSelectedLocation(location.name)}
-              className={cn(
-                "w-full p-3 rounded-lg text-left transition-colors",
-                selectedLocation === location.name
-                  ? "bg-blue-600"
-                  : "bg-gray-800 hover:bg-gray-700"
-              )}
-            >
-              <div className="font-medium">{location.name}</div>
-              <div className="text-sm text-gray-400">
-                {location.description}
-              </div>
-              <div className="text-xs text-gray-500">{location.coords}</div>
-            </button>
-          ))}
-        </div>
-      </div>
-    </div>
-  );
+    );
 }
+
+
+
 
 function CameraApp() {
   const [stream, setStream] = useState<MediaStream | null>(null);
