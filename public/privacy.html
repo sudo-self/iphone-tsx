@@ -6,91 +6,146 @@
   <title>Privacy Policy – iPhone TSX</title>
   <style>
     :root {
-      color-scheme: light;
+      color-scheme: dark;
+      --bg-color: #1a1a1a;
+      --text-color: #e0e0e0;
+      --heading-color: #ffffff;
+      --accent-color: #3b82f6;
+      --muted-color: #6b7280;
+      --card-bg: #2d2d2d;
     }
     body {
-      font-family: -apple-system, BlinkMacSystemFont, "San Francisco", "Helvetica Neue", sans-serif;
-      background: #f2f2f7;
-      color: #000;
+      font-family: -apple-system, BlinkMacSystemFont, "Inter", "Helvetica Neue", sans-serif;
+      background: var(--bg-color);
+      color: var(--text-color);
       margin: 0;
       padding: 0;
+      line-height: 1.6;
     }
     .container {
-      max-width: 680px;
+      max-width: 800px;
       margin: 0 auto;
-      padding: 24px 16px;
+      padding: 2rem 1.5rem;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
     }
     h1 {
-      font-size: 28px;
-      font-weight: 600;
-      margin-bottom: 12px;
-      color: #000;
+      font-size: 2rem;
+      font-weight: 700;
+      color: var(--heading-color);
+      margin-bottom: 1.5rem;
+      text-align: center;
     }
     h2 {
-      font-size: 17px;
+      font-size: 1.25rem;
       font-weight: 600;
-      color: #6d6d72;
+      color: var(--muted-color);
       text-transform: uppercase;
-      margin: 32px 0 8px;
+      margin: 2rem 0 1rem;
+      letter-spacing: 0.05em;
     }
     p, li {
-      font-size: 17px;
-      line-height: 1.5;
-      margin: 12px 0;
+      font-size: 1.1rem;
+      margin: 0.75rem 0;
     }
     ul {
-      padding-left: 20px;
-      margin: 0;
+      padding-left: 1.5rem;
+      margin: 0.5rem 0;
+    }
+    li {
+      margin-bottom: 0.5rem;
     }
     a {
-      color: #007aff;
+      color: var(--accent-color);
       text-decoration: none;
+      transition: color 0.2s ease;
     }
     a:hover {
+      color: #60a5fa;
       text-decoration: underline;
+    }
+    .card {
+      background: var(--card-bg);
+      padding: 1.5rem;
+      border-radius: 0.5rem;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+      margin-bottom: 1.5rem;
+    }
+    .footer-note {
+      margin-top: 2.5rem;
+      text-align: center;
+      font-size: 1rem;
+      color: var(--muted-color);
+    }
+    @media (max-width: 600px) {
+      h1 {
+        font-size: 1.75rem;
+      }
+      h2 {
+        font-size: 1.1rem;
+      }
+      p, li {
+        font-size: 1rem;
+      }
+      .container {
+        padding: 1.5rem 1rem;
+      }
     }
   </style>
 </head>
 <body>
   <div class="container">
     <h1>Privacy Policy</h1>
-    <p><strong>Effective Date:</strong> July 9, 2025</p>
-    <p><strong>Website:</strong> <a href="https://iphone.jessejesse.com">iphone.jessejesse.com</a></p>
-    <p><strong>Contact:</strong> <a href="mailto:support@jessejesse.com">Jesse@jessejesse.com</a></p>
+    <div class="card">
+      <p><strong>Effective Date:</strong> July 9, 2025</p>
+      <p><strong>Website:</strong> <a href="https://iphone.jessejesse.com">iphone.jessejesse.com</a></p>
+      <p><strong>Contact:</strong> <a href="mailto:support@jessejesse.com">Jesse@jessejesse.com</a></p>
+    </div>
 
-    <h2>Information We Collect</h2>
-    <p>We may collect the following when you use the iPhone TSX:</p>
-    <ul>
-      <li>Contact names or numbers you type in</li>
-      <li>Uploaded photos (camera access)</li>
-      <li>Fake calendar or call events you create</li>
-      <li>Browser-based preferences</li>
-    </ul>
-    <p><strong>We do not access your actual iPhone or Facebook Messenger data.</strong></p>
+    <div class="card">
+      <h2>Information We Collect</h2>
+      <p>We may collect the following when you use the iPhone TSX:</p>
+      <ul>
+        <li>Contact names or numbers you type in</li>
+        <li>Uploaded photos (camera access)</li>
+        <li>Fake calendar or call events you create</li>
+        <li>Browser-based preferences</li>
+      </ul>
+      <p><strong>We do not access your actual iPhone or Facebook Messenger data.</strong></p>
+    </div>
 
-    <h2>Use of Information</h2>
-    <p>Your data is used to:</p>
-    <ul>
-      <li>Render content (e.g. fake calls or photos)</li>
-      <li>Customize your experience</li>
-      <li>Improve reliability and save your layout</li>
-    </ul>
+    <div class="card">
+      <h2>Use of Information</h2>
+      <p>Your data is used to:</p>
+      <ul>
+        <li>Render content (e.g. fake calls or photos)</li>
+        <li>Customize your experience</li>
+        <li>Improve reliability and save your layout</li>
+      </ul>
+    </div>
 
-    <h2>Third-Party Services</h2>
-    <p>We use secure external tools:</p>
-    <ul>
-      <li><strong>Supabase</strong> – stores your photos on public links</li>
-      <li><strong>Upstash Redis</strong> – temporarily caches content</li>
-    </ul>
-    <p>We do <strong>not sell</strong> or share your personal data with advertisers or third parties.</p>
+    <div class="card">
+      <h2>Third-Party Services</h2>
+      <p>We use secure external tools:</p>
+      <ul>
+        <li><strong>Supabase</strong> – stores your photos on public links</li>
+        <li><strong>Upstash Redis</strong> – temporarily caches content</li>
+      </ul>
+      <p>We do <strong>not sell</strong> or share your personal data with advertisers or third parties.</p>
+    </div>
 
-    <h2>Control & Deletion</h2>
-    <p>You may request that we delete stored data by contacting us at <a href="mailto:support@jessejesse.com">support@jessejesse.com</a>.</p>
+    <div class="card">
+      <h2>Control & Deletion</h2>
+      <p>You may request that we delete stored data by contacting us at <a href="mailto:support@jessejesse.com">support@jessejesse.com</a>.</p>
+    </div>
 
-    <h2>Policy Changes</h2>
-    <p>We may update this page occasionally. Your continued use implies agreement with the latest version.</p>
+    <div class="card">
+      <h2>Policy Changes</h2>
+      <p>We may update this page occasionally. Your continued use implies agreement with the latest version.</p>
+    </div>
 
-    <p style="margin-top: 40px;">Thanks for using iPhone TSX.</p>
+    <p class="footer-note">Thanks for using iPhone TSX.</p>
   </div>
 </body>
 </html>
