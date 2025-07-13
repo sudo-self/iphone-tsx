@@ -14,8 +14,6 @@ import {
   Calendar,
   Calculator,
   User,
-  Search,
-  Mic,
   Camera,
   Globe,
   Settings,
@@ -25,6 +23,7 @@ import {
   Loader2,
   Folder,
   MessageCircle,
+  Search, 
   Grid3x3,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
