@@ -1352,95 +1352,69 @@ function MusicApp() {
         }
     };
     
-    return (
-            <div className="bg-black text-white min-h-screen flex flex-col items-center p-6 space-y-6 overflow-y-auto">
-            <div
-            ref={playerRef}
-            style={{ maxWidth: "426px", width: "100%", marginBottom: "1rem" }}
-            />
-            
-            <div className="glass-container w-full max-w-md relative">
-            <div className="glass-filter" />
-            <div className="glass-overlay" />
-            <div className="glass-specular" />
-            <div className="glass-content flex flex-col items-center gap-4">
-            <div className="text-center">
-            <h2 className="text-2xl font-bold">{currentTrack.title}</h2>
-            <p className="text-gray-300">{currentTrack.artist}</p>
+return (
+  <div className="bg-black text-white min-h-screen flex flex-col items-center p-6 space-y-6 overflow-y-auto">
+    <div
+      ref={playerRef}
+      style={{ maxWidth: "426px", width: "100%", marginBottom: "1rem" }}
+    ></div>
 
+    <div className="glass-container w-full max-w-md relative">
+      <div className="glass-filter" />
+      <div className="glass-overlay" />
+      <div className="glass-specular" />
 
-            <div className="w-full max-w-md p-6 rounded-2xl bg-white/10 backdrop-blur-lg border border-white/10 shadow-lg space-y-6">
-            <div className="text-center">
-            <h2 className="text-2xl font-bold">{currentTrack.title}</h2>
-            <p className="text-white/70">{currentTrack.artist}</p>
+      <div className="glass-content flex flex-col items-center gap-4">
+        <div className="text-center">
+          <h2 className="text-2xl font-bold">{currentTrack.title}</h2>
+          <p className="text-gray-300">{currentTrack.artist}</p>
+        </div>
 
-            </div>
-            
-            <input
+        <div className="w-full max-w-md p-6 rounded-2xl bg-white/10 backdrop-blur-lg border border-white/10 shadow-lg space-y-6">
+          <input
             type="range"
             min={0}
             max={duration}
             value={progress}
-
-            className="w-full max-w-md"
+            onChange={seekTo}
+            className="w-full max-w-md accent-cyan-500"
             aria-label="Seek video"
-            />
-            
-            <div className="flex items-center gap-8">
-            <button onClick={playPrev} aria-label="Previous Track" type="button">
-            <SkipBack className="w-8 h-8" />
-            </button>
-            <button
-            onClick={() => setIsPlaying((p) => !p)}
-            className="px-6 py-3 bg-white text-black rounded-full text-lg"
+          />
 
-            className="w-full accent-cyan-500"
-            aria-label="Seek video"
-            />
-            
-            <div className="flex items-center justify-center gap-8">
+          <div className="flex items-center justify-center gap-8">
             <button onClick={playPrev} aria-label="Previous Track" type="button">
-            <SkipBack className="w-8 h-8 text-white hover:text-cyan-500 transition" />
+              <SkipBack className="w-8 h-8 text-white hover:text-cyan-500 transition" />
             </button>
-            <button
-            onClick={() => setIsPlaying((p) => !p)}
-            className="px-6 py-3 bg-white text-black rounded-full text-lg font-semibold hover:scale-105 transition"
 
-            aria-label={isPlaying ? "Pause" : "Play"}
-            type="button"
+            <button
+              onClick={() => setIsPlaying((p) => !p)}
+              className="px-6 py-3 bg-white text-black rounded-full text-lg font-semibold hover:scale-105 transition"
+              aria-label={isPlaying ? "Pause" : "Play"}
+              type="button"
             >
-            {isPlaying ? "Pause" : "Play"}
+              {isPlaying ? "Pause" : "Play"}
             </button>
+
             <button onClick={playNext} aria-label="Next Track" type="button">
-
-            <SkipForward className="w-8 h-8" />
-
-            <SkipForward className="w-8 h-8 text-white hover:text-cyan-500 transition" />
-
+              <SkipForward className="w-8 h-8 text-white hover:text-cyan-500 transition" />
             </button>
-            </div>
-            
-            <input
+          </div>
+
+          <input
             type="range"
             min={0}
             max={100}
             value={volume}
             onChange={(e) => setVolume(Number(e.target.value))}
-
-            className="w-full max-w-md"
-
-            className="w-full accent-cyan-500"
-
+            className="w-full max-w-md accent-cyan-500"
             aria-label="Volume control"
-            />
-            </div>
-            </div>
+          />
+        </div>
+      </div>
+    </div>
+  </div>
+);
 
-            </div>
-
-
-            );
-}
 function ContactsApp({
   contacts,
   onContactsChange,
