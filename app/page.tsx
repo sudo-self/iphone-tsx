@@ -26,6 +26,10 @@ import {
   Search,
   Mic,
   Grid3x3,
+  Eye,
+  Smartphone,
+  Settings as SettingsIcon,
+  Info,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { getContacts } from "@/lib/redis";
@@ -71,7 +75,7 @@ export default function SmartphoneUI() {
   const [currentTime, setCurrentTime] = useState("");
   const [currentDate, setCurrentDate] = useState("");
   const [activeApp, setActiveApp] = useState<string | null>(null);
-  const [batteryLevel, setBatteryLevel] = useState(85);
+  const [batteryLevel, setBatteryLevel] = useState(100);
   const [contacts, setContacts] = useState<Array<{ name: string; phone: string }>>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [settings, setSettings] = useState<PhoneSettings>(defaultSettings);
@@ -217,40 +221,44 @@ export default function SmartphoneUI() {
         userSelect: "none",
       };
 
-      return (
-        <div
-          ref={setNodeRef}
-          style={style}
-          {...attributes}
-          className="flex flex-col items-center select-none"
-        >
-          <button
-            onClick={() => {
-              if (!isJiggling && !isDragging) onClick();
-            }}
-            className="flex flex-col items-center"
-            type="button"
+        return (
+          <div
+            ref={setNodeRef}
+            style={style}
+            {...attributes}
+            className="flex flex-col items-center select-none"
           >
-            <div
-              className={cn(
-                getAppIconStyle(),
-                "bg-gradient-to-br from-gray-700 to-gray-900 flex items-center justify-center text-white"
-              )}
+            <button
+              onClick={() => {
+                if (!isJiggling && !isDragging) onClick();
+              }}
+              className="flex flex-col items-center"
+              type="button"
             >
-              {icon}
-            </div>
-            <span className="text-xs mt-1 text-white">{name}</span>
-          </button>
+              <div
+                className={cn(
+                  getAppIconStyle(),
+                  "bg-gradient-to-br from-gray-700 to-gray-900 flex items-center justify-center text-white"
+                )}
+              >
+                {icon}
+              </div>
+              <span className="text-xs mt-1 text-white">{name}</span>
+            </button>
 
-          {isJiggling && (
-            <div
-              {...listeners}
-              className="mt-1 w-4 h-4 rounded-full bg-white cursor-grab"
-              title="Drag"
-            />
-          )}
-        </div>
-      );
+            {isJiggling && (
+              <button
+                {...listeners}
+                className="mt-1 cursor-grab text-red-600"
+                title="Drag"
+                type="button"
+              >
+                <Grid3x3 className="w-5 h-5" />
+              </button>
+            )}
+          </div>
+        );
+
     }
 
   function handleDragEnd(event: any) {
@@ -312,7 +320,7 @@ export default function SmartphoneUI() {
               <Wifi className="w-4 h-4" />
               <div className="flex items-center">
                 {settings.batteryPercentage && (
-                  <span className="text-xs mr-1 text-green-700">{batteryLevel}%</span>
+                  <span className="text-xs mr-1 text-white">{batteryLevel}%</span>
                 )}
                 <Battery className="w-5 h-5" />
               </div>
@@ -345,7 +353,7 @@ export default function SmartphoneUI() {
             </div>
           ) : (
             <div className="absolute inset-0 pt-12 flex flex-col">
-              {/* Scrollable content */}
+          
               <div className="flex-1 overflow-y-auto">
                 {activeApp ? (
                   <div>
@@ -393,12 +401,15 @@ export default function SmartphoneUI() {
                      <button
                        onClick={() => setIsJiggling((j) => !j)}
                        className={cn(
-                         "px-3 py-1 rounded-md font-semibold text-sm",
-                         isJiggling ? "bg-red-600 text-white" : "bg-gray-700 text-gray-200"
+                         "px-3 py-1 rounded-md font-semibold text-sm transition-colors",
+                         isJiggling
+                           ? "bg-red-600 backdrop-blur-md text-white"
+                           : "bg-white bg-opacity-20 backdrop-blur-md text-white"
                        )}
                      >
-                       {isJiggling ? "Done" : <Grid3x3 className="w-5 h-5" />}
+                       <Grid3x3 className="w-5 h-5" />
                      </button>
+
 
                     </div>
 
@@ -504,12 +515,12 @@ function SettingsApp({
   const [activeSection, setActiveSection] = useState<string | null>(null);
 
 
-  const settingSections = [
-    { id: "display", name: "Display", icon: "🤩" },
-    { id: "wallpaper", name: "Wallpaper", icon: "📱" },
-    { id: "general", name: "General", icon: "⚙️" },
-    { id: "about", name: "About", icon: "ℹ️" },
-  ];
+    const settingSections = [
+      { id: "display", name: "Display", icon: <Eye className="w-5 h-5" /> },
+      { id: "wallpaper", name: "Wallpaper", icon: <Smartphone className="w-5 h-5" /> },
+      { id: "general", name: "General", icon: <SettingsIcon className="w-5 h-5" /> },
+      { id: "about", name: "About", icon: <Info className="w-5 h-5" /> },
+    ];
 
   const wallpaperOptions = [
     {
@@ -839,16 +850,20 @@ if (activeSection === "about") {
 
           <div className="space-y-3">
             <div className="flex justify-between py-2 border-b border-gray-700">
-              <span className="text-gray-400">Version</span>
+              <span className="text-gray-400">Build Vers.</span>
               <span className="text-orange-400">{buildHash}</span>
             </div>
             <div className="flex justify-between py-2 border-b border-gray-700">
-              <span className="text-gray-400">Model</span>
-              <span className="text-blue-500">US</span>
+              <span className="text-gray-400">Framework</span>
+              <span className="text-red-500">Next.js</span>
             </div>
+          <div className="flex justify-between py-2 border-b border-gray-700">
+            <span className="text-gray-400">Language</span>
+            <span className="text-blue-500">TypeScript</span>
+          </div>
             <div className="flex justify-between py-2 border-b border-gray-700">
               <span className="text-gray-400">Storage</span>
-              <span className="text-yellow-400">20TB</span>
+              <span className="text-yellow-400">Supabase</span>
             </div>
             <div className="flex justify-between py-2 border-b border-gray-700">
               <span className="text-gray-400">Battery Health</span>
@@ -857,7 +872,7 @@ if (activeSection === "about") {
           </div>
 
           <div className="text-center text-pink-400 text-xs select-text mt-4">
-            <p>Framework - Next.js</p>
+            <p>FaaS -- Vercel</p>
           </div>
         </div>
       </div>
