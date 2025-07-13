@@ -3,7 +3,6 @@
 import type React from "react";
 
 import { useState, useEffect, useRef, useCallback } from "react";
-
 import {
   Battery,
   Signal,
@@ -15,6 +14,8 @@ import {
   Calendar,
   Calculator,
   User,
+  Search,
+  Mic,
   Camera,
   Globe,
   Settings,
