@@ -77,391 +77,435 @@ import {
 import { CSS } from "@dnd-kit/utilities";
 
 export default function SmartphoneUI() {
-  const [isLocked, setIsLocked] = useState(true);
-  const [currentTime, setCurrentTime] = useState("");
-  const [currentDate, setCurrentDate] = useState("");
-  const [activeApp, setActiveApp] = useState<string | null>(null);
-  const [batteryLevel, setBatteryLevel] = useState(100);
-  const [contacts, setContacts] = useState<Array<{ name: string; phone: string }>>([]);
-  const [isLoading, setIsLoading] = useState(false);
-  const [settings, setSettings] = useState<PhoneSettings>(defaultSettings);
-
-  const buildHash = process.env.NEXT_PUBLIC_BUILD_HASH ?? "dev";
-
- 
-  const [isJiggling, setIsJiggling] = useState(false);
-  const [appOrder, setAppOrder] = useState([
-    "Drive",
-    "Phone",
-    "Contacts",
-    "Calendar",
-    "Calculator",
-    "Camera",
-    "Browser",
-    "Settings",
-    "Music",
-    "Maps",
-    "Notes",
-    "Snake",
-    "Chat",
-  ]);
-
-  useEffect(() => {
-    const updateTime = () => {
-      const now = new Date();
-      setCurrentTime(
-        now.toLocaleTimeString([], {
-          hour: "2-digit",
-          minute: "2-digit",
-          hour12: false,
-        })
-      );
-      setCurrentDate(
-        now.toLocaleDateString([], {
-          weekday: "long",
-          month: "long",
-          day: "numeric",
-        })
-      );
+    const [isLocked, setIsLocked] = useState(true);
+    const [currentTime, setCurrentTime] = useState("");
+    const [currentDate, setCurrentDate] = useState("");
+    const [activeApp, setActiveApp] = useState<string | null>(null);
+    const [batteryLevel, setBatteryLevel] = useState(100);
+    const [contacts, setContacts] = useState<Array<{ name: string; phone: string }>>([]);
+    const [isLoading, setIsLoading] = useState(false);
+    const [settings, setSettings] = useState<PhoneSettings>(defaultSettings);
+    
+    const buildHash = process.env.NEXT_PUBLIC_BUILD_HASH ?? "dev";
+    
+    
+    const [isJiggling, setIsJiggling] = useState(false);
+    const [appOrder, setAppOrder] = useState([
+        "Drive",
+        "Phone",
+        "Contacts",
+        "Calendar",
+        "Calculator",
+        "Camera",
+        "Browser",
+        "Settings",
+        "Music",
+        "Maps",
+        "Notes",
+        "Snake",
+        "Chat",
+    ]);
+    
+    useEffect(() => {
+        const updateTime = () => {
+            const now = new Date();
+            setCurrentTime(
+                           now.toLocaleTimeString([], {
+                               hour: "2-digit",
+                               minute: "2-digit",
+                               hour12: false,
+                           })
+                           );
+            setCurrentDate(
+                           now.toLocaleDateString([], {
+                               weekday: "long",
+                               month: "long",
+                               day: "numeric",
+                           })
+                           );
+        };
+        updateTime();
+        const interval = setInterval(updateTime, 60000);
+        return () => clearInterval(interval);
+    }, []);
+    
+    useEffect(() => {
+        const loadedSettings = loadSettings();
+        setSettings(loadedSettings);
+    }, []);
+    
+    useEffect(() => {
+        const fetchContacts = async () => {
+            if (!isLocked) {
+                setIsLoading(true);
+                try {
+                    const contactsList = await getContacts();
+                    setContacts(contactsList);
+                } catch (error) {
+                    console.error("Failed to fetch contacts:", error);
+                } finally {
+                    setIsLoading(false);
+                }
+            }
+        };
+        fetchContacts();
+    }, [isLocked, activeApp]);
+    
+    const handleUnlock = () => setIsLocked(false);
+    const handleLock = () => {
+        setIsLocked(true);
+        setActiveApp(null);
     };
-    updateTime();
-    const interval = setInterval(updateTime, 60000);
-    return () => clearInterval(interval);
-  }, []);
-
-  useEffect(() => {
-    const loadedSettings = loadSettings();
-    setSettings(loadedSettings);
-  }, []);
-
-  useEffect(() => {
-    const fetchContacts = async () => {
-      if (!isLocked) {
+    const openApp = (appName: string) => {
+        if (!isJiggling) setActiveApp(appName);
+    };
+    const goHome = () => setActiveApp(null);
+    const refreshContacts = async () => {
         setIsLoading(true);
         try {
-          const contactsList = await getContacts();
-          setContacts(contactsList);
+            const contactsList = await getContacts();
+            setContacts(contactsList);
         } catch (error) {
-          console.error("Failed to fetch contacts:", error);
+            console.error("Failed to refresh contacts:", error);
         } finally {
-          setIsLoading(false);
+            setIsLoading(false);
         }
+    };
+    const updateSettings = (newSettings: PhoneSettings) => {
+        setSettings(newSettings);
+        saveSettings(newSettings);
+    };
+    
+    const getHomeButtonStyle = () => {
+      switch (settings.homeButtonStyle) {
+        case "square":
+          return `
+            w-12 h-12 
+            rounded-lg 
+            border-2 border-white/60 
+            bg-white/10 
+            shadow-md 
+            hover:bg-white/20 
+            transition 
+            duration-300
+            flex items-center justify-center
+          `;
+        case "pill":
+          return `
+            w-16 h-8 
+            rounded-full 
+            border-2 border-white/60 
+            bg-white/10 
+            shadow-md 
+            hover:bg-white/20 
+            transition 
+            duration-300
+            flex items-center justify-center
+          `;
+        default: // circle
+          return `
+            w-12 h-12 
+            rounded-full 
+            border-2 border-white/60 
+            bg-white/10 
+            shadow-md 
+            hover:bg-white/20 
+            transition 
+            duration-300
+            flex items-center justify-center
+          `;
       }
     };
-    fetchContacts();
-  }, [isLocked, activeApp]);
 
-  const handleUnlock = () => setIsLocked(false);
-  const handleLock = () => {
-    setIsLocked(true);
-    setActiveApp(null);
-  };
-  const openApp = (appName: string) => {
-    if (!isJiggling) setActiveApp(appName);
-  };
-  const goHome = () => setActiveApp(null);
-  const refreshContacts = async () => {
-    setIsLoading(true);
-    try {
-      const contactsList = await getContacts();
-      setContacts(contactsList);
-    } catch (error) {
-      console.error("Failed to refresh contacts:", error);
-    } finally {
-      setIsLoading(false);
-    }
-  };
-  const updateSettings = (newSettings: PhoneSettings) => {
-    setSettings(newSettings);
-    saveSettings(newSettings);
-  };
+    const getAppIconStyle = () => {
+      switch (settings.appIconStyle) {
+        case "square":
+          return `
+            w-14 h-14 
+            rounded-lg 
+            shadow-lg 
+            hover:shadow-xl 
+            transition 
+            duration-300 
+            bg-white/5
+          `;
+        case "circle":
+          return `
+            w-14 h-14 
+            rounded-full 
+            shadow-lg 
+            hover:shadow-xl 
+            transition 
+            duration-300 
+            bg-white/5
+          `;
+        default: // rounded-2xl
+          return `
+            w-14 h-14 
+            rounded-2xl 
+            shadow-lg 
+            hover:shadow-xl 
+            transition 
+            duration-300 
+            bg-white/5
+          `;
+      }
+    };
 
-  const getHomeButtonStyle = () => {
-    switch (settings.homeButtonStyle) {
-      case "square":
-        return "w-12 h-12 rounded-lg border-2 border-white/50";
-      case "pill":
-        return "w-16 h-8 rounded-full border-2 border-white/50";
-      default:
-        return "w-12 h-12 rounded-full border-2 border-white/50";
-    }
-  };
-
-  const getAppIconStyle = () => {
-    switch (settings.appIconStyle) {
-      case "square":
-        return "w-14 h-14 rounded-lg";
-      case "circle":
-        return "w-14 h-14 rounded-full";
-      default:
-        return "w-14 h-14 rounded-2xl";
-    }
-  };
-
-    function SortableAppIcon({
-      id,
-      name,
-      icon,
-      onClick,
-    }: {
-      id: string;
-      name: string;
-      icon: React.ReactNode;
-      onClick: () => void;
-    }) {
-      const {
-        attributes,
-        listeners,
-        setNodeRef,
-        transform,
-        transition,
-        isDragging,
-      } = useSortable({ id });
-
-      const style = {
-        transform: CSS.Transform.toString(transform),
-        transition,
-        animation: !isDragging && isJiggling ? "jiggle 0.3s infinite" : undefined,
-        cursor: isJiggling ? "grab" : "pointer",
-        opacity: isDragging ? 0.6 : 1,
-        userSelect: "none",
-      };
-
-        return (
-          <div
-            ref={setNodeRef}
-            style={style}
-            {...attributes}
-            className="flex flex-col items-center select-none"
-          >
-            <button
-              onClick={() => {
-                if (!isJiggling && !isDragging) onClick();
-              }}
-              className="flex flex-col items-center"
-              type="button"
-            >
-              <div
-                className={cn(
-                  getAppIconStyle(),
-                  "bg-gradient-to-br from-gray-700 to-gray-900 flex items-center justify-center text-white"
-                )}
-              >
-                {icon}
-              </div>
-              <span className="text-xs mt-1 text-white">{name}</span>
-            </button>
-
-            {isJiggling && (
-              <button
-                {...listeners}
-                className="mt-1 cursor-grab text-red-600"
-                title="Drag"
-                type="button"
-              >
-                <Grid3x3 className="w-5 h-5" />
-              </button>
-            )}
-          </div>
-        );
-
-    }
-
-  function handleDragEnd(event: any) {
-    const { active, over } = event;
-    if (active.id !== over?.id) {
-      setAppOrder((items) => {
-        const oldIndex = items.indexOf(active.id);
-        const newIndex = items.indexOf(over!.id);
-        return arrayMove(items, oldIndex, newIndex);
-      });
-    }
-  }
-
-
-  const appDetails = {
-    Drive: { icon: <Folder />, onClick: () => openApp("Drive") },
-    Phone: { icon: <Phone />, onClick: () => openApp("Phone") },
-    Contacts: { icon: <User />, onClick: () => openApp("Contacts") },
-    Calendar: { icon: <Calendar />, onClick: () => openApp("Calendar") },
-    Calculator: { icon: <Calculator />, onClick: () => openApp("Calculator") },
-    Camera: { icon: <Camera />, onClick: () => openApp("Camera") },
-    Browser: { icon: <Globe />, onClick: () => openApp("Browser") },
-    Settings: { icon: <Settings />, onClick: () => openApp("Settings") },
-    Music: { icon: <Youtube />, onClick: () => openApp("Music") },
-    Maps: { icon: <MapIcon />, onClick: () => openApp("Maps") },
-    Notes: { icon: <FileText />, onClick: () => openApp("Notes") },
-    Snake: { icon: <Loader2 />, onClick: () => openApp("Snake") },
-    Chat: { icon: <MessageCircle />, onClick: () => openApp("Chat") },
-  };
     
-
-  return (
-    <div className="flex justify-center items-center min-h-screen bg-gray-200 p-4">
-      <div className="relative w-full max-w-[375px] h-[750px] bg-black rounded-[40px] overflow-hidden shadow-2xl border-[14px] border-black">
-        <div className="absolute right-[-14px] top-[120px] w-[4px] h-[40px] bg-gray-700 rounded-r-sm"></div>
-        <div className="absolute left-[-14px] top-[100px] w-[4px] h-[30px] bg-gray-700 rounded-l-sm"></div>
-        <div className="absolute left-[-14px] top-[140px] w-[4px] h-[30px] bg-gray-700 rounded-l-sm"></div>
-        <div className="absolute top-0 left-1/2 transform -translate-x-1/2 w-[120px] h-[30px] bg-black rounded-b-[14px] z-50"></div>
-
-        <div className="relative w-full h-full bg-gray-900 overflow-hidden">
-          <div
-            className={cn(
-              "absolute top-0 left-0 right-0 h-12 px-6 flex justify-between items-center z-40 backdrop-blur-md",
-              settings.statusBarStyle === "dark"
-                ? "text-gray-800"
-                : "text-white"
-            )}
-            style={{
-              backgroundColor: getTailwindColor(settings.taskbarColor),
-            }}
-          >
-            <div className="flex flex-col text-left text-sm font-medium leading-tight">
-              <span>{settings.deviceName}</span>
-              <span className="text-xs">{currentTime}</span>
-            </div>
-
-            <div className="flex items-center gap-2">
-              <Signal className="w-4 h-4" />
-              <Wifi className="w-4 h-4" />
-              <div className="flex items-center">
-                {settings.batteryPercentage && (
-                  <span className="text-xs mr-1 text-white">{batteryLevel}%</span>
-                )}
-                <Battery className="w-5 h-5" />
-              </div>
-            </div>
-          </div>
-
-          {isLocked ? (
-            <div
-              className="absolute inset-0 flex flex-col items-center bg-cover bg-center"
-              style={{ backgroundImage: `url('${settings.lockScreenWallpaper}')` }}
-            >
-              <div className="mt-20 text-white text-center">
-                <div className="text-6xl font-light">{currentTime}</div>
-                <div className="mt-2 text-lg">{currentDate}</div>
-              </div>
-
-              <div className="mt-auto mb-10 flex flex-col items-center">
-                <div className="p-4 rounded-full mb-4">
-                  <Lock className="w-6 h-6 text-white" />
-                </div>
-                <button
-                  onClick={handleUnlock}
-                  className="text-white text-lg font-light flex items-center"
+    function SortableAppIcon({
+        id,
+        name,
+        icon,
+        onClick,
+    }: {
+        id: string;
+        name: string;
+        icon: React.ReactNode;
+        onClick: () => void;
+    }) {
+        const {
+            attributes,
+            listeners,
+            setNodeRef,
+            transform,
+            transition,
+            isDragging,
+        } = useSortable({ id });
+        
+        const style = {
+            transform: CSS.Transform.toString(transform),
+            transition,
+            animation: !isDragging && isJiggling ? "jiggle 0.3s infinite" : undefined,
+            cursor: isJiggling ? "grab" : "pointer",
+            opacity: isDragging ? 0.6 : 1,
+            userSelect: "none",
+        };
+        
+        return (
+                <div
+                ref={setNodeRef}
+                style={style}
+                {...attributes}
+                className="flex flex-col items-center select-none"
                 >
-                  <ChevronLeft className="w-5 h-5 mr-1 animate-pulse" />
-                  Tap to Unlock
-                  <ChevronRight className="w-5 h-5 ml-1 animate-pulse" />
-                </button>
-              </div>
-            </div>
-          ) : (
-            <div className="absolute inset-0 pt-12 flex flex-col">
-          
-              <div className="flex-1 overflow-y-auto">
-                {activeApp ? (
-                  <div>
-                    <div className="h-12 flex items-center justify-between px-4 bg-gray-800">
-                      <h2 className="text-white text-lg font-medium">{activeApp}</h2>
-                      {(activeApp === "Contacts" || activeApp === "Phone") && (
-                        <button
-                          onClick={refreshContacts}
-                          className="text-blue-400 text-sm"
-                          disabled={isLoading}
-                        >
-                          {isLoading ? "Loading..." : "Refresh"}
-                        </button>
-                      )}
-                    </div>
-
-                    {activeApp === "Phone" && <PhoneApp contacts={contacts} />}
-                    {activeApp === "Contacts" && (
-                      <ContactsApp contacts={contacts} onContactsChange={refreshContacts} />
-                    )}
-                    {activeApp === "Calendar" && <CalendarApp />}
-                    {activeApp === "Calculator" && <CalculatorApp />}
-                    {activeApp === "Camera" && <CameraApp />}
-                    {activeApp === "Browser" && <BrowserApp />}
-                    {activeApp === "Snake" && <SnakeApp />}
-                    {activeApp === "Music" && <MusicApp />}
-                    {activeApp === "Chat" && <ChatApp />}
-                    {activeApp === "Maps" && <MapsApp setActiveApp={setActiveApp} />}
-                    {activeApp === "Settings" && (
-                      <SettingsApp
-                        settings={settings}
-                        onSettingsChange={updateSettings}
-                        buildHash={buildHash}
-                      />
-                    )}
-                    {activeApp === "Notes" && <NotesApp />}
-                    {activeApp === "Drive" && <DriveApp />}
-                  </div>
-                ) : (
-                  <div
-                    className="flex flex-col bg-cover bg-center min-h-full"
-                    style={{ backgroundImage: `url('${settings.wallpaper}')` }}
-                  >
-                    <div className="flex justify-end p-4">
-                     <button
-                       onClick={() => setIsJiggling((j) => !j)}
-                       className={cn(
-                         "px-3 py-1 rounded-md font-semibold text-sm transition-colors",
-                         isJiggling
-                           ? "bg-red-600 backdrop-blur-md text-white"
-                           : "bg-white bg-opacity-20 backdrop-blur-md text-white"
-                       )}
-                     >
-                       <Grid3x3 className="w-5 h-5" />
-                     </button>
-
-
-                    </div>
-
-                    <DndContext
-                      collisionDetection={closestCenter}
-                      onDragEnd={handleDragEnd}
-                    >
-                      <SortableContext
-                        items={appOrder}
-                        strategy={verticalListSortingStrategy}
-                      >
-                        <div className="grid grid-cols-4 gap-4 p-6 mt-8">
-                          {appOrder.map((appName) => {
-                            const { icon, onClick } = appDetails[appName];
-                            return (
-                              <SortableAppIcon
-                                key={appName}
-                                id={appName}
-                                name={appName}
-                                icon={icon}
-                                onClick={onClick}
-                              />
-                            );
-                          })}
-                        </div>
-                      </SortableContext>
-                    </DndContext>
-                  </div>
-                )}
-              </div>
-
-              <div
-                className="h-16 flex-shrink-0 backdrop-blur-md flex justify-center items-center"
-                style={{ backgroundColor: getTailwindColor(settings.taskbarColor) }}
-              >
                 <button
-                  onClick={activeApp ? goHome : handleLock}
-                  className={getHomeButtonStyle()}
-                ></button>
-              </div>
+                onClick={() => {
+                    if (!isJiggling && !isDragging) onClick();
+                }}
+                className="flex flex-col items-center"
+                type="button"
+                >
+                <div
+                className={cn(
+                              getAppIconStyle(),
+                              "bg-gradient-to-br from-gray-700 to-gray-900 flex items-center justify-center text-white"
+                              )}
+                >
+                {icon}
+                </div>
+                <span className="text-xs mt-1 text-white">{name}</span>
+                </button>
+                
+                {isJiggling && (
+                                <button
+                                {...listeners}
+                                className="mt-1 cursor-grab text-red-600"
+                                title="Drag"
+                                type="button"
+                                >
+                                <Grid3x3 className="w-5 h-5" />
+                                </button>
+                                )}
+                </div>
+                );
+        
+    }
+    
+    function handleDragEnd(event: any) {
+        const { active, over } = event;
+        if (active.id !== over?.id) {
+            setAppOrder((items) => {
+                const oldIndex = items.indexOf(active.id);
+                const newIndex = items.indexOf(over!.id);
+                return arrayMove(items, oldIndex, newIndex);
+            });
+        }
+    }
+    
+    
+    const appDetails = {
+        Drive: { icon: <Folder />, onClick: () => openApp("Drive") },
+        Phone: { icon: <Phone />, onClick: () => openApp("Phone") },
+        Contacts: { icon: <User />, onClick: () => openApp("Contacts") },
+        Calendar: { icon: <Calendar />, onClick: () => openApp("Calendar") },
+        Calculator: { icon: <Calculator />, onClick: () => openApp("Calculator") },
+        Camera: { icon: <Camera />, onClick: () => openApp("Camera") },
+        Browser: { icon: <Globe />, onClick: () => openApp("Browser") },
+        Settings: { icon: <Settings />, onClick: () => openApp("Settings") },
+        Music: { icon: <Youtube />, onClick: () => openApp("Music") },
+        Maps: { icon: <MapIcon />, onClick: () => openApp("Maps") },
+        Notes: { icon: <FileText />, onClick: () => openApp("Notes") },
+        Snake: { icon: <Loader2 />, onClick: () => openApp("Snake") },
+        Chat: { icon: <MessageCircle />, onClick: () => openApp("Chat") },
+    };
+    
+    
+    return (
+            <div className="flex justify-center items-center min-h-screen bg-gray-200 p-4">
+            <div className="relative w-full max-w-[375px] h-[750px] bg-black rounded-[40px] overflow-hidden shadow-2xl border-[14px] border-black">
+            <div className="absolute right-[-14px] top-[120px] w-[4px] h-[40px] bg-gray-700 rounded-r-sm"></div>
+            <div className="absolute left-[-14px] top-[100px] w-[4px] h-[30px] bg-gray-700 rounded-l-sm"></div>
+            <div className="absolute left-[-14px] top-[140px] w-[4px] h-[30px] bg-gray-700 rounded-l-sm"></div>
+            <div className="absolute top-0 left-1/2 transform -translate-x-1/2 w-[120px] h-[30px] bg-black rounded-b-[14px] z-50"></div>
+            
+            <div className="relative w-full h-full bg-gray-900 overflow-hidden">
+            <div
+            className={cn(
+                          "absolute top-0 left-0 right-0 h-12 px-6 flex justify-between items-center z-40 glass",
+                          settings.statusBarStyle === "dark"
+                          ? "text-gray-800"
+                          : "text-white"
+                          )}
+            style={{ backgroundColor: getTailwindColor(settings.taskbarColor) }}
+            >
+            <div className="flex flex-col text-left text-sm font-medium leading-tight">
+            <span>{settings.deviceName}</span>
+            <span className="text-xs">{currentTime}</span>
             </div>
-          )}
-        </div>
-      </div>
-    </div>
-  );
+            
+            <div className="flex items-center gap-2">
+            <Signal className="w-4 h-4" />
+            <Wifi className="w-4 h-4" />
+            <div className="flex items-center">
+            {settings.batteryPercentage && (
+                                            <span className="text-xs mr-1 text-white">{batteryLevel}%</span>
+                                            )}
+            <Battery className="w-5 h-5" />
+            </div>
+            </div>
+            </div>
+            
+            {isLocked ? (
+                         <div
+                         className="absolute inset-0 flex flex-col items-center bg-cover bg-center"
+                         style={{ backgroundImage: `url('${settings.lockScreenWallpaper}')` }}
+                         >
+                         <div className="mt-20 text-white text-center glass p-4 rounded-lg">
+                         <div className="text-6xl font-light">{currentTime}</div>
+                         <div className="mt-2 text-lg">{currentDate}</div>
+                         </div>
+                         
+                         <div className="mt-auto mb-10 flex flex-col items-center">
+                         <div className="p-4 rounded-full mb-4 glass">
+                         <Lock className="w-6 h-6 text-white" />
+                         </div>
+                         <button
+                         onClick={handleUnlock}
+                         className="text-white text-lg font-light flex items-center glass px-4 py-2 rounded-lg"
+                         >
+                         <ChevronLeft className="w-5 h-5 mr-1 animate-pulse" />
+                         Tap to Unlock
+                         <ChevronRight className="w-5 h-5 ml-1 animate-pulse" />
+                         </button>
+                         </div>
+                         </div>
+                         ) : (
+                              <div className="absolute inset-0 pt-12 flex flex-col">
+                              <div className="flex-1 overflow-y-auto">
+                              {activeApp ? (
+                                            <div>
+                                            <div className="h-12 flex items-center justify-between px-4 bg-gray-800 glass rounded-b-md">
+                                            <h2 className="text-white text-lg font-medium">{activeApp}</h2>
+                                            {(activeApp === "Contacts" || activeApp === "Phone") && (
+                                                                                                     <button
+                                                                                                     onClick={refreshContacts}
+                                                                                                     className="text-blue-400 text-sm"
+                                                                                                     disabled={isLoading}
+                                                                                                     >
+                                                                                                     {isLoading ? "Loading..." : "Refresh"}
+                                                                                                     </button>
+                                                                                                     )}
+                                            </div>
+                                            
+                                            {activeApp === "Phone" && <PhoneApp contacts={contacts} />}
+                                            {activeApp === "Contacts" && (
+                                                                          <ContactsApp contacts={contacts} onContactsChange={refreshContacts} />
+                                                                          )}
+                                            {activeApp === "Calendar" && <CalendarApp />}
+                                            {activeApp === "Calculator" && <CalculatorApp />}
+                                            {activeApp === "Camera" && <CameraApp />}
+                                            {activeApp === "Browser" && <BrowserApp />}
+                                            {activeApp === "Snake" && <SnakeApp />}
+                                            {activeApp === "Music" && <MusicApp />}
+                                            {activeApp === "Chat" && <ChatApp />}
+                                            {activeApp === "Maps" && <MapsApp setActiveApp={setActiveApp} />}
+                                            {activeApp === "Settings" && (
+                                                                          <SettingsApp
+                                                                          settings={settings}
+                                                                          onSettingsChange={updateSettings}
+                                                                          buildHash={buildHash}
+                                                                          />
+                                                                          )}
+                                            {activeApp === "Notes" && <NotesApp />}
+                                            {activeApp === "Drive" && <DriveApp />}
+                                            </div>
+                                            ) : (
+                                                 <div
+                                                 className="flex flex-col bg-cover bg-center min-h-full"
+                                                 style={{ backgroundImage: `url('${settings.wallpaper}')` }}
+                                                 >
+                                                 <div className="flex justify-end p-4">
+                                                 <button
+                                                 onClick={() => setIsJiggling((j) => !j)}
+                                                 className={cn(
+                                                               "px-3 py-1 rounded-md font-semibold text-sm transition-colors glass",
+                                                               isJiggling
+                                                               ? "bg-red-600 backdrop-blur-md text-white"
+                                                               : "bg-white bg-opacity-20 backdrop-blur-md text-white"
+                                                               )}
+                                                 >
+                                                 <Grid3x3 className="w-5 h-5" />
+                                                 </button>
+                                                 </div>
+                                                 
+                                                 <DndContext collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
+                                                 <SortableContext items={appOrder} strategy={verticalListSortingStrategy}>
+                                                 <div className="grid grid-cols-4 gap-4 p-6 mt-8">
+                                                 {appOrder.map((appName) => {
+                                                     const { icon, onClick } = appDetails[appName];
+                                                     return (
+                                                             <SortableAppIcon
+                                                             key={appName}
+                                                             id={appName}
+                                                             name={appName}
+                                                             icon={icon}
+                                                             onClick={onClick}
+                                                             />
+                                                             );
+                                                 })}
+                                                 </div>
+                                                 </SortableContext>
+                                                 </DndContext>
+                                                 </div>
+                                                 )}
+                              </div>
+                              
+                              <div
+                              className="h-16 flex-shrink-0 backdrop-blur-md flex justify-center items-center glass"
+                              style={{ backgroundColor: getTailwindColor(settings.taskbarColor) }}
+                              >
+                              <button
+                              onClick={activeApp ? goHome : handleLock}
+                              className={getHomeButtonStyle()}
+                              ></button>
+                              </div>
+                              </div>
+                              )}
+            </div>
+            </div>
+            </div>
+            );
 }
 
 type TailwindColorKey =
@@ -668,119 +712,120 @@ function SettingsApp({
         <h2 className="text-xl font-bold">Display & Brightness</h2>
       </div>
 
-      <div className="px-4 pb-4 space-y-6">
-        <div>
-          <h3 className="text-lg font-medium mb-3">Taskbar Color</h3>
-          <div className="grid grid-cols-2 gap-2">
-            {taskbarColorOptions.map((option, index) => (
-              <button
-                key={index}
-                onClick={() =>
-                  onSettingsChange({
-                    ...settings,
-                    taskbarColor: option.value,
-                  })
-                }
-                className={cn(
-                  "p-3 rounded-lg border-2 text-left",
-                  settings.taskbarColor === option.value
-                    ? "border-blue-500 bg-blue-900/20"
-                    : "border-gray-600 bg-gray-800"
-                )}
-              >
-                {option.name}
-              </button>
-            ))}
-          </div>
-        </div>
+          <div className="px-4 pb-4 space-y-6">
+            <div className="bg-white/10 backdrop-blur-md p-4 rounded-xl border border-white/10 shadow-md">
+              <h3 className="text-lg font-medium mb-3 text-white">Taskbar Color</h3>
+              <div className="grid grid-cols-2 gap-2">
+                {taskbarColorOptions.map((option, index) => (
+                  <button
+                    key={index}
+                    onClick={() =>
+                      onSettingsChange({
+                        ...settings,
+                        taskbarColor: option.value,
+                      })
+                    }
+                    className={cn(
+                      "p-3 rounded-lg border-2 text-left text-white",
+                      settings.taskbarColor === option.value
+                        ? "border-blue-500 bg-blue-900/20"
+                        : "border-gray-600 bg-gray-800/60"
+                    )}
+                  >
+                    {option.name}
+                  </button>
+                ))}
+              </div>
+            </div>
 
-        <div>
-          <h3 className="text-lg font-medium mb-3">Home Button Style</h3>
-          <div className="grid grid-cols-3 gap-2">
-            {[
-              { name: "Circle", value: "circle" as const },
-              { name: "Square", value: "square" as const },
-              { name: "Pill", value: "pill" as const },
-            ].map((option, index) => (
-              <button
-                key={index}
-                onClick={() =>
-                  onSettingsChange({
-                    ...settings,
-                    homeButtonStyle: option.value,
-                  })
-                }
-                className={cn(
-                  "p-3 rounded-lg border-2 text-center",
-                  settings.homeButtonStyle === option.value
-                    ? "border-blue-500 bg-blue-900/20"
-                    : "border-gray-600 bg-gray-800"
-                )}
-              >
-                {option.name}
-              </button>
-            ))}
-          </div>
-        </div>
 
-        <div>
-          <h3 className="text-lg font-medium mb-3">App Icon Style</h3>
-          <div className="grid grid-cols-3 gap-2">
-            {[
-              { name: "Rounded", value: "rounded" as const },
-              { name: "Square", value: "square" as const },
-              { name: "Circle", value: "circle" as const },
-            ].map((option, index) => (
-              <button
-                key={index}
-                onClick={() =>
-                  onSettingsChange({
-                    ...settings,
-                    appIconStyle: option.value,
-                  })
-                }
-                className={cn(
-                  "p-3 rounded-lg border-2 text-center",
-                  settings.appIconStyle === option.value
-                    ? "border-blue-500 bg-blue-900/20"
-                    : "border-gray-600 bg-gray-800"
-                )}
-              >
-                {option.name}
-              </button>
-            ))}
-          </div>
-        </div>
 
-        <div>
-          <h3 className="text-lg font-medium mb-3">Status Bar</h3>
-          <div className="space-y-3">
-            <label className="flex items-center justify-between">
-              <span>Show Battery Percentage</span>
-              <button
-                onClick={() =>
-                  onSettingsChange({
-                    ...settings,
-                    batteryPercentage: !settings.batteryPercentage,
-                  })
-                }
-                className={cn(
-                  "w-12 h-6 rounded-full relative transition-colors",
-                  settings.batteryPercentage ? "bg-blue-600" : "bg-gray-600"
-                )}
-              >
-                <div
+          <div className="bg-white/10 backdrop-blur-md p-4 rounded-xl border border-white/10 shadow-md">
+            <h3 className="text-lg font-medium mb-3 text-white">Home Button Style</h3>
+            <div className="grid grid-cols-3 gap-2">
+              {[
+                { name: "Circle", value: "circle" as const },
+                { name: "Square", value: "square" as const },
+                { name: "Pill", value: "pill" as const },
+              ].map((option, index) => (
+                <button
+                  key={index}
+                  onClick={() =>
+                    onSettingsChange({
+                      ...settings,
+                      homeButtonStyle: option.value,
+                    })
+                  }
+                  className={`p-3 rounded-lg border-2 text-white text-center transition-all ${
+                    settings.homeButtonStyle === option.value
+                      ? "border-blue-500 bg-blue-800/30"
+                      : "border-white/20 bg-white/5 hover:bg-white/10"
+                  }`}
+                >
+                  {option.name}
+                </button>
+              ))}
+            </div>
+          </div>
+
+
+          <div className="bg-white/10 backdrop-blur-md p-4 rounded-xl border border-white/10 shadow-md">
+            <h3 className="text-lg font-medium mb-3 text-white">App Icon Style</h3>
+            <div className="grid grid-cols-3 gap-2">
+              {[
+                { name: "Rounded", value: "rounded" as const },
+                { name: "Square", value: "square" as const },
+                { name: "Circle", value: "circle" as const },
+              ].map((option, index) => (
+                <button
+                  key={index}
+                  onClick={() =>
+                    onSettingsChange({
+                      ...settings,
+                      appIconStyle: option.value,
+                    })
+                  }
+                  className={`p-3 rounded-lg border-2 text-white text-center transition-all ${
+                    settings.appIconStyle === option.value
+                      ? "border-blue-500 bg-blue-800/30"
+                      : "border-white/20 bg-white/5 hover:bg-white/10"
+                  }`}
+                >
+                  {option.name}
+                </button>
+              ))}
+            </div>
+          </div>
+
+
+          <div className="bg-white/10 backdrop-blur-md p-4 rounded-xl border border-white/10 shadow-md">
+            <h3 className="text-lg font-medium mb-3 text-white">Status Bar</h3>
+            <div className="space-y-3">
+              <label className="flex items-center justify-between text-white">
+                <span>Show Battery Percentage</span>
+                <button
+                  onClick={() =>
+                    onSettingsChange({
+                      ...settings,
+                      batteryPercentage: !settings.batteryPercentage,
+                    })
+                  }
                   className={cn(
-                    "w-5 h-5 bg-white rounded-full absolute top-0.5 transition-transform",
-                    settings.batteryPercentage
-                      ? "translate-x-6"
-                      : "translate-x-0.5"
+                    "w-12 h-6 rounded-full relative transition-colors duration-200",
+                    settings.batteryPercentage ? "bg-blue-600" : "bg-gray-600"
                   )}
-                />
-              </button>
-            </label>
+                >
+                  <div
+                    className={cn(
+                      "w-5 h-5 bg-white rounded-full absolute top-0.5 transition-transform duration-200",
+                      settings.batteryPercentage ? "translate-x-6" : "translate-x-0.5"
+                    )}
+                  />
+                </button>
+              </label>
+            </div>
           </div>
-        </div>
+
       </div>
     </div>
   );
@@ -910,6 +955,87 @@ if (activeSection === "about") {
   );
 }
 
+    if (activeSection === "about") {
+        return (
+                <div className="h-full bg-gray-900 text-white flex flex-col">
+                <div className="flex items-center mb-6 px-4 pt-4 flex-shrink-0">
+                <button
+                onClick={() => setActiveSection(null)}
+                className="text-blue-400 mr-4"
+                >
+                ← Back
+                </button>
+                </div>
+                
+                <div className="flex-1 overflow-y-auto px-4 pb-4">
+                <div className="space-y-4">
+                <div className="text-center mb-8">
+                <div className="w-full h-[180px] bg-gray-900">
+                <Canvas camera={{ position: [0, 0, 150], fov: 45 }}>
+                <ambientLight intensity={0.5} />
+                <directionalLight position={[5, 5, 5]} />
+                <Model />
+                <OrbitControls
+                autoRotate
+                autoRotateSpeed={2}
+                enableZoom={true}
+                zoomSpeed={0.5}
+                enablePan={true}
+                minDistance={100}
+                maxDistance={300}
+                />
+                </Canvas>
+                </div>
+                
+                <div className="flex justify-center mt-4">
+                <h4 className="text-xl font-bold bg-gradient-to-r from-blue-500 via-purple-600 to-pink-500 bg-clip-text text-transparent">
+                {settings.deviceName}
+                </h4>
+                </div>
+                
+                <div className="mt-8 text-center text-cyan-500 text-sm">
+                <p>🆁🅴🅰🅲🆃</p>
+                </div>
+                </div>
+                
+                <div className="space-y-3">
+                <div className="flex justify-between py-2 border-b border-gray-700">
+                <span className="text-gray-400">Build Vers.</span>
+                <span className="text-orange-400">{buildHash}</span>
+                </div>
+                <div className="flex justify-between py-2 border-b border-gray-700">
+                <span className="text-gray-400">Framework</span>
+                <span className="text-red-500">Next.js</span>
+                </div>
+                <div className="flex justify-between py-2 border-b border-gray-700">
+                <span className="text-gray-400">Language</span>
+                <span className="text-blue-500">TypeScript</span>
+                </div>
+                <div className="flex justify-between py-2 border-b border-gray-700">
+                <span className="text-gray-400">Storage</span>
+                <span className="text-yellow-400">Supabase</span>
+                </div>
+                <div className="flex justify-between py-2 border-b border-gray-700">
+                <span className="text-gray-400">Battery Health</span>
+                <span className="text-green-500">Excellent</span>
+                </div>
+                </div>
+                
+                <div className="text-center text-gray-400 text-xs select-text mt-2">
+                <p>
+                <a
+                href="https://iphone.jessejesse.com/privacy.html"
+                className="hover:text-gray-200 transition-colors duration-200"
+                >
+                Privacy Policy
+                </a>
+                </p>
+                </div>
+                </div>
+                </div>
+                </div>
+                );
+    }
     return (
       <div className="h-full bg-gray-900 text-white flex flex-col">
         <div className="px-4 pt-4 pb-2 flex-shrink-0">
@@ -932,28 +1058,7 @@ if (activeSection === "about") {
               </button>
             ))}
           </div>
-
-          <div className="mt-8 text-center text-cyan-500 text-sm">
-            <p>made with ⓛⓞⓥⓔ</p>
-          </div>
         </div>
-
-            <div className="w-full h-[150px] bg-gray-900">
-              <Canvas camera={{ position: [0, 0, 150], fov: 45 }}>
-                <ambientLight intensity={0.5} />
-                <directionalLight position={[5, 5, 5]} />
-                <Model />
-                <OrbitControls
-                  autoRotate
-                  autoRotateSpeed={2}
-                  enableZoom={true}
-                  zoomSpeed={0.5}
-                  enablePan={true}
-                  minDistance={100}
-                  maxDistance={300}
-                />
-              </Canvas>
-            </div>
       </div>
     );
   }
@@ -1082,7 +1187,7 @@ const sampleTracks: Track[] = [
   },
   {
     id: 2,
-    title: "I was running through the six",
+    title: "Running through the six",
     artist: "Drake",
     videoId: "jqScSp5l-AQ",
   },
@@ -1119,13 +1224,33 @@ const sampleTracks: Track[] = [
   },
   {
     id: 10,
-    title: "Chill Drive",
-    artist: "Lo-Fi",
-    videoId: "iicfmXFALM8",
+    title: "The Otherside",
+    artist: "Russ",
+    videoId: "WxmXFHjebHo",
 
   },
-];
+  {
+    id: 11,
+    title: "It wont stop",
+    artist: "Sevyn Streeter",
+    videoId: "XgFiWGIVP6s",
 
+  },
+  {
+    id: 12,
+    title: "Loyalty",
+    artist: "KAAN",
+    videoId: "N-85_Y9RzBk",
+
+  },
+  {
+    id: 13,
+    title: "Opportunity Cost",
+    artist: "G-Easy",
+    videoId: "Mko1OVHwzoU",
+
+  }
+];
 
 
 function MusicApp() {
@@ -1242,6 +1367,12 @@ function MusicApp() {
             <div className="text-center">
             <h2 className="text-2xl font-bold">{currentTrack.title}</h2>
             <p className="text-gray-300">{currentTrack.artist}</p>
+=======
+            <div className="w-full max-w-md p-6 rounded-2xl bg-white/10 backdrop-blur-lg border border-white/10 shadow-lg space-y-6">
+            <div className="text-center">
+            <h2 className="text-2xl font-bold">{currentTrack.title}</h2>
+            <p className="text-white/70">{currentTrack.artist}</p>
+>>>>>>> e411ace (css)
             </div>
             
             <input
@@ -1250,6 +1381,7 @@ function MusicApp() {
             max={duration}
             value={progress}
             onChange={seekTo}
+<<<<<<< HEAD
             className="w-full max-w-md"
             aria-label="Seek video"
             />
@@ -1261,13 +1393,30 @@ function MusicApp() {
             <button
             onClick={() => setIsPlaying((p) => !p)}
             className="px-6 py-3 bg-white text-black rounded-full text-lg"
+=======
+            className="w-full accent-cyan-500"
+            aria-label="Seek video"
+            />
+            
+            <div className="flex items-center justify-center gap-8">
+            <button onClick={playPrev} aria-label="Previous Track" type="button">
+            <SkipBack className="w-8 h-8 text-white hover:text-cyan-500 transition" />
+            </button>
+            <button
+            onClick={() => setIsPlaying((p) => !p)}
+            className="px-6 py-3 bg-white text-black rounded-full text-lg font-semibold hover:scale-105 transition"
+>>>>>>> e411ace (css)
             aria-label={isPlaying ? "Pause" : "Play"}
             type="button"
             >
             {isPlaying ? "Pause" : "Play"}
             </button>
             <button onClick={playNext} aria-label="Next Track" type="button">
+<<<<<<< HEAD
             <SkipForward className="w-8 h-8" />
+=======
+            <SkipForward className="w-8 h-8 text-white hover:text-cyan-500 transition" />
+>>>>>>> e411ace (css)
             </button>
             </div>
             
@@ -1277,12 +1426,19 @@ function MusicApp() {
             max={100}
             value={volume}
             onChange={(e) => setVolume(Number(e.target.value))}
+<<<<<<< HEAD
             className="w-full max-w-md"
+=======
+            className="w-full accent-cyan-500"
+>>>>>>> e411ace (css)
             aria-label="Volume control"
             />
             </div>
             </div>
+<<<<<<< HEAD
             </div>
+=======
+>>>>>>> e411ace (css)
             );
 }
 function ContactsApp({
