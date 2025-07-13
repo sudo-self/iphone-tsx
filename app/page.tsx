@@ -1430,6 +1430,7 @@ function CameraApp() {
   const [facingMode, setFacingMode] = useState<"user" | "environment">("user");
   const [permissionDenied, setPermissionDenied] = useState(false);
   const [lastPhotoUrl, setLastPhotoUrl] = useState<string | null>(null);
+  const [brokenImages, setBrokenImages] = useState<Set<string>>(new Set());
 
   const videoRef = useRef<HTMLVideoElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -1467,6 +1468,23 @@ function CameraApp() {
   async function loadPhotos() {
     const photos = await getPhotos();
     setPhotos(photos);
+    // Validate URLs
+    photos.forEach((photo) => {
+      if (!isValidUrl(photo.url)) {
+        console.warn(`Invalid URL detected: ${photo.url}`);
+        setBrokenImages((prev) => new Set(prev).add(photo.filename));
+      }
+    });
+  }
+
+
+  function isValidUrl(url: string): boolean {
+    try {
+      new URL(url);
+      return url.startsWith('http://') || url.startsWith('https://') || url.startsWith('blob:');
+    } catch {
+      return false;
+    }
   }
 
   async function capturePhoto() {
@@ -1508,13 +1526,16 @@ function CameraApp() {
     const fileName = `photo_${Date.now()}.jpg`;
     const file = new File([blob], fileName, { type: "image/jpeg" });
     const url = await uploadPhoto(file, fileName);
-    if (url) {
+    if (url && isValidUrl(url)) {
       setPhotos((prev) => [
         { filename: fileName, url, created_at: new Date().toISOString() },
         ...prev,
       ]);
       const localUrl = URL.createObjectURL(blob);
       setLastPhotoUrl(localUrl);
+    } else {
+      console.error(`Invalid or inaccessible URL returned: ${url}`);
+      setBrokenImages((prev) => new Set(prev).add(fileName));
     }
   }
 
@@ -1525,6 +1546,12 @@ function CameraApp() {
 
   function switchCamera() {
     setFacingMode((prev) => (prev === "user" ? "environment" : "user"));
+  }
+
+
+  function handleImageError(filename: string) {
+    console.warn(`Failed to load image: ${filename}`);
+    setBrokenImages((prev) => new Set(prev).add(filename));
   }
 
   if (showGallery) {
@@ -1547,13 +1574,20 @@ function CameraApp() {
           ) : (
             <div className="grid grid-cols-3 gap-1">
               {photos.map((photo) => (
-                <div key={photo.filename} className="aspect-square">
-                  <img
-                    src={photo.url}
-                    alt={photo.filename}
-                    className="w-full h-full object-cover rounded"
-                    loading="lazy"
-                  />
+                <div key={photo.filename} className="aspect-square relative">
+                  {brokenImages.has(photo.filename) ? (
+                    <div className="w-full h-full bg-gray-700 flex items-center justify-center rounded">
+                      <Camera className="w-8 h-8 text-gray-400" />
+                    </div>
+                  ) : (
+                    <img
+                      src={photo.url}
+                      alt={photo.filename}
+                      className="w-full h-full object-cover rounded"
+                      loading="lazy"
+                      onError={() => handleImageError(photo.filename)}
+                    />
+                  )}
                 </div>
               ))}
             </div>
@@ -1598,7 +1632,7 @@ function CameraApp() {
             <div className="w-12 h-12 bg-white/20 rounded-lg flex items-center justify-center mb-1">
               <div className="w-6 h-6 bg-white/60 rounded" />
             </div>
-            <span className="text-xs">Gallery</span>
+            <span className="text-xs">Camera Roll</span>
           </button>
 
           <button
@@ -1645,13 +1679,13 @@ function CameraApp() {
             <a
               href={lastPhotoUrl}
               download={`photo_${Date.now()}.jpg`}
-              className="text-blue-400 underline"
+              className="text-blue-400 hover:text-green-400"
               onClick={() => {
                 setTimeout(() => URL.revokeObjectURL(lastPhotoUrl), 1000);
                 setLastPhotoUrl(null);
               }}
             >
-              Download Last Photo
+              Download Photo
             </a>
           </div>
         )}
@@ -1662,14 +1696,13 @@ function CameraApp() {
           <div className="text-center text-white p-4">
             <Camera className="w-16 h-16 mx-auto mb-4 text-gray-400" />
             <p className="text-lg mb-2">Starting camera...</p>
-            <p className="text-sm text-gray-400">Please allow camera access</p>
+            <p className="text-sm text-gray-400">Please requestAnimationFrame camera access</p>
           </div>
         </div>
       )}
     </div>
   );
 }
-
 
 function NotesApp() {
   const [notes, setNotes] = useState([]);
