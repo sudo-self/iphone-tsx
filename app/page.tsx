@@ -45,6 +45,8 @@ import { uploadPhoto, getPhotos } from "@/lib/supabase";
 import confetti from "canvas-confetti";
 import * as maptilersdk from '@maptiler/sdk';
 import '@maptiler/sdk/dist/maptiler-sdk.css';
+import { Canvas } from "@react-three/fiber";
+import { OrbitControls, useGLTF } from "@react-three/drei";
 
 
 import PhoneApp from "./PhoneApp";
@@ -506,6 +508,37 @@ function AppIcon({
   );
 }
 
+
+function Model(props: any) {
+  const { nodes } = useGLTF("/LogosReact.glb");
+  return (
+    <group {...props} dispose={null}>
+      <group rotation={[0, Math.PI / 4, 0]} scale={[0.391, -0.391, 0.391]}>
+        <mesh geometry={nodes.mesh_0.geometry} material={nodes.mesh_0.material} position={[-128, -113.88, -2.5]} />
+        <mesh geometry={nodes.mesh_1.geometry} material={nodes.mesh_1.material} position={[-128, -113.88, -2.5]} />
+      </group>
+    </group>
+  );
+}
+useGLTF.preload("/LogosReact.glb");
+
+type PhoneSettings = {
+  wallpaper: string;
+  lockScreenWallpaper: string;
+  taskbarColor: string;
+  homeButtonStyle: "circle" | "square" | "pill";
+  statusBarStyle: "light" | "dark";
+  appIconStyle: "rounded" | "square" | "circle";
+  deviceName: string;
+  batteryPercentage: boolean;
+};
+
+type SettingsAppProps = {
+  settings: PhoneSettings;
+  onSettingsChange: (settings: PhoneSettings) => void;
+  buildHash: string;
+};
+
 function SettingsApp({
   settings,
   onSettingsChange,
@@ -896,39 +929,54 @@ if (activeSection === "about") {
 }
 
 
-  return (
-    <div className="h-full bg-gray-900 text-white flex flex-col">
-      <div className="px-4 pt-4 pb-2 flex-shrink-0">
-        <h2 className="text-2xl font-bold">Settings</h2>
-      </div>
-
-      <div className="flex-1 overflow-y-auto px-4 pb-4">
-        <div className="space-y-2">
-          {settingSections.map((section) => (
-            <button
-              key={section.id}
-              onClick={() => setActiveSection(section.id)}
-              className="w-full flex items-center justify-between p-4 bg-gray-800 rounded-lg hover:bg-gray-700 transition-colors"
-            >
-              <div className="flex items-center">
-                <span className="text-2xl mr-3">{section.icon}</span>
-                <span className="text-lg">{section.name}</span>
-              </div>
-              <ChevronRight className="w-5 h-5 text-gray-400" />
-            </button>
-          ))}
+    // Main Settings screen with 3D Canvas
+    return (
+      <div className="h-full bg-gray-900 text-white flex flex-col">
+        <div className="px-4 pt-4 pb-2 flex-shrink-0">
+          <h2 className="text-2xl font-bold">Settings</h2>
         </div>
 
-        <div className="mt-8 text-center text-cyan-500 text-sm">
-         <p>made with ⓛⓞⓥⓔ</p>
+        <div className="flex-1 overflow-y-auto px-4 pb-4">
+          <div className="space-y-2">
+            {settingSections.map((section) => (
+              <button
+                key={section.id}
+                onClick={() => setActiveSection(section.id)}
+                className="w-full flex items-center justify-between p-4 bg-gray-800 rounded-lg hover:bg-gray-700 transition-colors"
+              >
+                <div className="flex items-center">
+                  <span className="text-2xl mr-3">{section.icon}</span>
+                  <span className="text-lg">{section.name}</span>
+                </div>
+                <ChevronRight className="w-5 h-5 text-gray-400" />
+              </button>
+            ))}
+          </div>
+
+          <div className="mt-8 text-center text-cyan-500 text-sm">
+            <p>made with ⓛⓞⓥⓔ</p>
+          </div>
         </div>
+
+            <div className="w-full h-[300px] bg-black">
+              <Canvas camera={{ position: [0, 0, 150], fov: 45 }}>
+                <ambientLight intensity={0.5} />
+                <directionalLight position={[5, 5, 5]} />
+                <Model />
+                <OrbitControls
+                  autoRotate
+                  autoRotateSpeed={2}
+                  enableZoom={true}
+                  zoomSpeed={0.5}
+                  enablePan={true}
+                  minDistance={100}
+                  maxDistance={300}
+                />
+              </Canvas>
+            </div>
       </div>
-    </div>
-  );
-}
-
-
-
+    );
+  }
 
 function Page() {
   return (
