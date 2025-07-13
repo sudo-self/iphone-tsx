@@ -1420,7 +1420,6 @@ function MapsApp({ setActiveApp }: Props) {
 
 
 
-
 function CameraApp() {
   const [stream, setStream] = useState<MediaStream | null>(null);
   const [isCapturing, setIsCapturing] = useState(false);
@@ -1431,6 +1430,8 @@ function CameraApp() {
   const [showGallery, setShowGallery] = useState(false);
   const [facingMode, setFacingMode] = useState<"user" | "environment">("user");
   const [permissionDenied, setPermissionDenied] = useState(false);
+  const [lastPhotoUrl, setLastPhotoUrl] = useState<string | null>(null);
+
   const videoRef = useRef<HTMLVideoElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
@@ -1456,6 +1457,7 @@ function CameraApp() {
       if (videoRef.current) videoRef.current.srcObject = mediaStream;
     } catch (err: any) {
       if (err.name === "NotAllowedError") setPermissionDenied(true);
+      else console.error("Error accessing camera:", err);
     }
   }
 
@@ -1468,7 +1470,7 @@ function CameraApp() {
     try {
       const { supabase } = await import("@/lib/supabase");
       const { data: files, error } = await supabase.storage
-        .from("photos-bucket")
+        .from("iphone-tsx")
         .list("", {
           limit: 100,
           sortBy: { column: "name", order: "desc" },
@@ -1504,48 +1506,64 @@ function CameraApp() {
     const canvas = canvasRef.current;
     const video = videoRef.current;
     const ctx = canvas.getContext("2d");
-    if (!ctx) return;
+    if (!ctx) return resetCapture();
+
+    if (video.videoWidth === 0 || video.videoHeight === 0) {
+      console.warn("Video not ready");
+      resetCapture();
+      return;
+    }
 
     canvas.width = video.videoWidth;
     canvas.height = video.videoHeight;
     ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
 
     canvas.toBlob(async (blob) => {
-      if (!blob) return resetCapture();
-
-      const fileName = `photo_${Date.now()}.jpg`;
-      const file = new File([blob], fileName, { type: "image/jpeg" });
-
-      try {
-        const { supabase } = await import("@/lib/supabase");
-
-        const { error } = await supabase.storage
-          .from("photos-bucket")
-          .upload(fileName, file, {
-            cacheControl: "3600",
-            upsert: false,
-          });
-
-        if (error) throw error;
-
-        const {
-          data: { publicUrl },
-        } = supabase.storage.from("photos-bucket").getPublicUrl(fileName);
-
-        setPhotos((prev) => [
-          {
-            filename: fileName,
-            url: publicUrl,
-            created_at: new Date().toISOString(),
-          },
-          ...prev,
-        ]);
-      } catch (err) {
-        console.error("Upload failed:", err);
-      } finally {
+      if (!blob) {
+        console.warn("Blob generation failed, trying fallback");
+        const dataUrl = canvas.toDataURL("image/jpeg", 0.9);
+        const response = await fetch(dataUrl);
+        const fallbackBlob = await response.blob();
+        await uploadPhoto(fallbackBlob);
         resetCapture();
+        return;
       }
+      await uploadPhoto(blob);
+      resetCapture();
     }, "image/jpeg", 0.9);
+  }
+
+  async function uploadPhoto(blob: Blob) {
+    const fileName = `photo_${Date.now()}.jpg`;
+    const file = new File([blob], fileName, { type: "image/jpeg" });
+
+    try {
+      const { supabase } = await import("@/lib/supabase");
+
+      const { error } = await supabase.storage
+        .from("photos-bucket")
+        .upload(fileName, file, {
+          cacheControl: "3600",
+          upsert: false,
+        });
+
+      if (error) throw error;
+
+      const { data: { publicUrl } } = supabase.storage
+        .from("photos-bucket")
+        .getPublicUrl(fileName);
+
+      setPhotos((prev) => [
+        { filename: fileName, url: publicUrl, created_at: new Date().toISOString() },
+        ...prev,
+      ]);
+
+     
+      const localUrl = URL.createObjectURL(blob);
+      setLastPhotoUrl(localUrl);
+    } catch (err) {
+      console.error("Upload failed:", err);
+    }
   }
 
   function resetCapture() {
@@ -1672,6 +1690,24 @@ function CameraApp() {
             {isCapturing ? "Capturing..." : "Saving photo..."}
           </div>
         )}
+
+        {/* Download button for last captured photo */}
+        {lastPhotoUrl && (
+          <div className="mt-4 text-center">
+            <a
+              href={lastPhotoUrl}
+              download={`photo_${Date.now()}.jpg`}
+              className="text-blue-400 underline"
+              onClick={() => {
+                // Release object URL after download to avoid memory leaks
+                setTimeout(() => URL.revokeObjectURL(lastPhotoUrl), 1000);
+                setLastPhotoUrl(null);
+              }}
+            >
+              Download Last Photo
+            </a>
+          </div>
+        )}
       </div>
 
       {!stream && !permissionDenied && (
@@ -1686,6 +1722,7 @@ function CameraApp() {
     </div>
   );
 }
+
 
 function NotesApp() {
   const [notes, setNotes] = useState([]);
@@ -1777,7 +1814,7 @@ function NotesApp() {
     try {
       const { redis } = await import("@/lib/redis");
       await redis.hdel("notes", id);
-      await loadNotes(); // Force reload
+      await loadNotes();
     } catch (error) {
       console.error("Failed to delete note:", error);
     }
@@ -1792,10 +1829,10 @@ function NotesApp() {
     return matchesSearch && matchesMode;
   });
 
-  // Render UI
+
   return (
     <div className="h-full bg-gray-900 text-white flex flex-col">
-      {/* Header and search */}
+  
       <div className="p-4 bg-gray-800">
         <div className="flex items-center justify-between mb-4">
           <div className="flex bg-gray-700 rounded-lg p-1">
@@ -1936,11 +1973,11 @@ function BrowserApp() {
 
   const quickLinks = [
     { name: "Google", url: "https://www.google.com/search?igu=1" },
-    { name: "Three.js", url: "https://rose.jessejesse.xyz/" },
+    { name: "3D Rose", url: "https://rose.jessejesse.xyz/" },
     { name: "Paper.js", url: "https://clouds.jessejesse.com" },
-    { name: "Next.js", url: "https://meta-mirror.vercel.app" },
-    { name: "Emu.js", url: "https://retro.jessejesse.com" },
-    { name: "Web3", url: "https://web3.jessejesse.com/" },
+    { name: "Meta Mirror", url: "https://meta-mirror.vercel.app" },
+    { name: "Retro Games", url: "https://retro.jessejesse.com" },
+    { name: "Blockchain", url: "https://web3.jessejesse.com/" },
   ];
 
   const formatUrl = (inputUrl: string) => {
@@ -2009,7 +2046,7 @@ function BrowserApp() {
 
   return (
     <div className="h-screen flex flex-col bg-gray-200">
-      {/* Top bar */}
+
       <div className="bg-white border-b border-gray-200 p-3">
         <div className="flex items-center gap-2 mb-3">
           <button
@@ -2075,7 +2112,7 @@ function BrowserApp() {
         </form>
       </div>
 
-      {/* Content area */}
+ 
       <div className="flex-1 flex flex-col min-h-0">
         {currentUrl ? (
           <iframe
@@ -2098,7 +2135,7 @@ function BrowserApp() {
 
             <div className="mb-6">
               <h3 className="text-lg font-semibold text-gray-800 mb-3">
-                Java Frameworks
+                Most Visited
               </h3>
               <div className="grid grid-cols-2 gap-2">
                 {quickLinks.map((link, index) => (
