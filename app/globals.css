@@ -100,3 +100,9 @@ body {
     @apply bg-background text-foreground;
   }
 }
+
+@keyframes jiggle {
+0%, 100% { transform: rotate(-2deg); }
+50% { transform: rotate(2deg); }
+}
+
