@@ -23,7 +23,8 @@ import {
   Loader2,
   Folder,
   MessageCircle,
-  Search, 
+  Search,
+  Mic,
   Grid3x3,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -34,6 +35,9 @@ import {
   loadSettings,
   saveSettings,
 } from "@/lib/settings";
+
+import { createClient } from "@supabase/supabase-js";
+
 
 import PhoneApp from "./PhoneApp";
 import ContactsApp from "./ContactsApp";
