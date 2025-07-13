@@ -919,12 +919,18 @@ if (activeSection === "about") {
     </a>
   </p>
 </div>
+
+
+          
+        
         </div>
       </div>
     </div>
   );
 }
 
+
+    // Main Settings screen with 3D Canvas
     return (
       <div className="h-full bg-gray-900 text-white flex flex-col">
         <div className="px-4 pt-4 pb-2 flex-shrink-0">
