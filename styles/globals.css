@@ -85,10 +85,98 @@ body {
 }
 
 @layer base {
+  :root {
+    --lg-bg-color: rgba(255, 255, 255, 0.25);
+    --lg-highlight: rgba(255, 255, 255, 0.75);
+    --lg-text: #ffffff;
+    --lg-red: #fb4268;
+    --lg-grey: #444739;
+  }
+}
+
+
+@layer base {
   * {
     @apply border-border;
   }
   body {
     @apply bg-background text-foreground;
   }
+}
+
+@layer components {
+  .glass-container {
+    @apply relative flex items-center text-white transition-all duration-500 ease-in-out rounded-2xl overflow-hidden shadow-lg bg-transparent;
+  }
+
+  .glass-filter {
+    @apply absolute inset-0 rounded-inherit z-0;
+    backdrop-filter: blur(4px);
+    filter: saturate(1.2) brightness(1.15);
+  }
+
+  .glass-overlay {
+    @apply absolute inset-0 bg-white/20 rounded-inherit z-10;
+    background: var(--lg-bg-color);
+  }
+
+  .glass-specular {
+    @apply absolute inset-0 rounded-inherit z-20;
+    box-shadow:
+      inset 1px 1px 0 var(--lg-highlight),
+      inset 0 0 5px var(--lg-highlight);
+  }
+
+  .glass-content {
+    @apply relative z-30 flex flex-col items-center w-full p-6 space-y-4;
+  }
+}
+
+@layer base {
+  body {
+    background: url("https://images.unsplash.com/photo-1588943211346-0908a1fb0b01?crop=entropy&cs=srgb&fm=jpg&ixid=M3wzMjM4NDZ8MHwxfHJhbmRvbXx8fHx8fHx8fDE3NDk1MzU4MDV8&ixlib=rb-4.1.0&q=85")
+      center/cover no-repeat;
+    animation: bg-move 5s ease-in-out infinite alternate;
+  }
+
+  @keyframes bg-move {
+    from {
+      background-position: center center;
+    }
+    to {
+      background-position: center top;
+    }
+  }
+}
+
+
+.home-button-glass {
+  @apply glass-container w-12 h-12 rounded-full border-2 border-white/50;
+
+}
+
+.home-button-glass.square {
+  @apply w-12 h-12 rounded-lg;
+}
+
+.home-button-glass.pill {
+  @apply w-16 h-8 rounded-full;
+}
+
+
+.app-icon-glass {
+  @apply glass-container bg-gradient-to-br from-gray-700 to-gray-900 text-white flex items-center justify-center mb-1;
+
+}
+
+.app-icon-glass.square {
+  @apply w-14 h-14 rounded-lg;
+}
+
+.app-icon-glass.circle {
+  @apply w-14 h-14 rounded-full;
+}
+
+.app-icon-glass.rounded-2xl {
+  @apply w-14 h-14 rounded-2xl;
 }

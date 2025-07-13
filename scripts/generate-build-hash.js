@@ -25,7 +25,6 @@ if (fs.existsSync(envPath)) {
     .trim();
 }
 
-// Append or update the build hash
 const newEnv = `${env}\nNEXT_PUBLIC_BUILD_HASH=${buildHash}\n`;
 
 fs.writeFileSync(envPath, newEnv);

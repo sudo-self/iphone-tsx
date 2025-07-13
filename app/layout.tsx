@@ -1,7 +1,9 @@
-import type { Metadata } from "next";
-import "./globals.css";
-import "leaflet/dist/leaflet.css";
-import ClientSessionProvider from "@/components/ClientSessionProvider";
+// app/layout.tsx
+
+import "./globals.css"
+import "leaflet/dist/leaflet.css"
+import type { Metadata } from "next"
+import ClientSessionProvider from "@/components/ClientSessionProvider"
 
 export const metadata: Metadata = {
   title: "iPhone TSX — Supabase & Redis DBs, Maps and Youtube APIs",
@@ -34,17 +36,15 @@ export const metadata: Metadata = {
       "https://firebasestorage.googleapis.com/v0/b/jessejessexyz.appspot.com/o/Screenshot%202025-07-11%20at%207.42.32%E2%80%AFPM.png?alt=media&token=354e2561-ffae-45b5-b54a-b678ec6a04af",
     ],
   },
-};
-
-
+}
 
 export default function RootLayout({
   children,
 }: {
-  children: React.ReactNode;
+  children: React.ReactNode
 }) {
   return (
-    <html lang="en" className="h-full">
+    <html lang="en" className="h-full bg-black text-white">
       <head>
         <meta name="viewport" content="width=device-width, initial-scale=1" />
       </head>
@@ -52,8 +52,9 @@ export default function RootLayout({
         <ClientSessionProvider>{children}</ClientSessionProvider>
       </body>
     </html>
-  );
+  )
 }
+
 
 
 

@@ -464,7 +464,15 @@ export default function SmartphoneUI() {
   );
 }
 
-function getTailwindColor(value: string): string {
+type TailwindColorKey =
+  | "black/30"
+  | "black/60"
+  | "blue-900/40"
+  | "purple-900/40"
+  | "green-900/40"
+  | "red-900/40";
+
+function getTailwindColor(value: TailwindColorKey | string): string {
   switch (value) {
     case "black/30":
       return "rgba(0,0,0,0.3)";
@@ -482,33 +490,6 @@ function getTailwindColor(value: string): string {
       return "rgba(0,0,0,0.3)";
   }
 }
-
-function AppIcon({
-  name,
-  icon,
-  onClick,
-  iconStyle,
-}: {
-  name: string;
-  icon: React.ReactNode;
-  onClick: () => void;
-  iconStyle: string;
-}) {
-  return (
-    <button onClick={onClick} className="flex flex-col items-center">
-      <div
-        className={cn(
-          iconStyle,
-          "bg-gradient-to-br from-gray-700 to-gray-900 flex items-center justify-center text-white mb-1"
-        )}
-      >
-        {icon}
-      </div>
-      <span className="text-xs text-white">{name}</span>
-    </button>
-  );
-}
-
 
 function Model(props: any) {
   const { nodes } = useGLTF("/LogosReact.glb");
@@ -929,8 +910,6 @@ if (activeSection === "about") {
   );
 }
 
-
-    // Main Settings screen with 3D Canvas
     return (
       <div className="h-full bg-gray-900 text-white flex flex-col">
         <div className="px-4 pt-4 pb-2 flex-shrink-0">
@@ -1150,156 +1129,162 @@ const sampleTracks: Track[] = [
 
 
 function MusicApp() {
-  const playerRef = useRef<HTMLDivElement>(null);
-  const ytPlayer = useRef<any>(null);
-
-  const [currentIndex, setCurrentIndex] = useState(0);
-  const [isReady, setIsReady] = useState(false);
-  const [isPlaying, setIsPlaying] = useState(false);
-  const [volume, setVolume] = useState(50);
-  const [progress, setProgress] = useState(0);
-  const [duration, setDuration] = useState(0);
-
-  const currentTrack = sampleTracks[currentIndex];
-
-  useEffect(() => {
-    if (!window.YT) {
-      const tag = document.createElement("script");
-      tag.src = "https://www.youtube.com/iframe_api";
-      document.body.appendChild(tag);
-    }
-
-    window.onYouTubeIframeAPIReady = () => {
-      ytPlayer.current = new window.YT.Player(playerRef.current, {
-        height: "240",
-        width: "426",
-        videoId: currentTrack.videoId,
-        playerVars: {
-          autoplay: 0,
-          controls: 1,
-          modestbranding: 1,
-          rel: 0,
-        },
-        events: {
-          onReady: (event: any) => {
-            setIsReady(true);
+    const playerRef = useRef<HTMLDivElement>(null);
+    const ytPlayer = useRef<any>(null);
+    
+    const [currentIndex, setCurrentIndex] = useState(0);
+    const [isReady, setIsReady] = useState(false);
+    const [isPlaying, setIsPlaying] = useState(false);
+    const [volume, setVolume] = useState(50);
+    const [progress, setProgress] = useState(0);
+    const [duration, setDuration] = useState(0);
+    
+    const currentTrack = sampleTracks[currentIndex];
+    
+    useEffect(() => {
+        if (!window.YT) {
+            const tag = document.createElement("script");
+            tag.src = "https://www.youtube.com/iframe_api";
+            document.body.appendChild(tag);
+        }
+        
+        window.onYouTubeIframeAPIReady = () => {
+            ytPlayer.current = new window.YT.Player(playerRef.current, {
+                height: "240",
+                width: "426",
+                videoId: currentTrack.videoId,
+                playerVars: {
+                    autoplay: 0,
+                    controls: 1,
+                    modestbranding: 1,
+                    rel: 0,
+                },
+                events: {
+                    onReady: (event: any) => {
+                        setIsReady(true);
+                        ytPlayer.current.setVolume(volume);
+                        setDuration(ytPlayer.current.getDuration());
+                    },
+                    onStateChange: (e: any) => {
+                        if (e.data === window.YT.PlayerState.ENDED) {
+                            playNext();
+                        }
+                    },
+                },
+            });
+        };
+    }, []);
+    
+    useEffect(() => {
+        if (ytPlayer.current && isReady) {
+            ytPlayer.current.loadVideoById(currentTrack.videoId);
+            setIsPlaying(true);
+            setProgress(0);
+        }
+    }, [currentIndex, isReady, currentTrack.videoId]);
+    
+    useEffect(() => {
+        if (!ytPlayer.current || !isReady) return;
+        if (isPlaying) {
+            ytPlayer.current.playVideo();
+        } else {
+            ytPlayer.current.pauseVideo();
+        }
+    }, [isPlaying, isReady]);
+    
+    useEffect(() => {
+        if (ytPlayer.current && isReady) {
             ytPlayer.current.setVolume(volume);
-            setDuration(ytPlayer.current.getDuration());
-          },
-          onStateChange: (e: any) => {
-            if (e.data === window.YT.PlayerState.ENDED) {
-              playNext();
+        }
+    }, [volume, isReady]);
+    
+    useEffect(() => {
+        if (!ytPlayer.current) return;
+        
+        const interval = setInterval(() => {
+            if (ytPlayer.current && ytPlayer.current.getCurrentTime) {
+                setProgress(ytPlayer.current.getCurrentTime());
+                setDuration(ytPlayer.current.getDuration());
             }
-          },
-        },
-      });
+        }, 1000);
+        
+        return () => clearInterval(interval);
+    }, []);
+    
+    const playPrev = () => {
+        setCurrentIndex((i) => (i === 0 ? sampleTracks.length - 1 : i - 1));
     };
-  }, []);
-
-  useEffect(() => {
-    if (ytPlayer.current && isReady) {
-      ytPlayer.current.loadVideoById(currentTrack.videoId);
-      setIsPlaying(true);
-      setProgress(0);
-    }
-  }, [currentIndex, isReady, currentTrack.videoId]);
-
-  useEffect(() => {
-    if (!ytPlayer.current || !isReady) return;
-    if (isPlaying) {
-      ytPlayer.current.playVideo();
-    } else {
-      ytPlayer.current.pauseVideo();
-    }
-  }, [isPlaying, isReady]);
-
-  useEffect(() => {
-    if (ytPlayer.current && isReady) {
-      ytPlayer.current.setVolume(volume);
-    }
-  }, [volume, isReady]);
-
-  useEffect(() => {
-    if (!ytPlayer.current) return;
-
-    const interval = setInterval(() => {
-      if (ytPlayer.current && ytPlayer.current.getCurrentTime) {
-        setProgress(ytPlayer.current.getCurrentTime());
-        setDuration(ytPlayer.current.getDuration());
-      }
-    }, 1000);
-
-    return () => clearInterval(interval);
-  }, []);
-
-  const playPrev = () => {
-    setCurrentIndex((i) => (i === 0 ? sampleTracks.length - 1 : i - 1));
-  };
-
-  const playNext = () => {
-    setCurrentIndex((i) => (i === sampleTracks.length - 1 ? 0 : i + 1));
-  };
-
-  const seekTo = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const time = Number(e.target.value);
-    setProgress(time);
-    if (ytPlayer.current && isReady) {
-      ytPlayer.current.seekTo(time, true);
-    }
-  };
-
-  return (
-    <div className="bg-black text-white min-h-screen flex flex-col items-center p-6 space-y-6 overflow-y-auto">
-      <div
-        ref={playerRef}
-        style={{ maxWidth: "426px", width: "100%", marginBottom: "1rem" }}
-      />
-
-      <div className="text-center">
-        <h2 className="text-2xl font-bold">{currentTrack.title}</h2>
-        <p className="text-gray-400">{currentTrack.artist}</p>
-      </div>
-
-      <input
-        type="range"
-        min={0}
-        max={duration}
-        value={progress}
-        onChange={seekTo}
-        className="w-full max-w-md"
-        aria-label="Seek video"
-      />
-
-      <div className="flex items-center gap-8">
-        <button onClick={playPrev} aria-label="Previous Track" type="button">
-          <SkipBack className="w-8 h-8" />
-        </button>
-        <button
-          onClick={() => setIsPlaying((p) => !p)}
-          className="px-6 py-3 bg-white text-black rounded-full text-lg"
-          aria-label={isPlaying ? "Pause" : "Play"}
-          type="button"
-        >
-          {isPlaying ? "Pause" : "Play"}
-        </button>
-        <button onClick={playNext} aria-label="Next Track" type="button">
-          <SkipForward className="w-8 h-8" />
-        </button>
-      </div>
-
-      <input
-        type="range"
-        min={0}
-        max={100}
-        value={volume}
-        onChange={(e) => setVolume(Number(e.target.value))}
-        className="w-full max-w-md"
-        aria-label="Volume control"
-      />
-    </div>
-  );
+    
+    const playNext = () => {
+        setCurrentIndex((i) => (i === sampleTracks.length - 1 ? 0 : i + 1));
+    };
+    
+    const seekTo = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const time = Number(e.target.value);
+        setProgress(time);
+        if (ytPlayer.current && isReady) {
+            ytPlayer.current.seekTo(time, true);
+        }
+    };
+    
+    return (
+            <div className="bg-black text-white min-h-screen flex flex-col items-center p-6 space-y-6 overflow-y-auto">
+            <div
+            ref={playerRef}
+            style={{ maxWidth: "426px", width: "100%", marginBottom: "1rem" }}
+            />
+            
+            <div className="glass-container w-full max-w-md relative">
+            <div className="glass-filter" />
+            <div className="glass-overlay" />
+            <div className="glass-specular" />
+            <div className="glass-content flex flex-col items-center gap-4">
+            <div className="text-center">
+            <h2 className="text-2xl font-bold">{currentTrack.title}</h2>
+            <p className="text-gray-300">{currentTrack.artist}</p>
+            </div>
+            
+            <input
+            type="range"
+            min={0}
+            max={duration}
+            value={progress}
+            onChange={seekTo}
+            className="w-full max-w-md"
+            aria-label="Seek video"
+            />
+            
+            <div className="flex items-center gap-8">
+            <button onClick={playPrev} aria-label="Previous Track" type="button">
+            <SkipBack className="w-8 h-8" />
+            </button>
+            <button
+            onClick={() => setIsPlaying((p) => !p)}
+            className="px-6 py-3 bg-white text-black rounded-full text-lg"
+            aria-label={isPlaying ? "Pause" : "Play"}
+            type="button"
+            >
+            {isPlaying ? "Pause" : "Play"}
+            </button>
+            <button onClick={playNext} aria-label="Next Track" type="button">
+            <SkipForward className="w-8 h-8" />
+            </button>
+            </div>
+            
+            <input
+            type="range"
+            min={0}
+            max={100}
+            value={volume}
+            onChange={(e) => setVolume(Number(e.target.value))}
+            className="w-full max-w-md"
+            aria-label="Volume control"
+            />
+            </div>
+            </div>
+            </div>
+            );
 }
-
 function ContactsApp({
   contacts,
   onContactsChange,
