@@ -18,6 +18,7 @@ import {
   Globe,
   Settings,
   Music,
+  Youtube,
   MapIcon,
   FileText,
   Loader2,
@@ -287,7 +288,7 @@ export default function SmartphoneUI() {
     Camera: { icon: <Camera />, onClick: () => openApp("Camera") },
     Browser: { icon: <Globe />, onClick: () => openApp("Browser") },
     Settings: { icon: <Settings />, onClick: () => openApp("Settings") },
-    Music: { icon: <Music />, onClick: () => openApp("Music") },
+    Music: { icon: <Youtube />, onClick: () => openApp("Music") },
     Maps: { icon: <MapIcon />, onClick: () => openApp("Maps") },
     Notes: { icon: <FileText />, onClick: () => openApp("Notes") },
     Snake: { icon: <Loader2 />, onClick: () => openApp("Snake") },
@@ -918,18 +919,12 @@ if (activeSection === "about") {
     </a>
   </p>
 </div>
-
-
-          
-        
         </div>
       </div>
     </div>
   );
 }
 
-
-    // Main Settings screen with 3D Canvas
     return (
       <div className="h-full bg-gray-900 text-white flex flex-col">
         <div className="px-4 pt-4 pb-2 flex-shrink-0">
@@ -958,7 +953,7 @@ if (activeSection === "about") {
           </div>
         </div>
 
-            <div className="w-full h-[300px] bg-black">
+            <div className="w-full h-[150px] bg-gray-900">
               <Canvas camera={{ position: [0, 0, 150], fov: 45 }}>
                 <ambientLight intensity={0.5} />
                 <directionalLight position={[5, 5, 5]} />
@@ -2665,18 +2660,15 @@ function Game() {
 
 
 function SnakeApp() {
-
   const GRID_SIZE = 20;
   const CANVAS_SIZE = 400;
   const INITIAL_SNAKE = [{ x: 10, y: 10 }];
   const INITIAL_FOOD = { x: 15, y: 15 };
   const INITIAL_DIRECTION = { x: 0, y: 0 };
 
-
   type Position = { x: number; y: number };
   type Direction = { x: number; y: number };
   type Particle = { x: number; y: number; vx: number; vy: number; life: number; maxLife: number };
-
 
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const backgroundRef = useRef<HTMLCanvasElement>(null);
@@ -2690,14 +2682,17 @@ function SnakeApp() {
   const [particles, setParticles] = useState<Particle[]>([]);
   const touchStartPos = useRef<{ x: number; y: number } | null>(null);
 
-
   const generateFood = useCallback((snakeBody: Position[]): Position => {
     let newFood: Position;
     do {
       newFood = {
         x: Math.floor(Math.random() * (CANVAS_SIZE / GRID_SIZE)),
         y: Math.floor(Math.random() * (CANVAS_SIZE / GRID_SIZE)),
+        // Optional: Uncomment to restrict food from spawning at edges
+        // x: Math.floor(Math.random() * (CANVAS_SIZE / GRID_SIZE - 1)) + 1,
+        // y: Math.floor(Math.random() * (CANVAS_SIZE / GRID_SIZE - 1)) + 1,
       };
+      console.log("Generated food at:", newFood); // Debugging
     } while (snakeBody.some((segment) => segment.x === newFood.x && segment.y === newFood.y));
     return newFood;
   }, []);
@@ -2755,7 +2750,6 @@ function SnakeApp() {
     });
   }, [direction, food, gameRunning, gameOver, checkCollision, generateFood, createParticles]);
 
-
   const handleKeyPress = useCallback((e: KeyboardEvent) => {
     if (!gameRunning) return;
 
@@ -2803,18 +2797,15 @@ function SnakeApp() {
     const dy = endPos.y - startPos.y;
     const absDx = Math.abs(dx);
     const absDy = Math.abs(dy);
-    
 
-    if (Math.max(absDx, absDy) > 20) { 
+    if (Math.max(absDx, absDy) > 20) {
       if (absDx > absDy) {
-     
         if (dx > 0 && direction.x === 0) {
           setDirection({ x: 1, y: 0 }); // Right
         } else if (dx < 0 && direction.x === 0) {
           setDirection({ x: -1, y: 0 }); // Left
         }
       } else {
-   
         if (dy > 0 && direction.y === 0) {
           setDirection({ x: 0, y: 1 }); // Down
         } else if (dy < 0 && direction.y === 0) {
@@ -2825,7 +2816,6 @@ function SnakeApp() {
     
     touchStartPos.current = null;
   }, [gameRunning, direction]);
-
 
   const startGame = () => {
     setSnake(INITIAL_SNAKE);
@@ -2853,11 +2843,9 @@ function SnakeApp() {
     }
   };
 
-
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
-
 
     canvas.addEventListener('touchstart', handleTouchStart, { passive: false });
     canvas.addEventListener('touchmove', handleTouchMove, { passive: false });
@@ -2915,7 +2903,6 @@ function SnakeApp() {
     }
   }, [score, highScore]);
 
-
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
@@ -2923,27 +2910,34 @@ function SnakeApp() {
     const ctx = canvas.getContext("2d");
     if (!ctx) return;
 
-
+    // Clear canvas
     ctx.fillStyle = "rgba(0, 0, 0, 0.9)";
     ctx.fillRect(0, 0, CANVAS_SIZE, CANVAS_SIZE);
 
-
+    // Draw grid
     ctx.strokeStyle = "rgba(0, 255, 255, 0.2)";
     ctx.lineWidth = 1;
     ctx.shadowColor = "rgba(0, 255, 255, 0.5)";
     ctx.shadowBlur = 2;
+    ctx.beginPath();
     for (let i = 0; i <= CANVAS_SIZE; i += GRID_SIZE) {
-      ctx.beginPath();
-      ctx.moveTo(i, 0);
-      ctx.lineTo(i, CANVAS_SIZE);
-      ctx.stroke();
-      ctx.beginPath();
-      ctx.moveTo(0, i);
-      ctx.lineTo(CANVAS_SIZE, i);
-      ctx.stroke();
+      ctx.moveTo(i + 0.5, 0);
+      ctx.lineTo(i + 0.5, CANVAS_SIZE);
+      ctx.moveTo(0, i + 0.5);
+      ctx.lineTo(CANVAS_SIZE, i + 0.5);
     }
+    ctx.stroke();
 
+    // Draw particles
+    particles.forEach((particle) => {
+      const alpha = particle.life / particle.maxLife;
+      ctx.shadowColor = `rgba(0, 255, 255, ${alpha})`;
+      ctx.shadowBlur = 5;
+      ctx.fillStyle = `rgba(0, 255, 255, ${alpha})`;
+      ctx.fillRect(particle.x - 1, particle.y - 1, 2, 2);
+    });
 
+    // Draw snake
     snake.forEach((segment, index) => {
       const isHead = index === 0;
       ctx.shadowColor = isHead ? "rgba(0, 255, 0, 0.8)" : "rgba(0, 255, 0, 0.4)";
@@ -2968,7 +2962,7 @@ function SnakeApp() {
       ctx.fillRect(segment.x * GRID_SIZE + 2, segment.y * GRID_SIZE + 2, GRID_SIZE - 4, GRID_SIZE - 4);
     });
 
-
+    // Draw food (last for visibility)
     const time = Date.now() * 0.005;
     const pulseIntensity = Math.sin(time) * 0.3 + 0.7;
     ctx.shadowColor = `rgba(255, 0, 0, ${pulseIntensity})`;
@@ -2986,20 +2980,10 @@ function SnakeApp() {
     foodGradient.addColorStop(1, "#cc0000");
 
     ctx.fillStyle = foodGradient;
-    ctx.fillRect(food.x * GRID_SIZE + 2, food.y * GRID_SIZE + 2, GRID_SIZE - 4, GRID_SIZE - 4);
-
-
-    particles.forEach((particle) => {
-      const alpha = particle.life / particle.maxLife;
-      ctx.shadowColor = `rgba(0, 255, 255, ${alpha})`;
-      ctx.shadowBlur = 5;
-      ctx.fillStyle = `rgba(0, 255, 255, ${alpha})`;
-      ctx.fillRect(particle.x - 1, particle.y - 1, 2, 2);
-    });
+    ctx.fillRect(food.x * GRID_SIZE + 3, food.y * GRID_SIZE + 3, GRID_SIZE - 6, GRID_SIZE - 6);
 
     ctx.shadowBlur = 0;
   }, [snake, food, particles]);
-
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-900 via-purple-900 to-black flex items-center justify-center p-4 relative overflow-hidden">
@@ -3031,6 +3015,7 @@ function SnakeApp() {
               ref={canvasRef}
               width={CANVAS_SIZE}
               height={CANVAS_SIZE}
+              style={{ width: `${CANVAS_SIZE}px`, height: `${CANVAS_SIZE}px` }}
               className="border-2 border-cyan-500/50 rounded-lg shadow-lg shadow-cyan-500/30 bg-black/50 touch-none"
             />
             {!gameRunning && !gameOver && score === 0 && (
@@ -3104,7 +3089,6 @@ function SnakeApp() {
     </div>
   );
 }
-
 
 interface Message {
   id: number;
