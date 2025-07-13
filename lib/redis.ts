@@ -40,6 +40,15 @@ export async function deleteContact(name: string) {
   }
 }
 
+export async function deleteEvent(name: string) {
+  try {
+    await redis.hdel("calendar:events", name);
+    return true;
+  } catch (error) {
+    console.error("Error deleting event:", error);
+    return false;
+  }
+}
 
 export async function saveEvent(date: string, event: string) {
   try {
