@@ -874,9 +874,21 @@ if (activeSection === "about") {
             </div>
           </div>
 
-          <div className="text-center text-pink-400 text-xs select-text mt-4">
-            <p>FaaS -- Vercel</p>
-          </div>
+
+<div className="text-center text-gray-400 text-xs select-text mt-2">
+  <p>
+    <a
+      href="https://iphone.jessejesse.com/privacy.html"
+      className="hover:text-gray-200 transition-colors duration-200"
+    >
+      Privacy Policy
+    </a>
+  </p>
+</div>
+
+
+          
+        
         </div>
       </div>
     </div>
