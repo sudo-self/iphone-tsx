@@ -187,12 +187,16 @@ export default function SmartphoneUI() {
         <div className="relative w-full h-full bg-gray-900 overflow-hidden">
           <div
             className={cn(
-              "absolute top-0 left-0 right-0 h-12 px-6 flex justify-between items-center z-40",
+              "absolute top-0 left-0 right-0 h-12 px-6 flex justify-between items-center z-40 backdrop-blur-md",
               settings.statusBarStyle === "dark"
                 ? "text-gray-800"
-                : "text-gray-200"
+                : "text-white"
             )}
+            style={{
+              backgroundColor: getTailwindColor(settings.taskbarColor),
+            }}
           >
+
             <div className="flex flex-col text-left text-sm font-medium leading-tight">
               <span>{settings.deviceName}</span>
               <span className="text-xs">{currentTime}</span>
@@ -373,13 +377,13 @@ export default function SmartphoneUI() {
       )}
     </div>
 
-    {/* Fixed bottom bar */}
-    <div
-      className={cn(
-        "h-16 flex-shrink-0 backdrop-blur-md flex justify-center items-center",
-        `bg-${settings.taskbarColor}`
-      )}
-    >
+ 
+     <div
+       className="h-16 flex-shrink-0 backdrop-blur-md flex justify-center items-center"
+       style={{ backgroundColor: getTailwindColor(settings.taskbarColor) }}
+     >
+
+
       <button
         onClick={activeApp ? goHome : handleLock}
         className={getHomeButtonStyle()}
@@ -393,6 +397,26 @@ export default function SmartphoneUI() {
     </div>
   );
 }
+
+function getTailwindColor(value: string): string {
+  switch (value) {
+    case "black/30":
+      return "rgba(0,0,0,0.3)";
+    case "black/60":
+      return "rgba(0,0,0,0.6)";
+    case "blue-900/40":
+      return "rgba(30, 58, 138, 0.4)";
+    case "purple-900/40":
+      return "rgba(88, 28, 135, 0.4)";
+    case "green-900/40":
+      return "rgba(20, 83, 45, 0.4)";
+    case "red-900/40":
+      return "rgba(127, 29, 29, 0.4)";
+    default:
+      return "rgba(0,0,0,0.3)";
+  }
+}
+
 
 function AppIcon({
   name,
