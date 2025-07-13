@@ -37,6 +37,7 @@ import {
 } from "@/lib/settings";
 
 import { createClient } from "@supabase/supabase-js";
+import confetti from "canvas-confetti";
 
 
 import PhoneApp from "./PhoneApp";
