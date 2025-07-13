@@ -2318,7 +2318,7 @@ function CalendarApp() {
     const days = [];
 
     for (let i = 0; i < offset; i++) {
-      days.push(<div key={`empty-${month}-${i}`} className="h-8" />);
+      days.push(<div key={`empty-${month}-${i}`} className="h-10" />);
     }
 
     for (let day = 1; day <= daysInMonth; day++) {
@@ -2331,10 +2331,11 @@ function CalendarApp() {
         <div
           key={`day-${month}-${day}`}
           onClick={() => setSelectedDate(dateStr)}
-          className={`h-8 w-8 flex items-center justify-center rounded-full cursor-pointer text-sm
+          className={`h-10 w-10 flex items-center justify-center rounded-full cursor-pointer text-sm
             ${hasEvent ? 'bg-blue-600 text-white' : 'hover:bg-gray-700'}
             ${selectedDate === dateStr ? 'ring-2 ring-blue-400' : ''}
-            ${isToday ? 'font-bold' : ''}`}
+            ${isToday ? 'font-bold' : ''} 
+            ${viewMode === 'year' ? 'h-8 w-8 text-xs' : ''}`}
         >
           {day}
         </div>
@@ -2344,14 +2345,17 @@ function CalendarApp() {
     return (
       <div
         key={`month-${month}`}
-        className="p-3 bg-gray-800 rounded-lg shadow-sm flex flex-col"
+        className={`p-4 bg-gray-800 rounded-lg shadow-sm flex flex-col
+          ${viewMode === 'year' ? 'min-w-[250px] max-w-[300px]' : 'w-full'}`}
       >
-        <h3 className="text-md font-semibold text-white mb-1 text-center">
+        <h3 className="text-lg font-semibold text-white mb-2 text-center">
           {firstDay.toLocaleString('default', { month: 'long' })}
         </h3>
-        <div className="grid grid-cols-7 gap-1 text-center text-xs text-gray-400 pb-1">
+        <div className="grid grid-cols-7 gap-1 text-center text-xs text-gray-400 pb-2">
           {['S', 'M', 'T', 'W', 'T', 'F', 'S'].map((d, i) => (
-            <div key={`dow-${month}-${i}`}>{d}</div>
+            <div key={`dow-${month}-${i}`} className={viewMode === 'year' ? 'text-xs' : 'text-sm'}>
+              {d}
+            </div>
           ))}
           {days}
         </div>
@@ -2431,7 +2435,7 @@ function CalendarApp() {
   }
 
   return (
-    <div className="h-screen bg-gray-900 text-white flex flex-col p-4 overflow-hidden">
+    <div className="min-h-screen bg-gray-900 text-white flex flex-col p-4">
       <header className="flex justify-between items-center mb-4">
         <h1 className="text-xl font-bold">{currentDate.getFullYear()}</h1>
         <button
@@ -2446,7 +2450,7 @@ function CalendarApp() {
         {viewMode === 'month' ? (
           generateMonth(currentMonth)
         ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-3">
+          <div className="flex flex-wrap justify-center gap-4 max-w-7xl mx-auto">
             {Array.from({ length: 12 }).map((_, i) => generateMonth(i))}
           </div>
         )}
@@ -2480,8 +2484,6 @@ function CalendarApp() {
     </div>
   );
 }
-
-
 
 
     
