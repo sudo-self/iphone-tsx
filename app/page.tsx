@@ -1367,12 +1367,13 @@ function MusicApp() {
             <div className="text-center">
             <h2 className="text-2xl font-bold">{currentTrack.title}</h2>
             <p className="text-gray-300">{currentTrack.artist}</p>
-=======
+
+
             <div className="w-full max-w-md p-6 rounded-2xl bg-white/10 backdrop-blur-lg border border-white/10 shadow-lg space-y-6">
             <div className="text-center">
             <h2 className="text-2xl font-bold">{currentTrack.title}</h2>
             <p className="text-white/70">{currentTrack.artist}</p>
->>>>>>> e411ace (css)
+
             </div>
             
             <input
@@ -1380,8 +1381,7 @@ function MusicApp() {
             min={0}
             max={duration}
             value={progress}
-            onChange={seekTo}
-<<<<<<< HEAD
+
             className="w-full max-w-md"
             aria-label="Seek video"
             />
@@ -1393,7 +1393,7 @@ function MusicApp() {
             <button
             onClick={() => setIsPlaying((p) => !p)}
             className="px-6 py-3 bg-white text-black rounded-full text-lg"
-=======
+
             className="w-full accent-cyan-500"
             aria-label="Seek video"
             />
@@ -1405,18 +1405,18 @@ function MusicApp() {
             <button
             onClick={() => setIsPlaying((p) => !p)}
             className="px-6 py-3 bg-white text-black rounded-full text-lg font-semibold hover:scale-105 transition"
->>>>>>> e411ace (css)
+
             aria-label={isPlaying ? "Pause" : "Play"}
             type="button"
             >
             {isPlaying ? "Pause" : "Play"}
             </button>
             <button onClick={playNext} aria-label="Next Track" type="button">
-<<<<<<< HEAD
+
             <SkipForward className="w-8 h-8" />
-=======
+
             <SkipForward className="w-8 h-8 text-white hover:text-cyan-500 transition" />
->>>>>>> e411ace (css)
+
             </button>
             </div>
             
@@ -1426,19 +1426,19 @@ function MusicApp() {
             max={100}
             value={volume}
             onChange={(e) => setVolume(Number(e.target.value))}
-<<<<<<< HEAD
+
             className="w-full max-w-md"
-=======
+
             className="w-full accent-cyan-500"
->>>>>>> e411ace (css)
+
             aria-label="Volume control"
             />
             </div>
             </div>
-<<<<<<< HEAD
+
             </div>
-=======
->>>>>>> e411ace (css)
+
+
             );
 }
 function ContactsApp({
@@ -1959,7 +1959,6 @@ function NotesApp() {
     }
   };
 
-
   const handleAddNote = async (e) => {
     e.preventDefault();
     if (!newTitle.trim()) return;
@@ -2141,7 +2140,6 @@ function NotesApp() {
     </div>
   );
 }
-
 
 function BrowserApp() {
   const [url, setUrl] = useState("");
@@ -2718,8 +2716,6 @@ function CalendarApp() {
   );
 }
 
-
-    
 function Game() {
   const GRID_SIZE = 20
   const CANVAS_SIZE = 200 
@@ -2833,11 +2829,11 @@ function SnakeApp() {
     let newFood: Position;
     do {
       newFood = {
-        x: Math.floor(Math.random() * (CANVAS_SIZE / GRID_SIZE)),
-        y: Math.floor(Math.random() * (CANVAS_SIZE / GRID_SIZE)),
+          // x: Math.floor(Math.random() * (CANVAS_SIZE / GRID_SIZE)),
+         // y: Math.floor(Math.random() * (CANVAS_SIZE / GRID_SIZE)),
         // Optional: Uncomment to restrict food from spawning at edges
-        // x: Math.floor(Math.random() * (CANVAS_SIZE / GRID_SIZE - 1)) + 1,
-        // y: Math.floor(Math.random() * (CANVAS_SIZE / GRID_SIZE - 1)) + 1,
+         x: Math.floor(Math.random() * (CANVAS_SIZE / GRID_SIZE - 1)) + 1,
+         y: Math.floor(Math.random() * (CANVAS_SIZE / GRID_SIZE - 1)) + 1,
       };
       console.log("Generated food at:", newFood); // Debugging
     } while (snakeBody.some((segment) => segment.x === newFood.x && segment.y === newFood.y));
@@ -3061,7 +3057,7 @@ function SnakeApp() {
     ctx.fillStyle = "rgba(0, 0, 0, 0.9)";
     ctx.fillRect(0, 0, CANVAS_SIZE, CANVAS_SIZE);
 
-    // Draw grid
+ 
     ctx.strokeStyle = "rgba(0, 255, 255, 0.2)";
     ctx.lineWidth = 1;
     ctx.shadowColor = "rgba(0, 255, 255, 0.5)";
@@ -3109,7 +3105,7 @@ function SnakeApp() {
       ctx.fillRect(segment.x * GRID_SIZE + 2, segment.y * GRID_SIZE + 2, GRID_SIZE - 4, GRID_SIZE - 4);
     });
 
-    // Draw food (last for visibility)
+
     const time = Date.now() * 0.005;
     const pulseIntensity = Math.sin(time) * 0.3 + 0.7;
     ctx.shadowColor = `rgba(255, 0, 0, ${pulseIntensity})`;
