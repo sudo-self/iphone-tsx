@@ -1896,6 +1896,7 @@ function NotesApp() {
   );
 }
 
+
 function BrowserApp() {
   const [url, setUrl] = useState("");
   const [currentUrl, setCurrentUrl] = useState("");
@@ -1979,128 +1980,137 @@ function BrowserApp() {
     setIsLoading(false);
   };
 
-return (
-  <div className="h-full flex flex-col bg-gray-200">
-    <div className="bg-white border-b border-gray-200 p-3">
-      <div className="flex items-center gap-2 mb-3">
-        <button
-          onClick={goHome}
-          className="p-2 rounded-full bg-gray-100 hover:bg-gray-200"
-          title="Home"
-        >
-          🌐
-        </button>
-        <button
-          onClick={goBack}
-          disabled={!canGoBack}
-          className={cn(
-            "p-2 rounded-full",
-            canGoBack ? "bg-gray-100 hover:bg-gray-200" : "bg-gray-50 text-gray-400"
-          )}
-        >
-          ←
-        </button>
-        <button
-          onClick={goForward}
-          disabled={!canGoForward}
-          className={cn(
-            "p-2 rounded-full",
-            canGoForward ? "bg-gray-100 hover:bg-gray-200" : "bg-gray-50 text-gray-400"
-          )}
-        >
-          →
-        </button>
-        <button
-          onClick={refresh}
-          className="p-2 rounded-full bg-gray-100 hover:bg-gray-200"
-        >
-          🔄
-        </button>
+  return (
+    <div className="h-screen flex flex-col bg-gray-200">
+      {/* Top bar */}
+      <div className="bg-white border-b border-gray-200 p-3">
+        <div className="flex items-center gap-2 mb-3">
+          <button
+            onClick={goHome}
+            className="p-2 rounded-full bg-gray-100 hover:bg-gray-200"
+            title="Home"
+          >
+            🌐
+          </button>
+          <button
+            onClick={goBack}
+            disabled={!canGoBack}
+            className={cn(
+              "p-2 rounded-full",
+              canGoBack
+                ? "bg-gray-100 hover:bg-gray-200"
+                : "bg-gray-50 text-gray-400"
+            )}
+          >
+            ←
+          </button>
+          <button
+            onClick={goForward}
+            disabled={!canGoForward}
+            className={cn(
+              "p-2 rounded-full",
+              canGoForward
+                ? "bg-gray-100 hover:bg-gray-200"
+                : "bg-gray-50 text-gray-400"
+            )}
+          >
+            →
+          </button>
+          <button
+            onClick={refresh}
+            className="p-2 rounded-full bg-gray-100 hover:bg-gray-200"
+          >
+            🔄
+          </button>
+        </div>
+
+        <form onSubmit={handleSubmit} className="flex items-center gap-2">
+          <div className="flex-1 relative">
+            <input
+              type="text"
+              value={url}
+              onChange={(e) => setUrl(e.target.value)}
+              placeholder="search or enter website URL"
+              className="w-full px-4 py-2 bg-gray-100 rounded-full border-none outline-none text-sm"
+            />
+            {isLoading && (
+              <div className="absolute right-3 top-1/2 transform -translate-y-1/2">
+                <div className="w-4 h-4 border-2 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
+              </div>
+            )}
+          </div>
+          <button
+            type="submit"
+            className="px-4 py-2 bg-blue-500 text-white rounded-full text-sm hover:bg-blue-600"
+          >
+            Go
+          </button>
+        </form>
       </div>
 
-      <form onSubmit={handleSubmit} className="flex items-center gap-2">
-        <div className="flex-1 relative">
-          <input
-            type="text"
-            value={url}
-            onChange={(e) => setUrl(e.target.value)}
-            placeholder="search or enter website URL"
-            className="w-full px-4 py-2 bg-gray-100 rounded-full border-none outline-none text-sm"
+      {/* Content area */}
+      <div className="flex-1 flex flex-col min-h-0">
+        {currentUrl ? (
+          <iframe
+            ref={iframeRef}
+            src={currentUrl}
+            className="w-full h-full border-none flex-grow"
+            onLoad={() => setIsLoading(false)}
+            sandbox="allow-scripts allow-same-origin allow-forms allow-popups allow-popups-to-escape-sandbox"
+            title="Browser content"
           />
-          {isLoading && (
-            <div className="absolute right-3 top-1/2 transform -translate-y-1/2">
-              <div className="w-4 h-4 border-2 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
+        ) : (
+          <div className="flex-1 bg-white flex flex-col overflow-y-auto p-6">
+            <div className="text-center mb-6">
+              <Globe className="w-16 h-16 mx-auto mb-4 text-blue-500" />
+              <h2 className="text-2xl font-bold text-gray-700 mb-2">
+                Random Web Browser
+              </h2>
+              <p className="text-center text-emerald-700 text-sm">¯\_(ツ)_/¯</p>
             </div>
-          )}
-        </div>
-        <button
-          type="submit"
-          className="px-4 py-2 bg-blue-500 text-white rounded-full text-sm hover:bg-blue-600"
-        >
-          Go
-        </button>
-      </form>
-    </div>
 
-    <div className="flex-1 min-h-0">
-      {currentUrl ? (
-        <iframe
-          ref={iframeRef}
-          src={currentUrl}
-          className="w-full h-full border-none"
-          onLoad={() => setIsLoading(false)}
-          sandbox="allow-scripts allow-same-origin allow-forms allow-popups allow-popups-to-escape-sandbox"
-          title="Browser content"
-        />
-      ) : (
-        <div className="h-full bg-white flex flex-col p-6">
-          <div className="text-center mb-6">
-            <Globe className="w-16 h-16 mx-auto mb-4 text-blue-500" />
-            <h2 className="text-2xl font-bold text-gray-700 mb-2">Random Web Browser</h2>
-            <p className="text-center text-emerald-700 text-sm">¯\_(ツ)_/¯</p>
-          </div>
-
-          <div className="mb-6">
-            <h3 className="text-lg font-semibold text-gray-800 mb-3">
-              Java Frameworks
-            </h3>
-            <div className="grid grid-cols-2 gap-2">
-              {quickLinks.map((link, index) => (
-                <button
-                  key={index}
-                  onClick={() => {
-                    loadUrl(link.url); // put loadUrl first
-                    setUrl(link.url);
-                  }}
-                  className={cn(
-                    "p-3 rounded-lg text-white text-sm font-semibold flex items-center justify-center transition-all hover:scale-[1.02]",
-                    [
-                      "bg-blue-600",
-                      "bg-red-500",
-                      "bg-gray-800",
-                      "bg-purple-600",
-                      "bg-green-600",
-                      "bg-pink-600",
-                    ][index % 6]
-                  )}
-                >
-                  {link.name}
-                </button>
-              ))}
+            <div className="mb-6">
+              <h3 className="text-lg font-semibold text-gray-800 mb-3">
+                Java Frameworks
+              </h3>
+              <div className="grid grid-cols-2 gap-2">
+                {quickLinks.map((link, index) => (
+                  <button
+                    key={index}
+                    onClick={() => {
+                      loadUrl(link.url);
+                      setUrl(link.url);
+                    }}
+                    className={cn(
+                      "p-3 rounded-lg text-white text-sm font-semibold flex items-center justify-center transition-all hover:scale-[1.02]",
+                      [
+                        "bg-blue-600",
+                        "bg-red-500",
+                        "bg-gray-800",
+                        "bg-purple-600",
+                        "bg-green-600",
+                        "bg-pink-600",
+                      ][index % 6]
+                    )}
+                  >
+                    {link.name}
+                  </button>
+                ))}
+              </div>
             </div>
-          </div>
 
-         <div className="text-center text-xs text-emerald-400 bg-gradient-to-r from-gray-900 via-gray-800 to-gray-900 py-2 shadow-sm">
-  <p className="tracking-wide">React + Next.js + Tailwind + Redis + Vercel</p>
-</div>
-
-
+            <div className="text-center text-xs text-emerald-400 bg-gradient-to-r from-gray-900 via-gray-800 to-gray-900 py-2 shadow-sm">
+              <p className="tracking-wide">
+                Vercel + Next.js + Redis + Supabase
+              </p>
+            </div>
           </div>
         )}
       </div>
     </div>
   );
 }
+
 
 function CalculatorApp() {
   const [display, setDisplay] = useState("0");
@@ -2247,82 +2257,73 @@ function CalcButton({
   );
 }
 
+
 function CalendarApp() {
-  const [currentDate] = useState(new Date());
   const [events, setEvents] = useState<Record<string, string>>({});
   const [selectedDate, setSelectedDate] = useState<string | null>(null);
   const [newEvent, setNewEvent] = useState('');
   const [isLoading, setIsLoading] = useState(true);
   const [viewMode, setViewMode] = useState<'month' | 'year'>('month');
-  const [currentMonth, setCurrentMonth] = useState(new Date().getMonth());
-
+  const currentDate = new Date();
+  const currentMonth = currentDate.getMonth();
 
   useEffect(() => {
-    const loadEvents = async () => {
-      try {
-        const loadedEvents = (await redis.hgetall('calendar:events')) || {};
-        setEvents(loadedEvents);
-      } catch (error) {
-        console.error('Error loading events:', error);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-    loadEvents();
+    fetch('/api/events')
+      .then(res => res.json())
+      .then(data => setEvents(data))
+      .catch(err => console.error('Failed to load events:', err))
+      .finally(() => setIsLoading(false));
   }, []);
 
-
   const saveEvent = async (date: string, event: string) => {
-    try {
-      await redis.hset('calendar:events', { [date]: event });
+    const res = await fetch('/api/events/save', {
+      method: 'POST',
+      body: JSON.stringify({ date, event }),
+      headers: { 'Content-Type': 'application/json' },
+    });
+    if (res.ok) {
       setEvents(prev => ({ ...prev, [date]: event }));
-      return true;
-    } catch (error) {
-      console.error('Error saving event:', error);
-      return false;
     }
   };
 
   const deleteEvent = async (date: string) => {
-    try {
-      await redis.hdel('calendar:events', date);
-      const newEvents = { ...events };
-      delete newEvents[date];
-      setEvents(newEvents);
-      return true;
-    } catch (error) {
-      console.error('Error deleting event:', error);
-      return false;
+    const res = await fetch('/api/events/delete', {
+      method: 'POST',
+      body: JSON.stringify({ date }),
+      headers: { 'Content-Type': 'application/json' },
+    });
+    if (res.ok) {
+      const updated = { ...events };
+      delete updated[date];
+      setEvents(updated);
     }
   };
 
-  
   const generateMonth = (month: number) => {
     const year = currentDate.getFullYear();
     const firstDay = new Date(year, month, 1);
-    const lastDay = new Date(year, month + 1, 0);
-    const daysInMonth = lastDay.getDate();
-    const startingDay = firstDay.getDay();
-
+    const daysInMonth = new Date(year, month + 1, 0).getDate();
+    const offset = firstDay.getDay();
     const days = [];
- 
-    for (let i = 0; i < startingDay; i++) {
-      days.push(<div key={`empty-${i}`} className="h-8"></div>);
+
+    for (let i = 0; i < offset; i++) {
+      days.push(<div key={`empty-${month}-${i}`} className="h-8" />);
     }
 
-  
     for (let day = 1; day <= daysInMonth; day++) {
       const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
-      const hasEvent = events[dateStr];
-      
+      const hasEvent = !!events[dateStr];
+      const isToday =
+        day === new Date().getDate() && month === new Date().getMonth();
+
       days.push(
         <div
-          key={day}
+          key={`day-${month}-${day}`}
           onClick={() => setSelectedDate(dateStr)}
           className={`h-8 w-8 flex items-center justify-center rounded-full cursor-pointer text-sm
             ${hasEvent ? 'bg-blue-600 text-white' : 'hover:bg-gray-700'}
             ${selectedDate === dateStr ? 'ring-2 ring-blue-400' : ''}
-            ${day === new Date().getDate() && month === new Date().getMonth() ? 'font-bold' : ''}`}
+            ${isToday ? 'font-bold' : ''}`}
         >
           {day}
         </div>
@@ -2330,15 +2331,16 @@ function CalendarApp() {
     }
 
     return (
-      <div key={month} className="p-4 bg-gray-800 rounded-lg shadow-lg">
-        <div className="flex justify-between items-center mb-4">
-          <h3 className="text-lg font-semibold">
-            {firstDay.toLocaleString('default', { month: 'long' })}
-          </h3>
-        </div>
-        <div className="grid grid-cols-7 gap-1 text-center">
-          {['S', 'M', 'T', 'W', 'T', 'F', 'S'].map(day => (
-            <div key={day} className="text-xs text-gray-400 pb-1">{day}</div>
+      <div
+        key={`month-${month}`}
+        className="p-3 bg-gray-800 rounded-lg shadow-sm flex flex-col"
+      >
+        <h3 className="text-md font-semibold text-white mb-1 text-center">
+          {firstDay.toLocaleString('default', { month: 'long' })}
+        </h3>
+        <div className="grid grid-cols-7 gap-1 text-center text-xs text-gray-400 pb-1">
+          {['S', 'M', 'T', 'W', 'T', 'F', 'S'].map((d, i) => (
+            <div key={`dow-${month}-${i}`}>{d}</div>
           ))}
           {days}
         </div>
@@ -2346,13 +2348,12 @@ function CalendarApp() {
     );
   };
 
-  // Event modal
   const EventModal = () => {
     if (!selectedDate) return null;
 
     const handleSubmit = async (e: React.FormEvent) => {
       e.preventDefault();
-      if (selectedDate && newEvent.trim()) {
+      if (newEvent.trim()) {
         await saveEvent(selectedDate, newEvent.trim());
         setNewEvent('');
         setSelectedDate(null);
@@ -2360,24 +2361,22 @@ function CalendarApp() {
     };
 
     return (
-      <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-        <div className="bg-gray-800 rounded-lg p-6 max-w-md w-full">
-          <h3 className="text-xl mb-4">
-            {new Date(selectedDate).toLocaleDateString('en-US', {
-              weekday: 'long',
-              month: 'long',
-              day: 'numeric',
-              year: 'numeric'
-            })}
-          </h3>
-          
+      <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-60 px-4">
+        <div className="bg-gray-800 w-full max-w-sm p-6 rounded-lg shadow-xl">
+          <h2 className="text-lg font-semibold mb-4 text-white">
+            {new Date(selectedDate).toLocaleDateString()}
+          </h2>
+
           {events[selectedDate] ? (
-            <div className="mb-4">
+            <div>
               <p className="text-gray-300 mb-2">Event:</p>
-              <p className="bg-gray-700 p-3 rounded">{events[selectedDate]}</p>
+              <p className="bg-gray-700 p-3 rounded text-white">{events[selectedDate]}</p>
               <button
-                onClick={() => deleteEvent(selectedDate)}
-                className="mt-3 w-full bg-red-600 hover:bg-red-700 text-white py-2 px-4 rounded"
+                onClick={async () => {
+                  await deleteEvent(selectedDate);
+                  setSelectedDate(null);
+                }}
+                className="mt-4 w-full bg-red-600 hover:bg-red-700 text-white py-2 px-4 rounded"
               >
                 Delete Event
               </button>
@@ -2385,25 +2384,22 @@ function CalendarApp() {
           ) : (
             <form onSubmit={handleSubmit}>
               <input
-                type="text"
                 value={newEvent}
                 onChange={(e) => setNewEvent(e.target.value)}
-                placeholder="Enter event description"
-                className="w-full bg-gray-700 text-white p-3 rounded mb-3"
-                autoFocus
+                placeholder="Add event..."
+                className="w-full p-2 mb-3 rounded bg-gray-700 text-white"
               />
               <div className="flex gap-2">
                 <button
                   type="button"
                   onClick={() => setSelectedDate(null)}
-                  className="flex-1 bg-gray-600 hover:bg-gray-500 text-white py-2 px-4 rounded"
+                  className="flex-1 bg-gray-600 hover:bg-gray-500 text-white py-2 rounded"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  className="flex-1 bg-blue-600 hover:bg-blue-500 text-white py-2 px-4 rounded"
-                  disabled={!newEvent.trim()}
+                  className="flex-1 bg-blue-600 hover:bg-blue-500 text-white py-2 rounded"
                 >
                   Save
                 </button>
@@ -2417,65 +2413,65 @@ function CalendarApp() {
 
   if (isLoading) {
     return (
-      <div className="flex items-center justify-center h-full">
-        <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-blue-500"></div>
+      <div className="flex items-center justify-center h-screen">
+        <div className="w-8 h-8 border-4 border-blue-500 border-t-transparent rounded-full animate-spin" />
       </div>
     );
   }
 
   return (
-    <div className="flex flex-col h-full bg-gray-900 text-white p-4">
-      <div className="flex justify-between items-center mb-4">
-        <h1 className="text-xl font-semibold">
-          {currentDate.getFullYear()}
-        </h1>
+    <div className="h-screen bg-gray-900 text-white flex flex-col p-4 overflow-hidden">
+      <header className="flex justify-between items-center mb-4">
+        <h1 className="text-xl font-bold">{currentDate.getFullYear()}</h1>
         <button
           onClick={() => setViewMode(viewMode === 'month' ? 'year' : 'month')}
           className="text-sm bg-gray-700 hover:bg-gray-600 px-3 py-1 rounded"
         >
           {viewMode === 'month' ? 'Show Year View' : 'Show Month View'}
         </button>
-      </div>
+      </header>
 
-      <div className="flex-1 overflow-y-auto">
+      <main className="flex-1 overflow-y-auto">
         {viewMode === 'month' ? (
           generateMonth(currentMonth)
         ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-3">
             {Array.from({ length: 12 }).map((_, i) => generateMonth(i))}
           </div>
         )}
-      </div>
 
-      {/* Events List Section */}
-      <div className="mt-4 border-t border-gray-700 pt-4">
-        <h2 className="text-lg font-medium mb-2">Upcoming Events</h2>
-        {Object.entries(events).length > 0 ? (
-          <div className="space-y-2">
-            {Object.entries(events)
-              .sort(([dateA], [dateB]) => new Date(dateA).getTime() - new Date(dateB).getTime())
-              .map(([date, event]) => (
-                <div key={date} className="bg-gray-800 p-3 rounded-lg">
-                  <div className="text-blue-400 text-sm">
-                    {new Date(date).toLocaleDateString('en-US', {
-                      weekday: 'short',
-                      month: 'short',
-                      day: 'numeric'
-                    })}
+        <div className="mt-6 border-t border-gray-700 pt-4">
+          <h2 className="text-lg font-semibold mb-2">Upcoming Events</h2>
+          {Object.entries(events).length ? (
+            <div className="space-y-2">
+              {Object.entries(events)
+                .sort(([a], [b]) => new Date(a).getTime() - new Date(b).getTime())
+                .map(([date, event]) => (
+                  <div key={date} className="bg-gray-800 p-3 rounded-lg">
+                    <div className="text-sm text-blue-400">
+                      {new Date(date).toLocaleDateString('en-US', {
+                        weekday: 'short',
+                        month: 'short',
+                        day: 'numeric',
+                      })}
+                    </div>
+                    <div>{event}</div>
                   </div>
-                  <div className="mt-1">{event}</div>
-                </div>
-              ))}
-          </div>
-        ) : (
-          <p className="text-gray-400">No events scheduled</p>
-        )}
-      </div>
+                ))}
+            </div>
+          ) : (
+            <p className="text-gray-400">No events scheduled</p>
+          )}
+        </div>
+      </main>
 
       <EventModal />
     </div>
   );
 }
+
+
+
 
     
 function Game() {
