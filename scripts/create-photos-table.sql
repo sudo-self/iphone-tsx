@@ -5,13 +5,13 @@ CREATE TABLE IF NOT EXISTS photos (
   created_at TIMESTAMPTZ DEFAULT NOW()
 );
 
--- Enable Row Level Security on photos table
+-- Enable Row Level Security
 ALTER TABLE photos ENABLE ROW LEVEL SECURITY;
 
--- Policy: Allow anyone to read photos
+-- Policy: read photos
 CREATE POLICY "Allow public read access" ON photos
   FOR SELECT USING (true);
 
--- Policy: Allow anyone to insert photos
+-- Policy: anyone to insert photos
 CREATE POLICY "Allow public insert access" ON photos
   FOR INSERT WITH CHECK (true);
