@@ -41,6 +41,7 @@ import {
 } from "@/lib/settings";
 
 import { createClient } from "@supabase/supabase-js";
+import { uploadPhoto, getPhotos } from "@/lib/supabase";
 import confetti from "canvas-confetti";
 import * as maptilersdk from '@maptiler/sdk';
 import '@maptiler/sdk/dist/maptiler-sdk.css';
@@ -1418,8 +1419,6 @@ function MapsApp({ setActiveApp }: Props) {
     );
 }
 
-
-
 function CameraApp() {
   const [stream, setStream] = useState<MediaStream | null>(null);
   const [isCapturing, setIsCapturing] = useState(false);
@@ -1438,7 +1437,6 @@ function CameraApp() {
   useEffect(() => {
     if (!showGallery) startCamera();
     else stopCamera();
-
     return stopCamera;
   }, [showGallery, facingMode]);
 
@@ -1467,35 +1465,8 @@ function CameraApp() {
   }
 
   async function loadPhotos() {
-    try {
-      const { supabase } = await import("@/lib/supabase");
-      const { data: files, error } = await supabase.storage
-        .from("iphone-tsx")
-        .list("", {
-          limit: 100,
-          sortBy: { column: "name", order: "desc" },
-        });
-
-      if (error || !files) return;
-
-      const photoList = await Promise.all(
-        files.map(async (file) => {
-          const { data: urlData } = supabase.storage
-            .from("photos-bucket")
-            .getPublicUrl(file.name);
-
-          return {
-            filename: file.name,
-            url: urlData?.publicUrl ?? "",
-            created_at: file?.created_at ?? new Date().toISOString(),
-          };
-        })
-      );
-
-      setPhotos(photoList);
-    } catch (err) {
-      console.error("Failed to load photos:", err);
-    }
+    const photos = await getPhotos();
+    setPhotos(photos);
   }
 
   async function capturePhoto() {
@@ -1524,45 +1495,26 @@ function CameraApp() {
         const dataUrl = canvas.toDataURL("image/jpeg", 0.9);
         const response = await fetch(dataUrl);
         const fallbackBlob = await response.blob();
-        await uploadPhoto(fallbackBlob);
+        await handleUpload(fallbackBlob);
         resetCapture();
         return;
       }
-      await uploadPhoto(blob);
+      await handleUpload(blob);
       resetCapture();
     }, "image/jpeg", 0.9);
   }
 
-  async function uploadPhoto(blob: Blob) {
+  async function handleUpload(blob: Blob) {
     const fileName = `photo_${Date.now()}.jpg`;
     const file = new File([blob], fileName, { type: "image/jpeg" });
-
-    try {
-      const { supabase } = await import("@/lib/supabase");
-
-      const { error } = await supabase.storage
-        .from("photos-bucket")
-        .upload(fileName, file, {
-          cacheControl: "3600",
-          upsert: false,
-        });
-
-      if (error) throw error;
-
-      const { data: { publicUrl } } = supabase.storage
-        .from("photos-bucket")
-        .getPublicUrl(fileName);
-
+    const url = await uploadPhoto(file, fileName);
+    if (url) {
       setPhotos((prev) => [
-        { filename: fileName, url: publicUrl, created_at: new Date().toISOString() },
+        { filename: fileName, url, created_at: new Date().toISOString() },
         ...prev,
       ]);
-
-     
       const localUrl = URL.createObjectURL(blob);
       setLastPhotoUrl(localUrl);
-    } catch (err) {
-      console.error("Upload failed:", err);
     }
   }
 
@@ -1579,10 +1531,7 @@ function CameraApp() {
     return (
       <div className="h-full w-full bg-black text-white flex flex-col">
         <div className="flex items-center justify-between p-4 bg-gray-900">
-          <button
-            onClick={() => setShowGallery(false)}
-            className="text-blue-400"
-          >
+          <button onClick={() => setShowGallery(false)} className="text-blue-400">
             ← Camera
           </button>
           <h2 className="text-lg font-medium">Photos ({photos.length})</h2>
@@ -1691,7 +1640,6 @@ function CameraApp() {
           </div>
         )}
 
-        {/* Download button for last captured photo */}
         {lastPhotoUrl && (
           <div className="mt-4 text-center">
             <a
@@ -1699,7 +1647,6 @@ function CameraApp() {
               download={`photo_${Date.now()}.jpg`}
               className="text-blue-400 underline"
               onClick={() => {
-                // Release object URL after download to avoid memory leaks
                 setTimeout(() => URL.revokeObjectURL(lastPhotoUrl), 1000);
                 setLastPhotoUrl(null);
               }}
