@@ -958,8 +958,8 @@ if (activeSection === "about") {
           </div>
         </div>
 
-            <div className="w-full h-[300px] bg-black">
-              <Canvas camera={{ position: [0, 0, 150], fov: 45 }}>
+            <div className="w-full h-[200px] bg-black">
+              <Canvas camera={{ position: [0, 0.1, 150], fov: 45 }}>
                 <ambientLight intensity={0.5} />
                 <directionalLight position={[5, 5, 5]} />
                 <Model />
