@@ -112,7 +112,11 @@ dependencies:
     version: 9.2.0(@types/react@19.1.8)(react-dom@19.1.0)(react@19.1.0)(three@0.178.0)
   '@supabase/supabase-js':
     specifier: latest
+<<<<<<< HEAD
     version: 2.50.4
+=======
+    version: 2.51.0
+>>>>>>> 6834155f70e64474e0b1608e7cd5860f13e0bae2
   '@upstash/redis':
     specifier: latest
     version: 1.35.1
@@ -2071,8 +2075,13 @@ packages:
     engines: {node: '>=12.16'}
     dev: false
 
+<<<<<<< HEAD
   /@supabase/auth-js@2.70.0:
     resolution: {integrity: sha512-BaAK/tOAZFJtzF1sE3gJ2FwTjLf4ky3PSvcvLGEgEmO4BSBkwWKu8l67rLLIBZPDnCyV7Owk2uPyKHa0kj5QGg==}
+=======
+  /@supabase/auth-js@2.71.0:
+    resolution: {integrity: sha512-OMYNbhGa1Cj4stalJq0VoHm5l7Sj/xY0j9CiYEQCikbQmtiDG3c27EIFA4OD+NxuoHTZmjaW8VJlS3SP+yasEA==}
+>>>>>>> 6834155f70e64474e0b1608e7cd5860f13e0bae2
     dependencies:
       '@supabase/node-fetch': 2.6.15
     dev: false
@@ -2090,8 +2099,13 @@ packages:
       whatwg-url: 5.0.0
     dev: false
 
+<<<<<<< HEAD
   /@supabase/postgrest-js@1.21.0:
     resolution: {integrity: sha512-fqpV5ZwaLVJyQnsmljJF6MnpRWnkjbLEymPylhVo9nFxr6XpkmP0XjRdsDwICBR2ugezoyPYj8yPCrPgSyys3Q==}
+=======
+  /@supabase/postgrest-js@1.19.4:
+    resolution: {integrity: sha512-O4soKqKtZIW3olqmbXXbKugUtByD2jPa8kL2m2c1oozAO11uCcGrRhkZL0kVxjBLrXHE0mdSkFsMj7jDSfyNpw==}
+>>>>>>> 6834155f70e64474e0b1608e7cd5860f13e0bae2
     dependencies:
       '@supabase/node-fetch': 2.6.15
     dev: false
@@ -2115,6 +2129,7 @@ packages:
       '@supabase/node-fetch': 2.6.15
     dev: false
 
+<<<<<<< HEAD
   /@supabase/supabase-js@2.50.4:
     resolution: {integrity: sha512-houC5IKEncIQ06qz0W+TZiTmXVA954ZargG0IJHYWMVUiJ6CmQqvFXJ59ChdHP/EhMIjGeCaol5qQ/QchAJKSQ==}
     dependencies:
@@ -2122,6 +2137,15 @@ packages:
       '@supabase/functions-js': 2.4.5
       '@supabase/node-fetch': 2.6.15
       '@supabase/postgrest-js': 1.21.0
+=======
+  /@supabase/supabase-js@2.51.0:
+    resolution: {integrity: sha512-jG70XoNFcX3z0h/No0t1Aoc3zoHPtMQk5zaM5v3+sCJ/v5Z3qyoHYkGIg1JUycINPsuuAASZ4ZS43YO6H5wMoA==}
+    dependencies:
+      '@supabase/auth-js': 2.71.0
+      '@supabase/functions-js': 2.4.5
+      '@supabase/node-fetch': 2.6.15
+      '@supabase/postgrest-js': 1.19.4
+>>>>>>> 6834155f70e64474e0b1608e7cd5860f13e0bae2
       '@supabase/realtime-js': 2.11.15
       '@supabase/storage-js': 2.7.1
     transitivePeerDependencies:
