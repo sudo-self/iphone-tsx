@@ -82,7 +82,7 @@ export default function GooglePicker({ onPick }: GooglePickerProps) {
         {pickerReady
           ? pickerOpen
             ? "Picker Open"
-            : "View Google Drive"
+            : "View Google Drive Files"
           : "Loading Picker..."}
       </button>
     </div>

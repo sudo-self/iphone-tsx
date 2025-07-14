@@ -4,7 +4,7 @@ import { useState, useEffect, useRef } from 'react';
 import { createClient } from '@supabase/supabase-js';
 import confetti from 'canvas-confetti';
 
-// Initialize Supabase client
+
 const supabase = createClient(
   'https://db.pqzsjqxztgecxkzwlzgw.supabase.co',
   process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
@@ -24,12 +24,12 @@ const Chat = () => {
   const [isLoading, setIsLoading] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
-  // Scroll to bottom when new messages are added
+ 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   };
 
-  // Trigger confetti animation
+
   const triggerConfetti = () => {
     confetti({
       particleCount: 100,
@@ -38,7 +38,7 @@ const Chat = () => {
     });
   };
 
-  // Fetch initial messages
+
   useEffect(() => {
     const fetchMessages = async () => {
       const { data, error } = await supabase
@@ -57,7 +57,7 @@ const Chat = () => {
     scrollToBottom();
   }, []);
 
-  // Subscribe to real-time message updates
+
   useEffect(() => {
     const channel = supabase
       .channel('public:messages')
@@ -66,7 +66,7 @@ const Chat = () => {
         { event: 'INSERT', schema: 'public', table: 'messages' },
         (payload) => {
           setMessages((prev) => [...prev, payload.new as Message]);
-          triggerConfetti(); // Confetti on new message
+          triggerConfetti();
           scrollToBottom();
         }
       )
@@ -88,7 +88,7 @@ const Chat = () => {
     };
   }, []);
 
-  // Handle sending a new message
+
   const handleSendMessage = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!newMessage.trim() || isLoading) return;
@@ -98,7 +98,7 @@ const Chat = () => {
       const { error } = await supabase.from('messages').insert([
         {
           content: newMessage,
-          user_id: 'anonymous', // No auth, so use anonymous
+          user_id: 'anonymous',
           likes: 0,
         },
       ]);
@@ -115,7 +115,7 @@ const Chat = () => {
     }
   };
 
-  // Handle liking a message
+
   const handleLike = async (messageId: number, currentLikes: number) => {
     try {
       const { error } = await supabase
@@ -126,7 +126,7 @@ const Chat = () => {
       if (error) {
         console.error('Error liking message:', error);
       } else {
-        triggerConfetti(); // Confetti on like
+        triggerConfetti();
       }
     } catch (error) {
       console.error('Error:', error);
@@ -135,7 +135,7 @@ const Chat = () => {
 
   return (
     <div className="flex flex-col h-screen bg-gray-900 text-white">
-      {/* Chat Messages */}
+     
       <div className="flex-1 overflow-y-auto p-4 space-y-4">
         {messages.map((message) => (
           <div
@@ -161,7 +161,6 @@ const Chat = () => {
         <div ref={messagesEndRef} />
       </div>
 
-      {/* Message Input */}
       <form
         onSubmit={handleSendMessage}
         className="p-4 border-t border-gray-700"

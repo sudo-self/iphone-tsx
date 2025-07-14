@@ -1,3 +1,5 @@
+// lib/settings.ts
+
 export interface PhoneSettings {
   wallpaper: string
   lockScreenWallpaper: string
@@ -50,13 +52,11 @@ export const taskbarColorOptions = [
   { name: "Red", value: "red-900/40" },
 ]
 
-
-export function saveSettings(settings: PhoneSettings) {
+export function saveSettings(settings: PhoneSettings): void {
   if (typeof window !== "undefined") {
     localStorage.setItem("phoneSettings", JSON.stringify(settings))
   }
 }
-
 
 export function loadSettings(): PhoneSettings {
   if (typeof window !== "undefined") {
@@ -71,3 +71,4 @@ export function loadSettings(): PhoneSettings {
   }
   return defaultSettings
 }
+

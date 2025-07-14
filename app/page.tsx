@@ -31,6 +31,7 @@ import {
   Smartphone,
   Settings as SettingsIcon,
   Info,
+  Mail,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { getContacts } from "@/lib/redis";
@@ -50,6 +51,8 @@ import { Canvas } from "@react-three/fiber";
 import { OrbitControls, useGLTF } from "@react-three/drei";
 
 
+
+
 import PhoneApp from "./PhoneApp";
 import ContactsApp from "./ContactsApp";
 import CalendarApp from "./CalendarApp";
@@ -63,6 +66,7 @@ import NotesApp from "./NotesApp";
 import SnakeApp from "./SnakeApp";
 import DriveApp from "@/components/DriveApp";
 import ChatApp from "./ChatApp";
+import EmailApp from "@/components/EmailApp";
 
 import {
   DndContext,
@@ -91,20 +95,22 @@ export default function SmartphoneUI() {
     
     const [isJiggling, setIsJiggling] = useState(false);
     const [appOrder, setAppOrder] = useState([
-        "Drive",
-        "Phone",
-        "Contacts",
-        "Calendar",
-        "Calculator",
-        "Camera",
-        "Browser",
-        "Settings",
-        "Music",
-        "Maps",
-        "Notes",
-        "Snake",
-        "Chat",
+      "Drive",
+      "Phone",
+      "Contacts",
+      "Calendar",
+      "Calculator",
+      "Camera",
+      "Browser",
+      "Settings",
+      "Music",
+      "Maps",
+      "Notes",
+      "Snake",
+      "Chat",
+      "Email",
     ]);
+
     
     useEffect(() => {
         const updateTime = () => {
@@ -221,38 +227,63 @@ export default function SmartphoneUI() {
       switch (settings.appIconStyle) {
         case "square":
           return `
-            w-14 h-14 
-            rounded-lg 
-            shadow-lg 
-            hover:shadow-xl 
-            transition 
-            duration-300 
-            bg-white/5
+            w-14 h-14
+            rounded-lg
+            shadow-lg
+            hover:shadow-xl
+            transition
+            duration-300
+            bg-gray-700
+            text-white
+            flex items-center justify-center
           `;
         case "circle":
           return `
-            w-14 h-14 
-            rounded-full 
-            shadow-lg 
-            hover:shadow-xl 
-            transition 
-            duration-300 
-            bg-white/5
+            w-14 h-14
+            rounded-full
+            shadow-lg
+            hover:shadow-xl
+            transition
+            duration-300
+            bg-gray-700
+            text-white
+            hover:shadow-yellow-400
+            hover:text-yellow-400
+            flex items-center justify-center
           `;
-        default: // rounded-2xl
+        case "glass":
           return `
-            w-14 h-14 
-            rounded-2xl 
-            shadow-lg 
-            hover:shadow-xl 
-            transition 
-            duration-300 
-            bg-white/5
+            w-14 h-14
+            rounded-2xl
+            shadow-lg
+            hover:shadow-xl
+            transition
+            duration-300
+            bg-cyan-400/10
+            backdrop-blur-xl
+            border border-cyan-700/20
+            text-white
+            hover:shadow-cyan-400
+            hover:text-cyan-300
+            flex items-center justify-center
+          `;
+        default:
+          return `
+            w-14 h-14
+            rounded-2xl
+            shadow-lg
+            hover:shadow-xl
+            transition
+            duration-300
+            bg-gray-800
+            hover:shadow-green-400
+            hover:text-green-400
+            text-white
+            flex items-center justify-center
           `;
       }
     };
 
-    
     function SortableAppIcon({
         id,
         name,
@@ -296,14 +327,12 @@ export default function SmartphoneUI() {
                 className="flex flex-col items-center"
                 type="button"
                 >
-                <div
-                className={cn(
-                              getAppIconStyle(),
-                              "bg-gradient-to-br from-gray-700 to-gray-900 flex items-center justify-center text-white"
-                              )}
-                >
-                {icon}
+                <div className={cn(getAppIconStyle())}>
+                  {icon}
                 </div>
+
+
+
                 <span className="text-xs mt-1 text-white">{name}</span>
                 </button>
                 
@@ -348,6 +377,8 @@ export default function SmartphoneUI() {
         Notes: { icon: <FileText />, onClick: () => openApp("Notes") },
         Snake: { icon: <Loader2 />, onClick: () => openApp("Snake") },
         Chat: { icon: <MessageCircle />, onClick: () => openApp("Chat") },
+        Email: { icon: <Mail />, onClick: () => openApp("Email") },
+
     };
     
     
@@ -449,6 +480,8 @@ export default function SmartphoneUI() {
                                                                           )}
                                             {activeApp === "Notes" && <NotesApp />}
                                             {activeApp === "Drive" && <DriveApp />}
+                                            {activeApp === "Email" && <EmailApp />}
+
                                             </div>
                                             ) : (
                                                  <div
@@ -554,7 +587,7 @@ type PhoneSettings = {
   taskbarColor: string;
   homeButtonStyle: "circle" | "square" | "pill";
   statusBarStyle: "light" | "dark";
-  appIconStyle: "rounded" | "square" | "circle";
+  appIconStyle: "rounded" | "square" | "circle" | "glass";
   deviceName: string;
   batteryPercentage: boolean;
 };
@@ -578,15 +611,15 @@ function SettingsApp({
 
 
     const settingSections = [
-      { id: "display", name: "Display", icon: <Eye className="w-5 h-5" /> },
+      { id: "display", name: "Theme", icon: <Eye className="w-5 h-5" /> },
       { id: "wallpaper", name: "Wallpaper", icon: <Smartphone className="w-5 h-5" /> },
-      { id: "general", name: "General", icon: <SettingsIcon className="w-5 h-5" /> },
+      { id: "general", name: "Device", icon: <SettingsIcon className="w-5 h-5" /> },
       { id: "about", name: "About", icon: <Info className="w-5 h-5" /> },
     ];
 
   const wallpaperOptions = [
     {
-      name: "iphone 16",
+      name: "Nature",
       url: "https://firebasestorage.googleapis.com/v0/b/jessejessexyz.appspot.com/o/wallpaper_iphone.png?alt=media&token=f87e9198-2f22-4f65-89fd-f599a5ddcd34",
     },
     {
@@ -594,19 +627,19 @@ function SettingsApp({
       url: "https://firebasestorage.googleapis.com/v0/b/jessejessexyz.appspot.com/o/apple-ios-wallpapers.jpg?alt=media&token=d9e65040-0131-4fa7-8224-5293b1e126e0",
     },
     {
-      name: "iphone 14",
+      name: "iphone 16",
       url: "https://firebasestorage.googleapis.com/v0/b/jessejessexyz.appspot.com/o/lockscreen.jpg?alt=media&token=406ef44d-c8f3-4796-99ad-8feee27352da",
     },
     {
-      name: "iPad mini",
+      name: "iPad OS",
       url: "https://firebasestorage.googleapis.com/v0/b/jessejessexyz.appspot.com/o/ipad_wallpaper.png?alt=media&token=cb015e53-1df5-4474-96bf-789e39c6cffa",
     },
      {
-      name: "Glitter Pro",
+      name: "Apple Pro",
       url: "https://firebasestorage.googleapis.com/v0/b/jessejessexyz.appspot.com/o/iphoneglow.png?alt=media&token=a530a871-13fe-4e00-b8d6-7ebedc6cee1e",
     },
      {
-      name: "iphone 15",
+      name: "Technology",
       url: "https://firebasestorage.googleapis.com/v0/b/jessejessexyz.appspot.com/o/wp14611835-apple-iphone-15-pro-wallpapers.jpg?alt=media&token=75445df9-7e4a-4eb2-8d87-dc41889b56b3",
     },
   ];
@@ -709,7 +742,7 @@ function SettingsApp({
         >
           ← Back
         </button>
-        <h2 className="text-xl font-bold">Display & Brightness</h2>
+        <h2 className="text-xl font-bold">General Settings</h2>
       </div>
 
           <div className="px-4 pb-4 space-y-6">
@@ -741,7 +774,7 @@ function SettingsApp({
 
 
           <div className="bg-white/10 backdrop-blur-md p-4 rounded-xl border border-white/10 shadow-md">
-            <h3 className="text-lg font-medium mb-3 text-white">Home Button Style</h3>
+            <h3 className="text-lg font-medium mb-3 text-white">Home Button</h3>
             <div className="grid grid-cols-3 gap-2">
               {[
                 { name: "Circle", value: "circle" as const },
@@ -770,32 +803,35 @@ function SettingsApp({
 
 
           <div className="bg-white/10 backdrop-blur-md p-4 rounded-xl border border-white/10 shadow-md">
-            <h3 className="text-lg font-medium mb-3 text-white">App Icon Style</h3>
-            <div className="grid grid-cols-3 gap-2">
+            <h3 className="text-lg font-medium mb-3 text-white">Icon Styles</h3>
+            <div className="grid grid-cols-4 gap-2">
               {[
-                { name: "Rounded", value: "rounded" as const },
-                { name: "Square", value: "square" as const },
-                { name: "Circle", value: "circle" as const },
+                { name: "Dark", value: "square" as const },
+                { name: "Green", value: "rounded" as const },
+                { name: "Yellow", value: "circle" as const },
+                { name: "Glass", value: "glass" as const },
               ].map((option, index) => (
-                <button
-                  key={index}
-                  onClick={() =>
-                    onSettingsChange({
-                      ...settings,
-                      appIconStyle: option.value,
-                    })
-                  }
-                  className={`p-3 rounded-lg border-2 text-white text-center transition-all ${
-                    settings.appIconStyle === option.value
-                      ? "border-blue-500 bg-blue-800/30"
-                      : "border-white/20 bg-white/5 hover:bg-white/10"
-                  }`}
-                >
-                  {option.name}
-                </button>
+                                        <button
+                                          key={index}
+                                          onClick={() =>
+                                            onSettingsChange({
+                                              ...settings,
+                                              appIconStyle: option.value,
+                                            })
+                                          }
+                                          className={`p-3 rounded-lg border-2 text-white text-center transition-all flex items-center justify-center ${
+                                            settings.appIconStyle === option.value
+                                              ? "border-blue-500 bg-blue-800/30"
+                                              : "border-white/20 bg-white/5 hover:bg-white/10"
+                                          }`}
+                                        >
+                                          {option.name}
+                                        </button>
+
               ))}
             </div>
           </div>
+
 
 
           <div className="bg-white/10 backdrop-blur-md p-4 rounded-xl border border-white/10 shadow-md">
@@ -927,29 +963,33 @@ function SettingsApp({
                 </h4>
                 </div>
                 <div className="mt-8 text-center text-cyan-500 text-sm">
-                <p>🆁🅴🅰🅲🆃</p>
+                <p>🆁🅴🅰🅲🆃 19</p>
                 </div>
                 </div>
                 <div className="space-y-3">
                 <div className="flex justify-between py-2 border-b border-gray-700">
-                <span className="text-gray-400">Build Vers.</span>
+                <span className="text-gray-400">Build ID</span>
                 <span className="text-orange-400">{buildHash}</span>
                 </div>
                 <div className="flex justify-between py-2 border-b border-gray-700">
                 <span className="text-gray-400">Framework</span>
-                <span className="text-red-500">Next.js</span>
+                <span className="text-white bg-black">Next.js</span>
                 </div>
                 <div className="flex justify-between py-2 border-b border-gray-700">
-                <span className="text-gray-400">Language</span>
-                <span className="text-blue-500">TypeScript</span>
+                <span className="text-gray-400">Package Manager</span>
+                <span className="text-red-500 bg-white">PNPM</span>
+                </div>
+                <div className="flex justify-between py-2 border-b border-gray-700">
+                <span className="text-gray-400">Java</span>
+                <span className="text-blue-500">/openjdk@17</span>
                 </div>
                 <div className="flex justify-between py-2 border-b border-gray-700">
                 <span className="text-gray-400">Storage</span>
-                <span className="text-yellow-400">Supabase</span>
+                <span className="text-green-400">Supabase</span>
                 </div>
                 <div className="flex justify-between py-2 border-b border-gray-700">
                 <span className="text-gray-400">Battery Health</span>
-                <span className="text-green-500">Excellent</span>
+                <span className="text-pink-500">Excellent</span>
                 </div>
                 </div>
                 
@@ -959,7 +999,7 @@ function SettingsApp({
                 href="https://iphone.jessejesse.com/privacy.html"
                 className="hover:text-gray-200 transition-colors duration-200"
                 >
-                Privacy Policy
+                Data Privacy & Usage Policy
                 </a>
                 </p>
                 </div>
