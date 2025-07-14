@@ -904,9 +904,9 @@ function SettingsApp({
                 <div className="flex-1 overflow-y-auto px-4 pb-4">
                 <div className="space-y-4">
                 <div className="text-center mb-8">
-                <div className="w-full h-[180px] bg-gray-900">
+                <div className="w-full h-[150px] bg-gray-900">
                 <Canvas camera={{ position: [0, 0, 150], fov: 45 }}>
-                <ambientLight intensity={0.5} />
+                <ambientLight intensity={1.0} />
                 <directionalLight position={[5, 5, 5]} />
                 <Model />
                 <OrbitControls
@@ -926,12 +926,10 @@ function SettingsApp({
                 {settings.deviceName}
                 </h4>
                 </div>
-                
                 <div className="mt-8 text-center text-cyan-500 text-sm">
                 <p>🆁🅴🅰🅲🆃</p>
                 </div>
                 </div>
-                
                 <div className="space-y-3">
                 <div className="flex justify-between py-2 border-b border-gray-700">
                 <span className="text-gray-400">Build Vers.</span>
@@ -1069,7 +1067,6 @@ function PhoneApp({
   );
 }
 
-
 const SkipBack = (props: React.SVGProps<SVGSVGElement>) => (
   <svg
     {...props}
@@ -1129,7 +1126,7 @@ const sampleTracks: Track[] = [
   { id: 13, title: "Opportunity Cost", artist: "G-Easy", videoId: "Mko1OVHwzoU" },
 ];
 
-export function MusicApp() {
+function MusicApp() {
   const playerRef = useRef<HTMLDivElement>(null);
   const ytPlayer = useRef<any>(null);
 
@@ -1258,8 +1255,13 @@ export function MusicApp() {
             />
 
             <div className="flex items-center justify-center gap-8">
-              <button onClick={playPrev} aria-label="Previous Track" type="button">
-                <SkipBack className="w-8 h-8 text-white hover:text-cyan-500 transition" />
+              <button
+                onClick={playPrev}
+                aria-label="Previous Track"
+                type="button"
+                className="text-white hover:text-cyan-500 transition"
+              >
+                <SkipBack className="w-8 h-8" />
               </button>
 
               <button
@@ -1271,8 +1273,13 @@ export function MusicApp() {
                 {isPlaying ? "Pause" : "Play"}
               </button>
 
-              <button onClick={playNext} aria-label="Next Track" type="button">
-                <SkipForward className="w-8 h-8 text-white hover:text-cyan-500 transition" />
+              <button
+                onClick={playNext}
+                aria-label="Next Track"
+                type="button"
+                className="text-white hover:text-cyan-500 transition"
+              >
+                <SkipForward className="w-8 h-8" />
               </button>
             </div>
 
