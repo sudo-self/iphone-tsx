@@ -963,7 +963,7 @@ function SettingsApp({
                 </h4>
                 </div>
                 <div className="mt-8 text-center text-cyan-500 text-sm">
-                <p>🆁🅴🅰🅲🆃 19</p>
+                <p>🆁🅴🅰🅲🆃</p>
                 </div>
                 </div>
                 <div className="space-y-3">
@@ -977,7 +977,7 @@ function SettingsApp({
                 </div>
                 <div className="flex justify-between py-2 border-b border-gray-700">
                 <span className="text-gray-400">Package Manager</span>
-                <span className="text-red-500 bg-white">PNPM</span>
+                <span className="text-red-500 bg-white border rounded-md border-background">PNPM</span>
                 </div>
                 <div className="flex justify-between py-2 border-b border-gray-700">
                 <span className="text-gray-400">Java</span>
@@ -989,11 +989,11 @@ function SettingsApp({
                 </div>
                 <div className="flex justify-between py-2 border-b border-gray-700">
                 <span className="text-gray-400">Battery Health</span>
-                <span className="text-pink-500">Excellent</span>
+                <span className="text-cyan-500">Excellent</span>
                 </div>
                 </div>
                 
-                <div className="text-center text-gray-400 text-xs select-text mt-2">
+                <div className="text-center text-gray-500 text-xs select-text mt-2">
                 <p>
                 <a
                 href="https://iphone.jessejesse.com/privacy.html"
