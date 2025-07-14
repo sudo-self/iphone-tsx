@@ -888,73 +888,7 @@ function SettingsApp({
       </div>
     );
   }
-
-if (activeSection === "about") {
-  return (
-    <div className="h-full bg-gray-900 text-white flex flex-col">
-      <div className="flex items-center mb-6 px-4 pt-4 flex-shrink-0">
-        <button
-          onClick={() => setActiveSection(null)}
-          className="text-blue-400 mr-4"
-        >
-          ← Back
-        </button>
-      </div>
-
-      <div className="flex-1 overflow-y-auto px-4 pb-4">
-        <div className="space-y-4">
-          <div className="text-center mb-8">
-            <div className="w-20 h-20 bg-gradient-to-br from-blue-500 to-purple-600 rounded-2xl mx-auto mb-4 flex items-center justify-center">
-              <Phone className="w-10 h-10 text-white" />
-            </div>
-            <h3 className="text-xl font-bold">{settings.deviceName}</h3>
-            <p className="text-gray-400">JesseJesse.com</p>
-          </div>
-
-          <div className="space-y-3">
-            <div className="flex justify-between py-2 border-b border-gray-700">
-              <span className="text-gray-400">Build Vers.</span>
-              <span className="text-orange-400">{buildHash}</span>
-            </div>
-            <div className="flex justify-between py-2 border-b border-gray-700">
-              <span className="text-gray-400">Framework</span>
-              <span className="text-red-500">Next.js</span>
-            </div>
-          <div className="flex justify-between py-2 border-b border-gray-700">
-            <span className="text-gray-400">Language</span>
-            <span className="text-blue-500">TypeScript</span>
-          </div>
-            <div className="flex justify-between py-2 border-b border-gray-700">
-              <span className="text-gray-400">Storage</span>
-              <span className="text-yellow-400">Supabase</span>
-            </div>
-            <div className="flex justify-between py-2 border-b border-gray-700">
-              <span className="text-gray-400">Battery Health</span>
-              <span className="text-green-500">Excellent</span>
-            </div>
-          </div>
-
-
-<div className="text-center text-gray-400 text-xs select-text mt-2">
-  <p>
-    <a
-      href="https://iphone.jessejesse.com/privacy.html"
-      className="hover:text-gray-200 transition-colors duration-200"
-    >
-      Privacy Policy
-    </a>
-  </p>
-</div>
-
-
-          
-        
-        </div>
-      </div>
-    </div>
-  );
-}
-
+    
     if (activeSection === "about") {
         return (
                 <div className="h-full bg-gray-900 text-white flex flex-col">
@@ -1135,6 +1069,7 @@ function PhoneApp({
   );
 }
 
+
 const SkipBack = (props: React.SVGProps<SVGSVGElement>) => (
   <svg
     {...props}
@@ -1149,6 +1084,7 @@ const SkipBack = (props: React.SVGProps<SVGSVGElement>) => (
     <line x1="5" y1="19" x2="5" y2="5" />
   </svg>
 );
+
 const SkipForward = (props: React.SVGProps<SVGSVGElement>) => (
   <svg
     {...props}
@@ -1179,241 +1115,185 @@ interface Track {
 }
 
 const sampleTracks: Track[] = [
-  {
-    id: 1,
-    title: "You Only Live Once",
-    artist: "The Strokes",
-    videoId: "pT68FS3YbQ4",
-  },
-  {
-    id: 2,
-    title: "Running through the six",
-    artist: "Drake",
-    videoId: "jqScSp5l-AQ",
-  },
+  { id: 1, title: "You Only Live Once", artist: "The Strokes", videoId: "pT68FS3YbQ4" },
+  { id: 2, title: "Running through the six", artist: "Drake", videoId: "jqScSp5l-AQ" },
   { id: 3, title: "Undercover", artist: "Lane 8", videoId: "HSydHbGdIcY" },
-  {
-    id: 4,
-    title: "King of Everything",
-    artist: "Wiz Khalifa",
-    videoId: "8d0cm_hcQes",
-  },
-  {
-    id: 5,
-    title: "Cant Sleep",
-    artist: "Super 8 Tab",
-    videoId: "1coNgmWS0fs",
-  },
-  {
-    id: 7,
-    title: "Addicted",
-    artist: "Logic",
-    videoId: "3dofrKm_Usw",
-  },
-   {
-    id: 8,
-    title: "Palm Trees",
-    artist: "Flatbush Zombies",
-    videoId: "kfzRXseSBIM",
-  },
-  {
-    id: 9,
-    title: "Time is the Enemy",
-    artist: "Quantic",
-    videoId: "nvUeo5sagkA",
-  },
-  {
-    id: 10,
-    title: "The Otherside",
-    artist: "Russ",
-    videoId: "WxmXFHjebHo",
-
-  },
-  {
-    id: 11,
-    title: "It wont stop",
-    artist: "Sevyn Streeter",
-    videoId: "XgFiWGIVP6s",
-
-  },
-  {
-    id: 12,
-    title: "Loyalty",
-    artist: "KAAN",
-    videoId: "N-85_Y9RzBk",
-
-  },
-  {
-    id: 13,
-    title: "Opportunity Cost",
-    artist: "G-Easy",
-    videoId: "Mko1OVHwzoU",
-
-  }
+  { id: 4, title: "King of Everything", artist: "Wiz Khalifa", videoId: "8d0cm_hcQes" },
+  { id: 5, title: "Cant Sleep", artist: "Super 8 Tab", videoId: "1coNgmWS0fs" },
+  { id: 7, title: "Addicted", artist: "Logic", videoId: "3dofrKm_Usw" },
+  { id: 8, title: "Palm Trees", artist: "Flatbush Zombies", videoId: "kfzRXseSBIM" },
+  { id: 9, title: "Time is the Enemy", artist: "Quantic", videoId: "nvUeo5sagkA" },
+  { id: 10, title: "The Otherside", artist: "Russ", videoId: "WxmXFHjebHo" },
+  { id: 11, title: "It wont stop", artist: "Sevyn Streeter", videoId: "XgFiWGIVP6s" },
+  { id: 12, title: "Loyalty", artist: "KAAN", videoId: "N-85_Y9RzBk" },
+  { id: 13, title: "Opportunity Cost", artist: "G-Easy", videoId: "Mko1OVHwzoU" },
 ];
 
+export function MusicApp() {
+  const playerRef = useRef<HTMLDivElement>(null);
+  const ytPlayer = useRef<any>(null);
 
-function MusicApp() {
-    const playerRef = useRef<HTMLDivElement>(null);
-    const ytPlayer = useRef<any>(null);
-    
-    const [currentIndex, setCurrentIndex] = useState(0);
-    const [isReady, setIsReady] = useState(false);
-    const [isPlaying, setIsPlaying] = useState(false);
-    const [volume, setVolume] = useState(50);
-    const [progress, setProgress] = useState(0);
-    const [duration, setDuration] = useState(0);
-    
-    const currentTrack = sampleTracks[currentIndex];
-    
-    useEffect(() => {
-        if (!window.YT) {
-            const tag = document.createElement("script");
-            tag.src = "https://www.youtube.com/iframe_api";
-            document.body.appendChild(tag);
-        }
-        
-        window.onYouTubeIframeAPIReady = () => {
-            ytPlayer.current = new window.YT.Player(playerRef.current, {
-                height: "240",
-                width: "426",
-                videoId: currentTrack.videoId,
-                playerVars: {
-                    autoplay: 0,
-                    controls: 1,
-                    modestbranding: 1,
-                    rel: 0,
-                },
-                events: {
-                    onReady: (event: any) => {
-                        setIsReady(true);
-                        ytPlayer.current.setVolume(volume);
-                        setDuration(ytPlayer.current.getDuration());
-                    },
-                    onStateChange: (e: any) => {
-                        if (e.data === window.YT.PlayerState.ENDED) {
-                            playNext();
-                        }
-                    },
-                },
-            });
-        };
-    }, []);
-    
-    useEffect(() => {
-        if (ytPlayer.current && isReady) {
-            ytPlayer.current.loadVideoById(currentTrack.videoId);
-            setIsPlaying(true);
-            setProgress(0);
-        }
-    }, [currentIndex, isReady, currentTrack.videoId]);
-    
-    useEffect(() => {
-        if (!ytPlayer.current || !isReady) return;
-        if (isPlaying) {
-            ytPlayer.current.playVideo();
-        } else {
-            ytPlayer.current.pauseVideo();
-        }
-    }, [isPlaying, isReady]);
-    
-    useEffect(() => {
-        if (ytPlayer.current && isReady) {
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const [isReady, setIsReady] = useState(false);
+  const [isPlaying, setIsPlaying] = useState(false);
+  const [volume, setVolume] = useState(50);
+  const [progress, setProgress] = useState(0);
+  const [duration, setDuration] = useState(0);
+
+  const currentTrack = sampleTracks[currentIndex];
+
+  useEffect(() => {
+    if (!window.YT) {
+      const tag = document.createElement("script");
+      tag.src = "https://www.youtube.com/iframe_api";
+      document.body.appendChild(tag);
+    }
+
+    window.onYouTubeIframeAPIReady = () => {
+      ytPlayer.current = new window.YT.Player(playerRef.current, {
+        height: "240",
+        width: "426",
+        videoId: currentTrack.videoId,
+        playerVars: {
+          autoplay: 0,
+          controls: 1,
+          modestbranding: 1,
+          rel: 0,
+        },
+        events: {
+          onReady: () => {
+            setIsReady(true);
             ytPlayer.current.setVolume(volume);
-        }
-    }, [volume, isReady]);
-    
-    useEffect(() => {
-        if (!ytPlayer.current) return;
-        
-        const interval = setInterval(() => {
-            if (ytPlayer.current && ytPlayer.current.getCurrentTime) {
-                setProgress(ytPlayer.current.getCurrentTime());
-                setDuration(ytPlayer.current.getDuration());
+            setDuration(ytPlayer.current.getDuration());
+          },
+          onStateChange: (e: any) => {
+            if (e.data === window.YT.PlayerState.ENDED) {
+              playNext();
             }
-        }, 1000);
-        
-        return () => clearInterval(interval);
-    }, []);
-    
-    const playPrev = () => {
-        setCurrentIndex((i) => (i === 0 ? sampleTracks.length - 1 : i - 1));
+          },
+        },
+      });
     };
-    
-    const playNext = () => {
-        setCurrentIndex((i) => (i === sampleTracks.length - 1 ? 0 : i + 1));
-    };
-    
-    const seekTo = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const time = Number(e.target.value);
-        setProgress(time);
-        if (ytPlayer.current && isReady) {
-            ytPlayer.current.seekTo(time, true);
-        }
-    };
-    
-return (
-  <div className="bg-black text-white min-h-screen flex flex-col items-center p-6 space-y-6 overflow-y-auto">
-    <div
-      ref={playerRef}
-      style={{ maxWidth: "426px", width: "100%", marginBottom: "1rem" }}
-    ></div>
+  }, []);
 
-    <div className="glass-container w-full max-w-md relative">
-      <div className="glass-filter" />
-      <div className="glass-overlay" />
-      <div className="glass-specular" />
+  useEffect(() => {
+    if (ytPlayer.current && isReady) {
+      ytPlayer.current.loadVideoById(currentTrack.videoId);
+      setIsPlaying(true);
+      setProgress(0);
+    }
+  }, [currentIndex, isReady, currentTrack.videoId]);
 
-      <div className="glass-content flex flex-col items-center gap-4">
-        <div className="text-center">
-          <h2 className="text-2xl font-bold">{currentTrack.title}</h2>
-          <p className="text-gray-300">{currentTrack.artist}</p>
-        </div>
+  useEffect(() => {
+    if (!ytPlayer.current || !isReady) return;
+    if (isPlaying) {
+      ytPlayer.current.playVideo();
+    } else {
+      ytPlayer.current.pauseVideo();
+    }
+  }, [isPlaying, isReady]);
 
-        <div className="w-full max-w-md p-6 rounded-2xl bg-white/10 backdrop-blur-lg border border-white/10 shadow-lg space-y-6">
-          <input
-            type="range"
-            min={0}
-            max={duration}
-            value={progress}
-            onChange={seekTo}
-            className="w-full max-w-md accent-cyan-500"
-            aria-label="Seek video"
-          />
+  useEffect(() => {
+    if (ytPlayer.current && isReady) {
+      ytPlayer.current.setVolume(volume);
+    }
+  }, [volume, isReady]);
 
-          <div className="flex items-center justify-center gap-8">
-            <button onClick={playPrev} aria-label="Previous Track" type="button">
-              <SkipBack className="w-8 h-8 text-white hover:text-cyan-500 transition" />
-            </button>
+  useEffect(() => {
+    if (!ytPlayer.current) return;
 
-            <button
-              onClick={() => setIsPlaying((p) => !p)}
-              className="px-6 py-3 bg-white text-black rounded-full text-lg font-semibold hover:scale-105 transition"
-              aria-label={isPlaying ? "Pause" : "Play"}
-              type="button"
-            >
-              {isPlaying ? "Pause" : "Play"}
-            </button>
+    const interval = setInterval(() => {
+      if (ytPlayer.current && ytPlayer.current.getCurrentTime) {
+        setProgress(ytPlayer.current.getCurrentTime());
+        setDuration(ytPlayer.current.getDuration());
+      }
+    }, 1000);
 
-            <button onClick={playNext} aria-label="Next Track" type="button">
-              <SkipForward className="w-8 h-8 text-white hover:text-cyan-500 transition" />
-            </button>
+    return () => clearInterval(interval);
+  }, []);
+
+  const playPrev = () => {
+    setCurrentIndex((i) => (i === 0 ? sampleTracks.length - 1 : i - 1));
+  };
+
+  const playNext = () => {
+    setCurrentIndex((i) => (i === sampleTracks.length - 1 ? 0 : i + 1));
+  };
+
+  const seekTo = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const time = Number(e.target.value);
+    setProgress(time);
+    if (ytPlayer.current && isReady) {
+      ytPlayer.current.seekTo(time, true);
+    }
+  };
+
+  return (
+    <div className="bg-black text-white min-h-screen flex flex-col items-center p-6 space-y-6 overflow-y-auto">
+      <div
+        ref={playerRef}
+        style={{ maxWidth: "426px", width: "100%", marginBottom: "1rem" }}
+      />
+
+      <div className="glass-container w-full max-w-md relative">
+        <div className="glass-filter" />
+        <div className="glass-overlay" />
+        <div className="glass-specular" />
+
+        <div className="glass-content flex flex-col items-center gap-4">
+          <div className="text-center">
+            <h2 className="text-2xl font-bold">{currentTrack.title}</h2>
+            <p className="text-gray-300">{currentTrack.artist}</p>
           </div>
 
-          <input
-            type="range"
-            min={0}
-            max={100}
-            value={volume}
-            onChange={(e) => setVolume(Number(e.target.value))}
-            className="w-full max-w-md accent-cyan-500"
-            aria-label="Volume control"
-          />
+          <div className="w-full max-w-md p-6 rounded-2xl bg-white/10 backdrop-blur-lg border border-white/10 shadow-lg space-y-6">
+            <input
+              type="range"
+              min={0}
+              max={duration}
+              value={progress}
+              onChange={seekTo}
+              className="w-full max-w-md accent-cyan-500"
+              aria-label="Seek video"
+            />
+
+            <div className="flex items-center justify-center gap-8">
+              <button onClick={playPrev} aria-label="Previous Track" type="button">
+                <SkipBack className="w-8 h-8 text-white hover:text-cyan-500 transition" />
+              </button>
+
+              <button
+                onClick={() => setIsPlaying((p) => !p)}
+                className="px-6 py-3 bg-white text-black rounded-full text-lg font-semibold hover:scale-105 transition"
+                aria-label={isPlaying ? "Pause" : "Play"}
+                type="button"
+              >
+                {isPlaying ? "Pause" : "Play"}
+              </button>
+
+              <button onClick={playNext} aria-label="Next Track" type="button">
+                <SkipForward className="w-8 h-8 text-white hover:text-cyan-500 transition" />
+              </button>
+            </div>
+
+            <input
+              type="range"
+              min={0}
+              max={100}
+              value={volume}
+              onChange={(e) => setVolume(Number(e.target.value))}
+              className="w-full max-w-md accent-cyan-500"
+              aria-label="Volume control"
+            />
+          </div>
         </div>
       </div>
     </div>
-  </div>
-);
+  );
+}
+
+
+
 
 function ContactsApp({
   contacts,
@@ -1933,6 +1813,7 @@ function NotesApp() {
     }
   };
 
+
   const handleAddNote = async (e) => {
     e.preventDefault();
     if (!newTitle.trim()) return;
@@ -2114,6 +1995,7 @@ function NotesApp() {
     </div>
   );
 }
+
 
 function BrowserApp() {
   const [url, setUrl] = useState("");
@@ -2690,6 +2572,8 @@ function CalendarApp() {
   );
 }
 
+
+    
 function Game() {
   const GRID_SIZE = 20
   const CANVAS_SIZE = 200 
@@ -2803,8 +2687,8 @@ function SnakeApp() {
     let newFood: Position;
     do {
       newFood = {
-          // x: Math.floor(Math.random() * (CANVAS_SIZE / GRID_SIZE)),
-         // y: Math.floor(Math.random() * (CANVAS_SIZE / GRID_SIZE)),
+       // x: Math.floor(Math.random() * (CANVAS_SIZE / GRID_SIZE)),
+       // y: Math.floor(Math.random() * (CANVAS_SIZE / GRID_SIZE)),
         // Optional: Uncomment to restrict food from spawning at edges
          x: Math.floor(Math.random() * (CANVAS_SIZE / GRID_SIZE - 1)) + 1,
          y: Math.floor(Math.random() * (CANVAS_SIZE / GRID_SIZE - 1)) + 1,
@@ -3027,11 +2911,11 @@ function SnakeApp() {
     const ctx = canvas.getContext("2d");
     if (!ctx) return;
 
-    // Clear canvas
+
     ctx.fillStyle = "rgba(0, 0, 0, 0.9)";
     ctx.fillRect(0, 0, CANVAS_SIZE, CANVAS_SIZE);
 
- 
+
     ctx.strokeStyle = "rgba(0, 255, 255, 0.2)";
     ctx.lineWidth = 1;
     ctx.shadowColor = "rgba(0, 255, 255, 0.5)";
@@ -3045,7 +2929,7 @@ function SnakeApp() {
     }
     ctx.stroke();
 
-    // Draw particles
+  
     particles.forEach((particle) => {
       const alpha = particle.life / particle.maxLife;
       ctx.shadowColor = `rgba(0, 255, 255, ${alpha})`;
@@ -3054,7 +2938,7 @@ function SnakeApp() {
       ctx.fillRect(particle.x - 1, particle.y - 1, 2, 2);
     });
 
-    // Draw snake
+   
     snake.forEach((segment, index) => {
       const isHead = index === 0;
       ctx.shadowColor = isHead ? "rgba(0, 255, 0, 0.8)" : "rgba(0, 255, 0, 0.4)";
@@ -3079,7 +2963,7 @@ function SnakeApp() {
       ctx.fillRect(segment.x * GRID_SIZE + 2, segment.y * GRID_SIZE + 2, GRID_SIZE - 4, GRID_SIZE - 4);
     });
 
-
+  
     const time = Date.now() * 0.005;
     const pulseIntensity = Math.sin(time) * 0.3 + 0.7;
     ctx.shadowColor = `rgba(255, 0, 0, ${pulseIntensity})`;
@@ -3295,7 +3179,7 @@ function ChatApp() {
 
   return (
     <div className="flex flex-col h-full bg-gray-900 text-white">
-      {/* Scrollable message area */}
+   
       <div className="flex-1 overflow-y-auto px-4 pt-4 pb-2 space-y-4">
         {messages.map((message) => (
           <div
@@ -3350,3 +3234,4 @@ function ChatApp() {
     </div>
   );
 }
+
