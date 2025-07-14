@@ -1,16 +1,34 @@
 # iphone-tsx
 
+### check out the <a href="https://iphone.jessejesse.com">DEMO</a><br>
+
 <img width="1430" alt="og" src="https://github.com/user-attachments/assets/e0f64669-bd15-4797-a28e-31c0a5f62997" />
 
-## Multiple integrated databases
+## Integrated Databases
+
 - Supabase for photos and Redis for contacts/events
 - Google Drive integration with OAuth authentication
-- 
+  
 ## Interactive Apps: Chat, Email, Maps, Calendar, Camera, Notes, Games.
+
 - Realistic iPhone interface with customizable settings
 - Real-time features using Supabase realtime subscriptions
 
-## Left the DB rules open for demo
+### Left the DB rules open for demo
+
+- initial sql table
+
+```
+CREATE TABLE public.messages (
+  id integer NOT NULL DEFAULT nextval('messages_id_seq'::regclass),
+  content text NOT NULL,
+  created_at timestamp with time zone DEFAULT timezone('utc'::text, now()),
+  likes integer DEFAULT 0,
+  user_id text DEFAULT 'anonymous'::text,
+  CONSTRAINT messages_pkey PRIMARY KEY (id)
+);
+```
+
 
 ## Clone
 
